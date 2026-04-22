@@ -1,0 +1,10 @@
+cff-version: 1.2.0
+message: "If this benchmark helps your research or evaluation work, please cite it."
+title: "Agent Infrastructure Security Bench"
+authors:
+  - name: "Bortlesboat"
+version: 0.1.0
+date-released: 2026-04-22
+license: MIT
+repository-code: "https://github.com/Bortlesboat/agent-infra-security-bench"
+abstract: "Public-safe benchmark fixtures and deterministic scoring for self-hosted tool-using AI agent infrastructure."

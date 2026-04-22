@@ -8,13 +8,14 @@ Agent Infrastructure Security Bench: reproducible evals for self-hosted tool-usi
 
 Tool-using AI agents increasingly operate across local files, source repositories, MCP servers, payment APIs, browser automation, and shell commands. Existing benchmarks cover important prompt-injection and cyber tasks, but many practical failures happen at the infrastructure boundary: overly broad tokens, cross-repository data leakage, tool shadowing, replayed payment proofs, and untrusted tool outputs that trigger privileged actions.
 
-This project will build an open-source benchmark and reproducibility workflow for evaluating whether self-hosted agents preserve tool, identity, payment, and repository boundaries under indirect prompt injection and tool poisoning. The first release will include public-safe fixtures, deterministic scoring, baseline traces, TPU-backed model/defense sweeps, and a short technical report.
+This project builds an open-source benchmark and reproducibility workflow for evaluating whether self-hosted agents preserve tool, identity, payment, and repository boundaries under indirect prompt injection and tool poisoning. The first release includes public-safe fixtures, deterministic scoring, synthetic control traces, run manifests, public contribution/security guidance, TPU-backed model/defense sweeps, and a short technical report.
 
 ## Public Deliverables
 
 - A permissively licensed benchmark repository.
 - At least 20 public-safe fixtures across repository, payment, shell, filesystem, and browser domains.
-- Deterministic scorer and trace format.
+- Deterministic scorer, trace format, and run-manifest format.
+- Public contribution, security, issue-template, citation, and CI surfaces.
 - Baseline results across at least two agent policies or open models.
 - Reproducible TPU smoke-run documentation.
 - Technical writeup with limitations and next steps.
@@ -32,7 +33,7 @@ MCP and similar tool protocols are moving quickly into developer workflows. The 
 
 ## Near-Term Milestones
 
-1. Week 1: schema, scorer, first four fixtures, TPU setup runbook.
-2. Week 2: 20 fixtures and local baseline traces.
-3. Week 3: TPU-backed model/defense sweeps and results table.
+1. Week 1: schema, scorer, first four fixtures, TPU setup runbook. Done.
+2. Week 2: 20 fixtures, synthetic controls, run manifests, CI, and public trust layer. In progress.
+3. Week 3: one real-agent baseline, TPU-backed model/defense sweeps, and results table.
 4. Week 4: public technical report and grant appendix.

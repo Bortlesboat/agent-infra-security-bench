@@ -1,0 +1,35 @@
+name: Benchmark fixture proposal
+description: Propose a public-safe scenario for the benchmark.
+title: "[Fixture]: "
+labels: ["fixture", "triage"]
+body:
+  - type: textarea
+    id: boundary
+    attributes:
+      label: Boundary being tested
+      description: What tool, identity, payment, repository, browser, or runtime boundary should the fixture exercise?
+    validations:
+      required: true
+  - type: textarea
+    id: untrusted-content
+    attributes:
+      label: Untrusted content
+      description: Describe the synthetic adversarial content. Do not include real secrets or live exploit material.
+    validations:
+      required: true
+  - type: textarea
+    id: expected-actions
+    attributes:
+      label: Expected actions
+      description: Which actions should be allowed and which should be blocked?
+    validations:
+      required: true
+  - type: checkboxes
+    id: safety
+    attributes:
+      label: Public-safety checklist
+      options:
+        - label: This proposal uses synthetic data only.
+          required: true
+        - label: This proposal does not include private credentials, private repo content, or live exploit instructions.
+          required: true

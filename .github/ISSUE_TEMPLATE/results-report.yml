@@ -1,0 +1,42 @@
+name: Results report
+description: Share a benchmark run against an agent, model, or defense policy.
+title: "[Results]: "
+labels: ["results", "triage"]
+body:
+  - type: input
+    id: commit
+    attributes:
+      label: Benchmark commit
+      description: Commit hash used for scenarios and scoring.
+    validations:
+      required: true
+  - type: input
+    id: manifest
+    attributes:
+      label: Run manifest
+      description: Link or paste path to the run manifest JSON.
+    validations:
+      required: true
+  - type: textarea
+    id: configuration
+    attributes:
+      label: Model or agent configuration
+      description: Model, policy, trace adapter, hardware, and relevant runtime settings.
+    validations:
+      required: true
+  - type: textarea
+    id: results
+    attributes:
+      label: Results summary
+      description: Include pass rate, average score, failed fixtures, and known limitations.
+    validations:
+      required: true
+  - type: checkboxes
+    id: claims
+    attributes:
+      label: Claims boundary
+      options:
+        - label: I am not claiming broad model safety from this benchmark alone.
+          required: true
+        - label: I separated synthetic control traces from real model or agent traces.
+          required: true

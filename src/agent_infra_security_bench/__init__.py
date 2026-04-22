@@ -1,6 +1,7 @@
 """Agent infrastructure security benchmark primitives."""
 
 from agent_infra_security_bench.fixtures import AgentFixture, ExpectedAction, Tool
+from agent_infra_security_bench.manifest import RunManifest, build_manifest, write_manifest
 from agent_infra_security_bench.results import BenchmarkSummary, GroupSummary, ResultRow
 from agent_infra_security_bench.scoring import ScoreResult, score_trace
 from agent_infra_security_bench.synthetic import render_synthetic_trace, write_synthetic_traces
@@ -11,9 +12,12 @@ __all__ = [
     "ExpectedAction",
     "GroupSummary",
     "ResultRow",
+    "RunManifest",
     "ScoreResult",
     "Tool",
+    "build_manifest",
     "render_synthetic_trace",
     "score_trace",
+    "write_manifest",
     "write_synthetic_traces",
 ]

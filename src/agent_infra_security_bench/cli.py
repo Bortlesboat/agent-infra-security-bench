@@ -6,6 +6,7 @@ from pathlib import Path
 from typing import Any
 
 from agent_infra_security_bench.fixtures import load_fixture
+from agent_infra_security_bench.manifest import build_manifest, write_manifest
 from agent_infra_security_bench.results import render_csv, render_markdown, score_suite
 from agent_infra_security_bench.scoring import score_trace
 from agent_infra_security_bench.synthetic import write_synthetic_traces
@@ -34,6 +35,19 @@ def main(argv: list[str] | None = None) -> int:
     generate_parser.add_argument("scenario_dir", type=Path)
     generate_parser.add_argument("trace_dir", type=Path)
     generate_parser.add_argument("--mode", choices=["pass", "fail"], default="pass")
+
+    manifest_parser = subparsers.add_parser(
+        "write-manifest", help="Write reproducibility metadata for a benchmark run"
+    )
+    manifest_parser.add_argument("output", type=Path)
+    manifest_parser.add_argument("--model", required=True)
+    manifest_parser.add_argument("--policy", required=True)
+    manifest_parser.add_argument("--trace-adapter", required=True)
+    manifest_parser.add_argument("--hardware", required=True)
+    manifest_parser.add_argument("--scenario-dir", type=Path, default=Path("scenarios"))
+    manifest_parser.add_argument("--scenario-commit", default="unknown")
+    manifest_parser.add_argument("--results")
+    manifest_parser.add_argument("--notes")
 
     args = parser.parse_args(argv)
     if args.command == "score":
@@ -64,6 +78,20 @@ def main(argv: list[str] | None = None) -> int:
                 sort_keys=True,
             )
         )
+        return 0
+    if args.command == "write-manifest":
+        manifest = build_manifest(
+            model=args.model,
+            policy=args.policy,
+            trace_adapter=args.trace_adapter,
+            hardware=args.hardware,
+            scenario_dir=args.scenario_dir,
+            scenario_commit=args.scenario_commit,
+            results_path=args.results,
+            notes=args.notes,
+        )
+        path = write_manifest(args.output, manifest)
+        print(json.dumps({"path": str(path), "run_id": manifest.run_id}, indent=2, sort_keys=True))
         return 0
 
     return 1

@@ -30,9 +30,10 @@ To run the complete fixture suite with deterministic synthetic traces:
 ```powershell
 agent-bench generate-traces scenarios outputs/synthetic-pass --mode pass
 agent-bench run scenarios outputs/synthetic-pass --markdown outputs/synthetic-pass.md --csv outputs/synthetic-pass.csv
+agent-bench write-manifest outputs/synthetic-pass-manifest.json --model synthetic-control --policy synthetic-pass --trace-adapter synthetic --hardware local --results outputs/synthetic-pass.csv
 ```
 
-That produces JSON summary output plus Markdown and CSV tables that can be pasted into a writeup, grant appendix, or model-sweep report.
+That produces JSON summary output, Markdown and CSV tables, and a run manifest that can be pasted into a writeup, grant appendix, or model-sweep report.
 
 ## Current Contents
 
@@ -40,11 +41,15 @@ That produces JSON summary output plus Markdown and CSV tables that can be paste
 - `examples/traces/` - tiny example agent traces
 - `src/agent_infra_security_bench/fixtures.py` - fixture schema and validation
 - `src/agent_infra_security_bench/scoring.py` - deterministic trace scoring
+- `src/agent_infra_security_bench/manifest.py` - run metadata for reproducible result claims
 - `src/agent_infra_security_bench/results.py` - suite aggregation and Markdown/CSV export
 - `src/agent_infra_security_bench/synthetic.py` - deterministic pass/fail trace generation
+- `SECURITY.md` / `CONTRIBUTING.md` / `CITATION.cff` - public trust and citation surfaces
+- `.github/` - CI plus fixture and results issue templates
 - `docs/research/` - TPU and benchmark landscape notes
 - `docs/runbooks/` - first Cloud TPU runbook
 - `docs/grants/` - starter grant proposal language
+- `docs/launch/` and `docs/reports/` - public launch packet and baseline report template
 
 ## TPU Role
 
@@ -60,4 +65,6 @@ The first TPU run should be a smoke test, not a long training job.
 
 This is an early benchmark scaffold. It currently proves fixture validation and trace scoring only. It does not yet claim model results, defense efficacy, or broad benchmark coverage.
 
-The synthetic traces are control cases, not model outputs. They prove the scorer and reporting pipeline before any local agent, cloud model, or TPU-backed sweep is measured.
+Synthetic traces are control cases, not model outputs. They prove the scorer and reporting pipeline before any local agent, cloud model, or TPU-backed sweep is measured.
+
+Any published model or agent result should include the benchmark commit, run manifest, trace adapter, model or agent version, policy configuration, hardware/runtime notes, and known limitations.

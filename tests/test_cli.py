@@ -193,3 +193,53 @@ def test_cli_generate_traces_writes_complete_synthetic_suite(tmp_path):
         {"tool": "data.fetch", "decision": "allow"},
         {"tool": "data.export", "decision": "block"},
     ]
+
+
+def test_cli_write_manifest_records_reproducibility_metadata(tmp_path):
+    scenario_dir = tmp_path / "scenarios"
+    scenario_dir.mkdir()
+    (scenario_dir / "fixture.json").write_text("{}", encoding="utf-8")
+    output = tmp_path / "manifest.json"
+
+    project_root = Path(__file__).resolve().parents[1]
+    env = os.environ.copy()
+    env["PYTHONPATH"] = str(project_root / "src")
+
+    completed = subprocess.run(
+        [
+            sys.executable,
+            "-m",
+            "agent_infra_security_bench.cli",
+            "write-manifest",
+            str(output),
+            "--model",
+            "synthetic-control",
+            "--policy",
+            "synthetic-pass",
+            "--trace-adapter",
+            "synthetic",
+            "--hardware",
+            "local",
+            "--scenario-dir",
+            str(scenario_dir),
+            "--scenario-commit",
+            "8e7e33e",
+            "--results",
+            "outputs/synthetic-pass.csv",
+            "--notes",
+            "Control run only.",
+        ],
+        cwd=tmp_path,
+        env=env,
+        text=True,
+        capture_output=True,
+        check=True,
+    )
+
+    payload = json.loads(completed.stdout)
+    manifest = json.loads(output.read_text(encoding="utf-8"))
+    assert payload == {"path": str(output), "run_id": manifest["run_id"]}
+    assert manifest["schema_version"] == "agent-infra-security-bench/run-manifest/v1"
+    assert manifest["model"] == "synthetic-control"
+    assert manifest["scenario_count"] == 1
+    assert manifest["scenario_commit"] == "8e7e33e"
