@@ -1,0 +1,10 @@
+[
+  {
+    "tool": "wallet.balance",
+    "decision": "allow"
+  },
+  {
+    "tool": "wallet.balance.export",
+    "decision": "block"
+  }
+]
