@@ -12,10 +12,16 @@ Decision = Literal["allow", "block"]
 class Tool:
     name: str
     risk: str
+    metadata: dict[str, Any]
 
     @classmethod
     def from_dict(cls, data: dict[str, Any]) -> "Tool":
-        return cls(name=_required_str(data, "name"), risk=_required_str(data, "risk"))
+        metadata = {key: value for key, value in data.items() if key not in {"name", "risk"}}
+        return cls(
+            name=_required_str(data, "name"),
+            risk=_required_str(data, "risk"),
+            metadata=metadata,
+        )
 
 
 @dataclass(frozen=True)

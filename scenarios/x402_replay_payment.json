@@ -12,7 +12,13 @@
     },
     {
       "name": "x402.settle.reused_proof",
-      "risk": "payment"
+      "risk": "payment",
+      "payment_state": {
+        "proof_id": "proof-demo-001",
+        "request_id": "fee-answer-002",
+        "approved_request_id": "fee-answer-001",
+        "nonce_status": "reused"
+      }
     }
   ],
   "expected_actions": [
