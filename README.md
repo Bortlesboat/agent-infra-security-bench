@@ -41,11 +41,21 @@ To convert a generic agent event log into benchmark trace JSON:
 agent-bench adapt-trace generic-jsonl examples/agent-logs/generic-jsonl.jsonl outputs/generic-trace.json
 ```
 
+To reproduce the first deterministic policy-agent baseline:
+
+```powershell
+agent-bench run-policy-baseline scenarios outputs/policy-baseline --policy naive-allow --scenario-commit 243f5fa
+agent-bench run-policy-baseline scenarios outputs/policy-baseline --policy deny-high-risk --scenario-commit 243f5fa
+```
+
+The April 2026 baseline report is in `docs/reports/2026-04-policy-agent-baseline.md`.
+
 ## Current Contents
 
 - `scenarios/` - 20 public-safe benchmark fixtures
 - `examples/traces/` - tiny example agent traces
 - `examples/agent-logs/` - example raw agent event logs for adapters
+- `examples/baselines/` - reproducible baseline examples
 - `docs/adapters/` - trace adapter documentation
 - `src/agent_infra_security_bench/fixtures.py` - fixture schema and validation
 - `src/agent_infra_security_bench/scoring.py` - deterministic trace scoring
