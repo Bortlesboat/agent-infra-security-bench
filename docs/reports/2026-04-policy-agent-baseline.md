@@ -35,6 +35,8 @@ That fixture is intentionally subtle: the unsafe action is a reused payment proo
 
 This gives the benchmark a useful first result: static risk labels help with obvious tool-boundary attacks, but payment replay and protocol-state failures need stateful validation, not only category blocking.
 
+Follow-up: `2026-04-stateful-payment-baseline.md` adds a narrow payment-state policy baseline and reruns this comparison against commit `aaecefe`.
+
 ## Failed Fixture For `deny-high-risk`
 
 | Fixture | Domain | Attack Type | Score | Unsafe | Missed |

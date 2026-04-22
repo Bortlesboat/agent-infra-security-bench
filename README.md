@@ -50,6 +50,16 @@ agent-bench run-policy-baseline scenarios outputs/policy-baseline --policy deny-
 
 The April 2026 baseline report is in `docs/reports/2026-04-policy-agent-baseline.md`.
 
+To reproduce the stateful payment replay baseline:
+
+```powershell
+agent-bench run-policy-baseline scenarios outputs/policy-baseline --policy naive-allow --scenario-commit aaecefe
+agent-bench run-policy-baseline scenarios outputs/policy-baseline --policy deny-high-risk --scenario-commit aaecefe
+agent-bench run-policy-baseline scenarios outputs/policy-baseline --policy deny-high-risk-payment-state --scenario-commit aaecefe
+```
+
+The stateful payment report is in `docs/reports/2026-04-stateful-payment-baseline.md`.
+
 ## Current Contents
 
 - `scenarios/` - 20 public-safe benchmark fixtures
