@@ -12,6 +12,7 @@ from agent_infra_security_bench.adapters import (
 )
 from agent_infra_security_bench.fixtures import load_fixture
 from agent_infra_security_bench.manifest import build_manifest, write_manifest
+from agent_infra_security_bench.policy_agent import available_policies, write_policy_traces
 from agent_infra_security_bench.results import render_csv, render_markdown, score_suite
 from agent_infra_security_bench.scoring import score_trace
 from agent_infra_security_bench.synthetic import write_synthetic_traces
@@ -60,6 +61,14 @@ def main(argv: list[str] | None = None) -> int:
     adapt_parser.add_argument("adapter", choices=["generic-jsonl"])
     adapt_parser.add_argument("source", type=Path)
     adapt_parser.add_argument("output", type=Path)
+
+    policy_parser = subparsers.add_parser(
+        "run-policy-baseline", help="Run a transparent deterministic policy baseline"
+    )
+    policy_parser.add_argument("scenario_dir", type=Path)
+    policy_parser.add_argument("output_dir", type=Path)
+    policy_parser.add_argument("--policy", choices=available_policies(), required=True)
+    policy_parser.add_argument("--scenario-commit", default="unknown")
 
     args = parser.parse_args(argv)
     if args.command == "score":
@@ -112,6 +121,41 @@ def main(argv: list[str] | None = None) -> int:
         print(
             json.dumps(
                 {"adapter": args.adapter, "actions": len(actions), "output": str(output)},
+                indent=2,
+                sort_keys=True,
+            )
+        )
+        return 0
+    if args.command == "run-policy-baseline":
+        run_dir = args.output_dir / args.policy
+        trace_dir = run_dir / "traces"
+        write_policy_traces(args.scenario_dir, trace_dir, args.policy)
+        summary = score_suite(args.scenario_dir, trace_dir)
+        markdown_path = run_dir / "results.md"
+        csv_path = run_dir / "results.csv"
+        markdown_path.write_text(render_markdown(summary), encoding="utf-8")
+        csv_path.write_text(render_csv(summary), encoding="utf-8")
+        manifest = build_manifest(
+            model="deterministic-policy-agent",
+            policy=args.policy,
+            trace_adapter="policy-agent",
+            hardware="local",
+            scenario_dir=args.scenario_dir,
+            scenario_commit=args.scenario_commit,
+            results_path=str(csv_path),
+            notes="Deterministic policy baseline; not an LLM or TPU-backed model result.",
+        )
+        manifest_path = write_manifest(run_dir / "manifest.json", manifest)
+        print(
+            json.dumps(
+                {
+                    "policy": args.policy,
+                    "total": summary.total,
+                    "passed": summary.passed,
+                    "pass_rate": summary.pass_rate,
+                    "results": str(csv_path),
+                    "manifest": str(manifest_path),
+                },
                 indent=2,
                 sort_keys=True,
             )
