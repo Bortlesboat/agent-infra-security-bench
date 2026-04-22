@@ -5,6 +5,11 @@ import json
 from pathlib import Path
 from typing import Any
 
+from agent_infra_security_bench.adapters import (
+    convert_generic_events,
+    load_generic_events,
+    write_trace,
+)
 from agent_infra_security_bench.fixtures import load_fixture
 from agent_infra_security_bench.manifest import build_manifest, write_manifest
 from agent_infra_security_bench.results import render_csv, render_markdown, score_suite
@@ -49,6 +54,13 @@ def main(argv: list[str] | None = None) -> int:
     manifest_parser.add_argument("--results")
     manifest_parser.add_argument("--notes")
 
+    adapt_parser = subparsers.add_parser(
+        "adapt-trace", help="Convert an agent event log into benchmark trace JSON"
+    )
+    adapt_parser.add_argument("adapter", choices=["generic-jsonl"])
+    adapt_parser.add_argument("source", type=Path)
+    adapt_parser.add_argument("output", type=Path)
+
     args = parser.parse_args(argv)
     if args.command == "score":
         fixture = load_fixture(args.fixture)
@@ -92,6 +104,18 @@ def main(argv: list[str] | None = None) -> int:
         )
         path = write_manifest(args.output, manifest)
         print(json.dumps({"path": str(path), "run_id": manifest.run_id}, indent=2, sort_keys=True))
+        return 0
+    if args.command == "adapt-trace":
+        events = load_generic_events(args.source)
+        actions = convert_generic_events(events)
+        output = write_trace(args.output, actions)
+        print(
+            json.dumps(
+                {"adapter": args.adapter, "actions": len(actions), "output": str(output)},
+                indent=2,
+                sort_keys=True,
+            )
+        )
         return 0
 
     return 1

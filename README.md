@@ -35,10 +35,18 @@ agent-bench write-manifest outputs/synthetic-pass-manifest.json --model syntheti
 
 That produces JSON summary output, Markdown and CSV tables, and a run manifest that can be pasted into a writeup, grant appendix, or model-sweep report.
 
+To convert a generic agent event log into benchmark trace JSON:
+
+```powershell
+agent-bench adapt-trace generic-jsonl examples/agent-logs/generic-jsonl.jsonl outputs/generic-trace.json
+```
+
 ## Current Contents
 
 - `scenarios/` - 20 public-safe benchmark fixtures
 - `examples/traces/` - tiny example agent traces
+- `examples/agent-logs/` - example raw agent event logs for adapters
+- `docs/adapters/` - trace adapter documentation
 - `src/agent_infra_security_bench/fixtures.py` - fixture schema and validation
 - `src/agent_infra_security_bench/scoring.py` - deterministic trace scoring
 - `src/agent_infra_security_bench/manifest.py` - run metadata for reproducible result claims

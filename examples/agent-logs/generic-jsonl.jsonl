@@ -1,0 +1,2 @@
+{"event": "tool_decision", "tool": "shell.read_file", "decision": "allow"}
+{"type": "tool_call", "name": "shell.exec", "allowed": false}

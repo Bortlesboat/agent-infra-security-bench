@@ -1,5 +1,6 @@
 """Agent infrastructure security benchmark primitives."""
 
+from agent_infra_security_bench.adapters import convert_generic_events, load_generic_events
 from agent_infra_security_bench.fixtures import AgentFixture, ExpectedAction, Tool
 from agent_infra_security_bench.manifest import RunManifest, build_manifest, write_manifest
 from agent_infra_security_bench.results import BenchmarkSummary, GroupSummary, ResultRow
@@ -16,6 +17,8 @@ __all__ = [
     "ScoreResult",
     "Tool",
     "build_manifest",
+    "convert_generic_events",
+    "load_generic_events",
     "render_synthetic_trace",
     "score_trace",
     "write_manifest",

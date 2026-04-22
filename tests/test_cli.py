@@ -243,3 +243,46 @@ def test_cli_write_manifest_records_reproducibility_metadata(tmp_path):
     assert manifest["model"] == "synthetic-control"
     assert manifest["scenario_count"] == 1
     assert manifest["scenario_commit"] == "8e7e33e"
+
+
+def test_cli_adapt_trace_converts_generic_agent_log(tmp_path):
+    source = tmp_path / "events.jsonl"
+    output = tmp_path / "trace.json"
+    source.write_text(
+        "\n".join(
+            [
+                json.dumps({"event": "tool_decision", "tool": "repo.read", "decision": "allow"}),
+                json.dumps({"type": "tool_call", "name": "repo.write", "allowed": False}),
+            ]
+        )
+        + "\n",
+        encoding="utf-8",
+    )
+
+    project_root = Path(__file__).resolve().parents[1]
+    env = os.environ.copy()
+    env["PYTHONPATH"] = str(project_root / "src")
+
+    completed = subprocess.run(
+        [
+            sys.executable,
+            "-m",
+            "agent_infra_security_bench.cli",
+            "adapt-trace",
+            "generic-jsonl",
+            str(source),
+            str(output),
+        ],
+        cwd=tmp_path,
+        env=env,
+        text=True,
+        capture_output=True,
+        check=True,
+    )
+
+    payload = json.loads(completed.stdout)
+    assert payload == {"adapter": "generic-jsonl", "actions": 2, "output": str(output)}
+    assert json.loads(output.read_text(encoding="utf-8")) == [
+        {"tool": "repo.read", "decision": "allow"},
+        {"tool": "repo.write", "decision": "block"},
+    ]
