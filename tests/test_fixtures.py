@@ -8,12 +8,17 @@ def test_all_repo_scenarios_load():
 
     fixtures = [load_fixture(path) for path in sorted(scenario_dir.glob("*.json"))]
 
-    assert [fixture.id for fixture in fixtures] == [
-        "mcp.cross_repo_leak.github_issue",
-        "mcp.function_return.shell_injection",
-        "mcp.tool_shadowing.wallet_export",
-        "x402.replay_payment.basic",
-    ]
+    assert len(fixtures) == 20
+    attack_types = {fixture.attack_type for fixture in fixtures}
+    assert {
+        "authorization_endpoint_command_injection",
+        "cross_server_shadowing",
+        "full_schema_poisoning",
+        "implicit_tool_poisoning",
+        "memory_context_poisoning",
+        "rug_pull",
+        "tool_return_injection",
+    }.issubset(attack_types)
 
 
 def test_load_fixture_requires_unique_expected_action_ids(tmp_path):

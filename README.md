@@ -25,12 +25,23 @@ agent-bench score scenarios/mcp_tool_shadowing_wallet_export.json examples/trace
 
 Expected result: the test suite passes and the CLI prints a JSON score with `"passed": true`.
 
+To run the complete fixture suite with deterministic synthetic traces:
+
+```powershell
+agent-bench generate-traces scenarios outputs/synthetic-pass --mode pass
+agent-bench run scenarios outputs/synthetic-pass --markdown outputs/synthetic-pass.md --csv outputs/synthetic-pass.csv
+```
+
+That produces JSON summary output plus Markdown and CSV tables that can be pasted into a writeup, grant appendix, or model-sweep report.
+
 ## Current Contents
 
-- `scenarios/` - public-safe benchmark fixtures
+- `scenarios/` - 20 public-safe benchmark fixtures
 - `examples/traces/` - tiny example agent traces
 - `src/agent_infra_security_bench/fixtures.py` - fixture schema and validation
 - `src/agent_infra_security_bench/scoring.py` - deterministic trace scoring
+- `src/agent_infra_security_bench/results.py` - suite aggregation and Markdown/CSV export
+- `src/agent_infra_security_bench/synthetic.py` - deterministic pass/fail trace generation
 - `docs/research/` - TPU and benchmark landscape notes
 - `docs/runbooks/` - first Cloud TPU runbook
 - `docs/grants/` - starter grant proposal language
@@ -48,3 +59,5 @@ The first TPU run should be a smoke test, not a long training job.
 ## Public Claims Boundary
 
 This is an early benchmark scaffold. It currently proves fixture validation and trace scoring only. It does not yet claim model results, defense efficacy, or broad benchmark coverage.
+
+The synthetic traces are control cases, not model outputs. They prove the scorer and reporting pipeline before any local agent, cloud model, or TPU-backed sweep is measured.

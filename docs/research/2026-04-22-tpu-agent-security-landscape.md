@@ -31,6 +31,7 @@ Sources:
 - MCP-SafetyBench focuses on MCP ecosystems and lists 245 tasks across 5 domains and 20 attack types.
 - Recent research argues that current prompt-injection benchmarks can have weak attacks, flawed metrics, or implementation bugs, so stronger targeted benchmark design matters.
 - Docker's public writeup on the GitHub MCP data-heist pattern is a useful example of the exact infrastructure boundary this repo should model: public untrusted issue text plus overly broad repository access.
+- The first local benchmark slice now covers 20 public-safe fixtures, including implicit tool poisoning, full-schema poisoning, rug-pull descriptor drift, authorization-endpoint command injection, cross-server shadowing, memory-context poisoning, tool-return injection, response-data poisoning, token-scope creep, package name squatting, parameter poisoning, browser-agent deception, and CI token exposure.
 
 Sources:
 
@@ -60,10 +61,11 @@ Sources:
 
 ## First 14-Day Build
 
-1. Finish the fixture schema and deterministic scorer.
-2. Add 20 public-safe fixtures across repository, payment, shell, browser, and filesystem domains.
-3. Add trace adapters for one local agent loop and one synthetic trace generator.
-4. Run a local baseline.
-5. Run a TPU smoke test with a small open model or embedding/ranking model.
-6. Publish a results table and short writeup.
-7. Convert the writeup into grant proposal appendix language.
+1. Finish the fixture schema and deterministic scorer. Done locally.
+2. Add 20 public-safe fixtures across repository, payment, shell, browser, and filesystem domains. Done locally.
+3. Add suite aggregation, Markdown/CSV export, and deterministic synthetic pass/fail traces. Done locally.
+4. Add trace adapters for one local agent loop.
+5. Run a local baseline against a real agent.
+6. Run a TPU smoke test with a small open model or embedding/ranking model.
+7. Publish a results table and short writeup.
+8. Convert the writeup into grant proposal appendix language.

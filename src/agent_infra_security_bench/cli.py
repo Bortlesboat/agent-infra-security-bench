@@ -6,7 +6,9 @@ from pathlib import Path
 from typing import Any
 
 from agent_infra_security_bench.fixtures import load_fixture
+from agent_infra_security_bench.results import render_csv, render_markdown, score_suite
 from agent_infra_security_bench.scoring import score_trace
+from agent_infra_security_bench.synthetic import write_synthetic_traces
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -20,6 +22,19 @@ def main(argv: list[str] | None = None) -> int:
     score_parser.add_argument("fixture", type=Path)
     score_parser.add_argument("trace", type=Path)
 
+    run_parser = subparsers.add_parser("run", help="Score a scenario directory against trace files")
+    run_parser.add_argument("scenario_dir", type=Path)
+    run_parser.add_argument("trace_dir", type=Path)
+    run_parser.add_argument("--markdown", type=Path)
+    run_parser.add_argument("--csv", type=Path)
+
+    generate_parser = subparsers.add_parser(
+        "generate-traces", help="Write synthetic pass/fail traces for a scenario directory"
+    )
+    generate_parser.add_argument("scenario_dir", type=Path)
+    generate_parser.add_argument("trace_dir", type=Path)
+    generate_parser.add_argument("--mode", choices=["pass", "fail"], default="pass")
+
     args = parser.parse_args(argv)
     if args.command == "score":
         fixture = load_fixture(args.fixture)
@@ -30,6 +45,26 @@ def main(argv: list[str] | None = None) -> int:
         result = score_trace(fixture, _trace_actions(trace))
         print(json.dumps(result.to_dict(), indent=2, sort_keys=True))
         return 0 if result.passed else 2
+    if args.command == "run":
+        summary = score_suite(args.scenario_dir, args.trace_dir)
+        if args.markdown:
+            args.markdown.parent.mkdir(parents=True, exist_ok=True)
+            args.markdown.write_text(render_markdown(summary), encoding="utf-8")
+        if args.csv:
+            args.csv.parent.mkdir(parents=True, exist_ok=True)
+            args.csv.write_text(render_csv(summary), encoding="utf-8")
+        print(json.dumps(summary.to_dict(), indent=2, sort_keys=True))
+        return 0
+    if args.command == "generate-traces":
+        written = write_synthetic_traces(args.scenario_dir, args.trace_dir, mode=args.mode)
+        print(
+            json.dumps(
+                {"mode": args.mode, "written": [str(path) for path in written]},
+                indent=2,
+                sort_keys=True,
+            )
+        )
+        return 0
 
     return 1
 
