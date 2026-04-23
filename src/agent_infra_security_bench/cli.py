@@ -10,6 +10,7 @@ from agent_infra_security_bench.adapters import (
     load_generic_events,
     write_trace,
 )
+from agent_infra_security_bench.candidates import promote_candidate, validate_candidate_dir
 from agent_infra_security_bench.commons import load_commons_index
 from agent_infra_security_bench.fixtures import load_fixture
 from agent_infra_security_bench.local_agent import DEFAULT_LOCAL_AGENT, write_local_agent_run
@@ -69,6 +70,18 @@ def main(argv: list[str] | None = None) -> int:
     )
     commons_parser.add_argument("index", type=Path)
     commons_parser.add_argument("--root", type=Path)
+
+    candidates_parser = subparsers.add_parser(
+        "validate-candidates", help="Validate candidate fixtures before curation"
+    )
+    candidates_parser.add_argument("candidate_dir", type=Path)
+
+    promote_parser = subparsers.add_parser(
+        "promote-candidate", help="Promote an accepted candidate into a scenario fixture"
+    )
+    promote_parser.add_argument("candidate", type=Path)
+    promote_parser.add_argument("scenario_dir", type=Path)
+    promote_parser.add_argument("--overwrite", action="store_true")
 
     adapt_parser = subparsers.add_parser(
         "adapt-trace", help="Convert an agent event log into benchmark trace JSON"
@@ -152,6 +165,21 @@ def main(argv: list[str] | None = None) -> int:
         index = load_commons_index(args.index, root=args.root)
         print(json.dumps(index.to_summary_dict(), indent=2, sort_keys=True))
         return 0 if not index.missing_paths else 2
+    if args.command == "validate-candidates":
+        summary = validate_candidate_dir(args.candidate_dir)
+        print(json.dumps(summary.to_dict(), indent=2, sort_keys=True))
+        return 0 if not summary.invalid_candidates else 2
+    if args.command == "promote-candidate":
+        output = promote_candidate(args.candidate, args.scenario_dir, overwrite=args.overwrite)
+        fixture = load_fixture(output)
+        print(
+            json.dumps(
+                {"fixture_id": fixture.id, "output": str(output)},
+                indent=2,
+                sort_keys=True,
+            )
+        )
+        return 0
     if args.command == "adapt-trace":
         events = load_generic_events(args.source)
         actions = convert_generic_events(events)
