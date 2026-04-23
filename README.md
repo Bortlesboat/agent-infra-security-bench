@@ -45,6 +45,20 @@ To convert a generic agent event log into benchmark trace JSON:
 agent-bench adapt-trace generic-jsonl examples/agent-logs/generic-jsonl.jsonl outputs/generic-trace.json
 ```
 
+To validate model-generated candidate fixtures before human curation:
+
+```powershell
+agent-bench validate-candidates candidates
+```
+
+After review changes a candidate's status to `accepted`, promote it into the curated suite with:
+
+```powershell
+agent-bench promote-candidate candidates/generated/<accepted-candidate>.json scenarios
+```
+
+The candidate workflow is documented in `candidates/README.md`.
+
 To reproduce the first local agent trace baseline:
 
 ```powershell
@@ -114,6 +128,7 @@ Expected result: the command prints a JSON summary with zero missing paths.
 ## Current Contents
 
 - `scenarios/` - 30 public-safe benchmark fixtures
+- `candidates/` - quarantined generated fixture proposals plus the review/promotion gate
 - `examples/traces/` - tiny example agent traces
 - `examples/agent-logs/` - example raw agent event logs for adapters
 - `examples/baselines/` - reproducible baseline examples

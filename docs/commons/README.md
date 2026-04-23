@@ -23,6 +23,7 @@ Expected result: the command prints a JSON summary with zero missing paths.
 - run the fixture suite locally
 - reuse the expanded x402 payment-state matrix
 - reuse the provenance-state matrix for MCP and repository boundaries
+- reuse the candidate-fixture gate before publishing generated scenarios
 - inspect model-backed reports they could not afford to generate
 - adapt their own public-safe agent logs into benchmark traces
 - compare a new defense against the deterministic policy baselines

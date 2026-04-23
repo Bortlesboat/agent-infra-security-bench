@@ -1,4 +1,5 @@
 import json
+from pathlib import Path
 
 from agent_infra_security_bench.candidates import (
     load_candidate,
@@ -83,6 +84,15 @@ def test_promote_candidate_writes_plain_fixture_json(tmp_path):
     raw = json.loads(promoted.read_text(encoding="utf-8"))
     assert "schema_version" not in raw
     assert raw["expected_actions"][1]["decision"] == "block"
+
+
+def test_repo_candidate_examples_validate():
+    candidate_dir = Path(__file__).resolve().parents[1] / "candidates"
+
+    summary = validate_candidate_dir(candidate_dir)
+
+    assert summary.candidate_count >= 1
+    assert summary.invalid_candidates == []
 
 
 def _candidate_payload() -> dict:

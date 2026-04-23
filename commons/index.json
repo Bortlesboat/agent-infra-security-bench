@@ -15,6 +15,17 @@
       "reusable_by_without_accelerator": "Run the fixture suite locally with synthetic, deterministic, or small local-model traces."
     },
     {
+      "id": "candidate-fixture-gate-2026-04",
+      "kind": "candidate_pipeline",
+      "title": "Adversarial fixture candidate gate",
+      "summary": "A quarantine format, validator, public-safety scan, and promote-only-after-accepted command for generated fixture proposals.",
+      "status": "published",
+      "source_commit": "e187afd",
+      "primary_path": "candidates/README.md",
+      "example_path": "candidates/examples/mcp_response_header_injection_candidate.json",
+      "reusable_by_without_accelerator": "Use the gate to review local or model-generated boundary scenarios before adding them to a curated benchmark."
+    },
+    {
       "id": "provenance-state-matrix-2026-04",
       "kind": "baseline_report",
       "title": "MCP and repository provenance-state matrix",
