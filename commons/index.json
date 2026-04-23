@@ -1,0 +1,83 @@
+{
+  "schema_version": "agent-infra-security-bench/compute-commons/v1",
+  "name": "BoundaryBench Commons",
+  "updated_at": "2026-04-23",
+  "mission": "Use scarce accelerator and local-model access to publish reusable agent-infrastructure security evidence for people who cannot run the same sweeps themselves.",
+  "artifacts": [
+    {
+      "id": "fixtures-v0.1-20",
+      "kind": "fixture_set",
+      "title": "Initial 20 public-safe boundary fixtures",
+      "summary": "Curated scenarios across MCP, repository, x402/payment, browser, CI, memory, and developer-tool boundaries.",
+      "status": "published",
+      "source_commit": "2307e3d",
+      "primary_path": "scenarios",
+      "reusable_by_without_accelerator": "Run the fixture suite locally with synthetic, deterministic, or small local-model traces."
+    },
+    {
+      "id": "policy-baselines-2026-04",
+      "kind": "baseline_report",
+      "title": "Deterministic policy baseline ladder",
+      "summary": "Naive allow, static high-risk deny, and stateful payment validation baselines showing why payment replay needs protocol-state checks.",
+      "status": "published",
+      "source_commit": "8dee283",
+      "primary_path": "docs/reports/2026-04-stateful-payment-baseline.md",
+      "report_path": "docs/reports/2026-04-policy-agent-baseline.md",
+      "reusable_by_without_accelerator": "Compare new defenses against transparent policy baselines before spending accelerator time."
+    },
+    {
+      "id": "local-agent-trace-path-2026-04",
+      "kind": "trace_adapter",
+      "title": "Raw JSONL to benchmark trace path",
+      "summary": "A local heuristic agent run proves raw generic JSONL events can be adapted, scored, and manifested without relying on private agent logs.",
+      "status": "published",
+      "source_commit": "6dc142f",
+      "primary_path": "docs/reports/2026-04-local-agent-trace-baseline.md",
+      "example_path": "examples/agent-logs/boundary-heuristic-x402.jsonl",
+      "reusable_by_without_accelerator": "Use the generic JSONL adapter to convert another agent's public-safe tool decisions into benchmark traces."
+    },
+    {
+      "id": "qwen25-7b-local-model-baseline-2026-04",
+      "kind": "model_sweep",
+      "title": "Local qwen2.5:7b model-backed baseline",
+      "summary": "The first local model-backed run passed 14/20 with zero unsafe approvals and six missed expected-safe actions.",
+      "status": "published",
+      "source_commit": "553f526",
+      "primary_path": "docs/reports/2026-04-ollama-qwen25-agent-baseline.md",
+      "example_path": "examples/agent-logs/ollama-qwen25-x402.jsonl",
+      "reusable_by_without_accelerator": "Use the report and example trace as a reference point for small local open-model behavior."
+    },
+    {
+      "id": "qwen25-7b-defense-sweep-2026-04",
+      "kind": "defense_sweep",
+      "title": "Prompt and runtime defense sweep",
+      "summary": "Setup-aware prompting and a runtime risk floor each recovered the qwen2.5:7b run from 14/20 to 20/20 on the current fixture suite.",
+      "status": "published",
+      "source_commit": "6faae4b",
+      "primary_path": "docs/reports/2026-04-ollama-defense-sweep.md",
+      "example_path": "examples/agent-logs/ollama-qwen25-setup-aware-x402.jsonl",
+      "reusable_by_without_accelerator": "Inspect which failures were prompt-sensitive and which defenses should be tested before larger sweeps."
+    },
+    {
+      "id": "mac-mini-cross-model-baselines-2026-04",
+      "kind": "model_sweep",
+      "title": "Second-machine cross-model baselines",
+      "summary": "Mac mini Ollama runs for qwen2.5:14b and qwen2.5-coder:14b establish a second local reproducibility surface.",
+      "status": "published",
+      "source_commit": "34e4792",
+      "primary_path": "docs/reports/2026-04-local-cross-model-baselines.md",
+      "reusable_by_without_accelerator": "Use the report to compare small local hardware results against the Windows qwen2.5:7b defense sweep."
+    },
+    {
+      "id": "tpu-first-runbook",
+      "kind": "runbook",
+      "title": "No-spend-first Cloud TPU runbook",
+      "summary": "A cautious TPU setup path that keeps VM creation paused until TRC confirmation and starts with a smoke run.",
+      "status": "ready_waiting_for_trc_confirmation",
+      "source_commit": "2307e3d",
+      "primary_path": "docs/runbooks/cloud-tpu-first-run.md",
+      "runbook_path": "docs/runbooks/cloud-tpu-first-run.md",
+      "reusable_by_without_accelerator": "People without TPU access can still reproduce the local scorer path and inspect how accelerator-backed runs will be manifested."
+    }
+  ]
+}

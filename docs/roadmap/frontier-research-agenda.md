@@ -35,6 +35,8 @@ Use accelerator access to scale evidence, not to chase an unrelated training pro
 
 The repo output should stay hardware-neutral: public-safe JSON fixtures, raw JSONL model/tool traces, deterministic scores, CSV/Markdown tables, and run manifests.
 
+The public-good expression of this strategy is BoundaryBench Commons: a static index of reusable fixtures, reports, traces, and runbooks that lets people without TPU access benefit from accelerator-backed work.
+
 ## Research Milestones
 
 ### Milestone 1: Stateful Fixture Expansion
@@ -90,6 +92,19 @@ Do not spend the next cycle on outreach. Publish only after the artifact has a s
 - one clear failure class that prompt-only defenses miss but stateful runtime validation catches
 - reproducible raw traces, manifests, and CI-backed scoring
 
+### Milestone 6: BoundaryBench Commons
+
+Turn scarce compute access into a public artifact other builders can use without owning the same hardware.
+
+The first commons layer should stay static:
+
+- a machine-readable index of published artifacts
+- links to reports, fixtures, examples, and runbooks
+- clear notes on what is reusable without accelerator access
+- a validation command that proves the index points at real repo paths
+
+Only add a hosted eval queue after the fixture format, trace format, and commons index have earned trust.
+
 ## Near-Term Commit Sequence
 
 1. Add this frontier agenda and align the README around development-first positioning.
@@ -99,5 +114,5 @@ Do not spend the next cycle on outreach. Publish only after the artifact has a s
 5. Add a scenario mutator/generator that runs locally first.
 6. Add a sweep manifest command that can compare many models and defenses in one table.
 7. Prepare the TPU smoke run, but create no TPU VM until TRC confirmation arrives.
-8. Publish a development report only after the next fixture and sweep expansion lands.
-
+8. Maintain BoundaryBench Commons as the public index for reusable compute-backed artifacts.
+9. Publish a development report only after the next fixture and sweep expansion lands.

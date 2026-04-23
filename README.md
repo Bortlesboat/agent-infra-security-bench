@@ -6,6 +6,8 @@ The first wedge is intentionally narrow: MCP-style tools, x402/payment actions, 
 
 The current frontier agenda is in `docs/roadmap/frontier-research-agenda.md`. Its stated goal is to make this repo the most useful open, reproducible benchmark for stateful agent infrastructure boundary failures: payment proof freshness and replay, repository privilege crossing, MCP tool provenance, CI/shell execution, memory leakage, and runtime policy gaps.
 
+The public-good layer is [BoundaryBench Commons](docs/commons/README.md). It indexes reusable fixtures, traces, reports, and runbooks so people without TPU or multi-machine model access can still use the compute-backed evidence.
+
 ## Why This Exists
 
 Generic agent benchmarks are useful, but many real failures happen at the infrastructure boundary:
@@ -90,6 +92,14 @@ agent-bench run-policy-baseline scenarios outputs/policy-baseline --policy deny-
 
 The stateful payment report is in `docs/reports/2026-04-stateful-payment-baseline.md`.
 
+To validate the public compute commons index:
+
+```powershell
+agent-bench validate-commons commons/index.json --root .
+```
+
+Expected result: the command prints a JSON summary with zero missing paths.
+
 ## Current Contents
 
 - `scenarios/` - 20 public-safe benchmark fixtures
@@ -97,6 +107,7 @@ The stateful payment report is in `docs/reports/2026-04-stateful-payment-baselin
 - `examples/agent-logs/` - example raw agent event logs for adapters
 - `examples/baselines/` - reproducible baseline examples
 - `docs/adapters/` - trace adapter documentation
+- `docs/commons/` and `commons/index.json` - public compute commons docs and machine-readable artifact index
 - `src/agent_infra_security_bench/fixtures.py` - fixture schema and validation
 - `src/agent_infra_security_bench/scoring.py` - deterministic trace scoring
 - `src/agent_infra_security_bench/manifest.py` - run metadata for reproducible result claims

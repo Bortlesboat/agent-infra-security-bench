@@ -10,6 +10,7 @@ from agent_infra_security_bench.adapters import (
     load_generic_events,
     write_trace,
 )
+from agent_infra_security_bench.commons import load_commons_index
 from agent_infra_security_bench.fixtures import load_fixture
 from agent_infra_security_bench.local_agent import DEFAULT_LOCAL_AGENT, write_local_agent_run
 from agent_infra_security_bench.llm_agent import (
@@ -62,6 +63,12 @@ def main(argv: list[str] | None = None) -> int:
     manifest_parser.add_argument("--scenario-commit", default="unknown")
     manifest_parser.add_argument("--results")
     manifest_parser.add_argument("--notes")
+
+    commons_parser = subparsers.add_parser(
+        "validate-commons", help="Validate the public compute commons index"
+    )
+    commons_parser.add_argument("index", type=Path)
+    commons_parser.add_argument("--root", type=Path)
 
     adapt_parser = subparsers.add_parser(
         "adapt-trace", help="Convert an agent event log into benchmark trace JSON"
@@ -141,6 +148,10 @@ def main(argv: list[str] | None = None) -> int:
         path = write_manifest(args.output, manifest)
         print(json.dumps({"path": str(path), "run_id": manifest.run_id}, indent=2, sort_keys=True))
         return 0
+    if args.command == "validate-commons":
+        index = load_commons_index(args.index, root=args.root)
+        print(json.dumps(index.to_summary_dict(), indent=2, sort_keys=True))
+        return 0 if not index.missing_paths else 2
     if args.command == "adapt-trace":
         events = load_generic_events(args.source)
         actions = convert_generic_events(events)
