@@ -49,9 +49,11 @@ Open-source benchmark and reproducibility workflow for evaluating whether self-h
 - Baseline report with synthetic controls separated from model results
 - Stateful payment baseline showing `deny-high-risk` at `19/20` and `deny-high-risk-payment-state` at `20/20`
 - First local model-backed report showing `ollama/qwen2.5:7b` at `14/20`, with zero unsafe allows and six over-blocked expected-safe actions
+- Prompt/runtime defense sweep showing `ollama/qwen2.5:7b` recovering to `20/20` with either setup-aware prompting or runtime risk-floor policy, both with zero unsafe allows
+- Local cross-model report showing Mac mini `ollama/qwen2.5:14b` at `20/20` baseline and `ollama/qwen2.5-coder:14b` moving from `19/20` to `20/20` with setup-aware prompting
 - Public roadmap issues for real-agent traces, x402 replay fixture expansion, TPU smoke manifests, and fixture contributions
 - TPU smoke-run runbook once TRC quota is confirmed
 
 ## Next Packet To Assemble
 
-Use the stateful payment baseline plus the first local Ollama model result as the evidence spine for NLnet, Amazon PI follow-ups, and AGNTCon/MCPCon. The next technical proof to add is a prompt/runtime defense comparison that improves model utility without introducing unsafe approvals.
+Use the stateful payment baseline, local Ollama defense sweep, and Mac mini cross-model report as the evidence spine for NLnet, Amazon PI follow-ups, and AGNTCon/MCPCon. The next technical proof to add is expanded x402 replay coverage plus a TPU smoke manifest after quota confirmation.

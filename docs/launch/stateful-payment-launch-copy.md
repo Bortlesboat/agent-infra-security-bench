@@ -4,6 +4,8 @@
 
 - Repo: https://github.com/Bortlesboat/agent-infra-security-bench
 - Report: https://github.com/Bortlesboat/agent-infra-security-bench/blob/main/docs/reports/2026-04-stateful-payment-baseline.md
+- Defense sweep: https://github.com/Bortlesboat/agent-infra-security-bench/blob/main/docs/reports/2026-04-ollama-defense-sweep.md
+- Cross-model report: https://github.com/Bortlesboat/agent-infra-security-bench/blob/main/docs/reports/2026-04-local-cross-model-baselines.md
 - Fixture contribution issue: https://github.com/Bortlesboat/agent-infra-security-bench/issues/4
 
 ## X Thread Draft
@@ -44,9 +46,25 @@ Payment-aware agents need stateful validation, not only category blocking.
 
 That is an interesting tradeoff: safety without enough utility is not enough.
 
-7/ Next steps are public:
+7/ Follow-up: the prompt/runtime defense comparison is now published.
 
-- compare model prompts/runtime defenses
+The same `qwen2.5:7b` run goes from 14/20 to 20/20 with either:
+
+- a setup-aware prompt
+- a runtime risk-floor policy
+
+Both preserve zero unsafe approvals.
+
+8/ I also ran a second local baseline surface on a Mac mini:
+
+- `qwen2.5:14b`: 20/20 baseline
+- `qwen2.5-coder:14b`: 19/20 baseline, 20/20 setup-aware
+
+Cross-model report:
+https://github.com/Bortlesboat/agent-infra-security-bench/blob/main/docs/reports/2026-04-local-cross-model-baselines.md
+
+9/ Next steps are public:
+
 - more x402 replay fixtures
 - TPU smoke manifest after access confirmation
 - public-safe fixture contributions
@@ -75,13 +93,23 @@ That is the point of the benchmark: make these boundary failures small, public-s
 
 The first local model-backed run is now published too: `ollama/qwen2.5:7b` passed 14/20, with zero unsafe approvals but six over-blocked expected-safe actions.
 
-The next step is comparing prompt/runtime defenses, then TPU-backed model/defense sweeps after access is confirmed.
+The follow-up defense sweep recovers those six safe actions two different ways. With a setup-aware prompt, `qwen2.5:7b` reaches 20/20. With a deterministic runtime risk-floor policy, it also reaches 20/20. Both recovered runs preserve zero unsafe approvals.
+
+I also ran the same benchmark on a Mac mini baseline runner with resident local models. `qwen2.5:14b` passed 20/20 with the baseline prompt. `qwen2.5-coder:14b` passed 19/20 with the baseline prompt and 20/20 with setup-aware guidance.
+
+The next step is expanding replay/payment fixtures, then TPU-backed model/defense sweeps after access is confirmed.
 
 Report:
 https://github.com/Bortlesboat/agent-infra-security-bench/blob/main/docs/reports/2026-04-stateful-payment-baseline.md
 
 Model-backed report:
 https://github.com/Bortlesboat/agent-infra-security-bench/blob/main/docs/reports/2026-04-ollama-qwen25-agent-baseline.md
+
+Defense sweep:
+https://github.com/Bortlesboat/agent-infra-security-bench/blob/main/docs/reports/2026-04-ollama-defense-sweep.md
+
+Cross-model report:
+https://github.com/Bortlesboat/agent-infra-security-bench/blob/main/docs/reports/2026-04-local-cross-model-baselines.md
 
 ## Hacker News Draft
 
@@ -99,7 +127,7 @@ Repo: https://github.com/Bortlesboat/agent-infra-security-bench
 
 Report: https://github.com/Bortlesboat/agent-infra-security-bench/blob/main/docs/reports/2026-04-stateful-payment-baseline.md
 
-This is not a claim that any model is safe. It is a public fixture/scoring harness for comparing agent runtime controls. The first local model-backed report currently shows a useful safety/utility split: `ollama/qwen2.5:7b` had zero unsafe allows, but failed six fixtures by over-blocking expected-safe actions.
+This is not a claim that any model is safe. It is a public fixture/scoring harness for comparing agent runtime controls. The local model-backed reports show a useful safety/utility split: `ollama/qwen2.5:7b` had zero unsafe allows, but failed six fixtures by over-blocking expected-safe actions; setup-aware prompting and runtime risk-floor policy each recovered those safe actions.
 
 HN timing note: this is now usable as an early-feedback post, but only if the title/body keep the claims boundary visible.
 
@@ -116,4 +144,4 @@ The first concrete result is an x402 replay fixture: a static high-risk tool den
 Report:
 https://github.com/Bortlesboat/agent-infra-security-bench/blob/main/docs/reports/2026-04-stateful-payment-baseline.md
 
-The repo is intentionally small: JSON fixtures, deterministic traces, a scorer, manifests, and issue templates for new fixtures/results. A first local Ollama run is also published: qwen2.5:7b passed 14/20 with zero unsafe approvals and six over-blocked safe actions. I am looking for public-safe fixture ideas from people building MCP servers, local agents, and payment-aware tools.
+The repo is intentionally small: JSON fixtures, deterministic traces, a scorer, manifests, and issue templates for new fixtures/results. Local Ollama runs are also published: qwen2.5:7b passed 14/20 with zero unsafe approvals and six over-blocked safe actions, then reached 20/20 with either setup-aware prompting or runtime risk-floor policy. A Mac mini cross-model pass adds qwen2.5:14b and qwen2.5-coder:14b results. I am looking for public-safe fixture ideas from people building MCP servers, local agents, and payment-aware tools.

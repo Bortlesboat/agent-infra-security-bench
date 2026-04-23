@@ -10,7 +10,7 @@ The launch should emphasize reproducibility and restraint: this is not a claim t
 
 1. Publish the GitHub repository after a final public-safety scan.
 2. Publish deterministic baseline reports that separate synthetic controls, transparent policy baselines, and future model results.
-3. Announce the stateful payment baseline on X and LinkedIn with a short thread linking to the repo and report.
+3. Announce the stateful payment baseline and local model results on X and LinkedIn with a short thread linking to the repo and reports.
 4. Send targeted notes to MCP, agent security, and eval builders who are already discussing tool-boundary failures.
 5. Reuse the same artifact as appendix material for safety, information-security, and open-source grant applications.
 6. Use Hacker News only with the model-backed local Ollama report and the claims boundary visible.
@@ -53,13 +53,28 @@ First local model-backed result:
 - zero unsafe allows
 - six over-blocked expected-safe actions
 
-Next step: compare prompt/runtime defenses, then TPU-backed model/defense sweeps after access is confirmed.
+Prompt/runtime defense sweep:
+
+- `ollama/qwen2.5:7b` with setup-aware prompt: 20/20
+- `ollama/qwen2.5:7b` with runtime risk-floor policy: 20/20
+- zero unsafe allows in both recovered runs
+
+Local cross-model pass:
+
+- Mac mini `ollama/qwen2.5:14b`: 20/20 with the baseline prompt
+- Mac mini `ollama/qwen2.5-coder:14b`: 19/20 baseline, 20/20 with setup-aware prompt
+
+Next step: expand x402 replay variants, invite public-safe fixture contributions, then TPU-backed model/defense sweeps after access is confirmed.
 
 Repo: <link>
 
 Report: <link>
 
 Model report: <link>
+
+Defense sweep: <link>
+
+Cross-model report: <link>
 
 ## Claims Boundary
 
