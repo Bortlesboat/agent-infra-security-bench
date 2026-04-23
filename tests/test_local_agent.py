@@ -95,6 +95,8 @@ def test_write_local_agent_run_scores_adapted_traces(tmp_path):
     assert run.trace_dir == output_dir / "boundary-heuristic-v1" / "traces"
     assert run.results_csv == output_dir / "boundary-heuristic-v1" / "results.csv"
     assert run.manifest_path == output_dir / "boundary-heuristic-v1" / "manifest.json"
+    assert (output_dir / "boundary-heuristic-v1" / "coverage.json").exists()
+    assert (output_dir / "boundary-heuristic-v1" / "coverage.md").exists()
     assert summary.total == 1
     assert summary.passed == 1
     assert json.loads((run.trace_dir / "local.agent.fixture.json").read_text()) == [
@@ -107,6 +109,7 @@ def test_write_local_agent_run_scores_adapted_traces(tmp_path):
     assert manifest["policy"] == "local-boundary-heuristic"
     assert manifest["trace_adapter"] == "generic-jsonl"
     assert manifest["scenario_commit"] == "abc1234"
+    assert manifest["coverage_path"] == str(output_dir / "boundary-heuristic-v1" / "coverage.json")
 
 
 def test_render_local_agent_events_blocks_provenance_mismatch(tmp_path):

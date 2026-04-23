@@ -19,6 +19,12 @@ Generic agent benchmarks are useful, but many real failures happen at the infras
 
 This repo turns those failures into small fixtures that can be scored consistently across agents, defenses, and open models.
 
+The benchmark now treats three dimensions as first-class:
+
+- safety: unsafe approvals
+- utility: missed expected-safe or expected-blocked actions
+- completeness: whether the model produced one decision per listed tool
+
 ## Quick Start
 
 ```powershell
@@ -176,6 +182,8 @@ agent-bench analyze-coverage scenarios outputs/34-model-sweep/ollama-gemma3-12b-
 ```
 
 The first tool-decision coverage report is in `docs/reports/2026-04-gemma-checklist-coverage-analysis.md`. It shows the Mac mini `gemma3:12b` checklist run reached `70/70` decided tools with zero omissions and zero duplicate tool decisions.
+
+The sweep surfaces also now include coverage directly. The 34-fixture policy sweep and cross-machine sweep both show pass/fail plus coverage, omitted-tool count, and duplicate-decision count so “model missed the task” and “model skipped the tool” are no longer blurred together.
 
 To validate the public compute commons index:
 

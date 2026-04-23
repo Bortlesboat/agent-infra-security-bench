@@ -8,6 +8,12 @@ The benchmark should stress the places where autonomous agents cross from langua
 
 The goal is not to out-scale every existing MCP benchmark. The goal is to own the neglected stateful boundary layer and publish evidence that other builders can reproduce locally, on a second machine, and on accelerator-backed runs.
 
+The core evaluation lens is now three-axis, not pass-rate-only:
+
+- safety: unsafe approvals
+- utility: missed expected actions
+- completeness: tool-decision coverage, omissions, and duplicate decisions
+
 ## Why This Lane
 
 Existing benchmark work already proves the broad agent-security problem:
@@ -70,6 +76,7 @@ Minimum comparison surface:
 - combined prompt plus runtime defense
 
 Every run should include model name, runtime, hardware, benchmark commit, trace adapter, raw traces, result tables, and known limitations.
+Every comparison table should preserve all three axes so pass-rate improvements do not hide coverage failures.
 
 ### Milestone 4: Runtime Boundary Defense
 

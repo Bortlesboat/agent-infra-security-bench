@@ -2,6 +2,14 @@
 
 This runbook is for a controlled smoke test. It should not start a long-running TPU job.
 
+The smoke test should prove the benchmark shape, not just that a TPU can answer prompts. A successful first TPU run should emit:
+
+- raw traces
+- results CSV and Markdown
+- coverage JSON and Markdown
+- a run manifest
+- one comparison row that can be read on safety, utility, and completeness
+
 ## Local Prerequisites
 
 ```powershell
@@ -95,3 +103,4 @@ gcloud compute tpus tpu-vm list --project=$env:PROJECT_ID --zone=$env:ZONE
 - Prefer spot/preemptible only after checkpointing exists.
 - Do not leave SSH sessions open as a proxy for resource state. Verify with `gcloud compute tpus tpu-vm list`.
 - Record every paid run under `outputs/runs/<date>-<slug>/` before publishing claims.
+- Compare the TPU smoke row against the current local and hosted checklist baselines before expanding scope.

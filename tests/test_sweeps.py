@@ -14,6 +14,21 @@ def test_build_sweep_index_summarizes_manifest_results(tmp_path):
         ],
     )
     manifest = tmp_path / "manifest.json"
+    coverage = tmp_path / "coverage.json"
+    coverage.write_text(
+        json.dumps(
+            {
+                "total_fixtures": 2,
+                "total_tools": 4,
+                "decided_tools": 3,
+                "omitted_tools": 1,
+                "duplicate_decision_tools": 0,
+                "coverage_rate": 0.75,
+                "details": [],
+            }
+        ),
+        encoding="utf-8",
+    )
     manifest.write_text(
         json.dumps(
             {
@@ -27,6 +42,7 @@ def test_build_sweep_index_summarizes_manifest_results(tmp_path):
                 "scenario_count": 2,
                 "scenario_commit": "abc1234",
                 "results_path": str(results),
+                "coverage_path": str(coverage),
                 "notes": "Prompt profile: setup-aware. Runtime policy: risk-floor.",
             }
         ),
@@ -48,6 +64,11 @@ def test_build_sweep_index_summarizes_manifest_results(tmp_path):
     assert row.average_score == 0.75
     assert row.unsafe_count == 1
     assert row.missed_count == 0
+    assert row.coverage_rate == 0.75
+    assert row.total_tools == 4
+    assert row.decided_tools == 3
+    assert row.omitted_tools == 1
+    assert row.duplicate_decision_tools == 0
 
 
 def test_render_sweep_markdown_lists_comparable_runs(tmp_path):
@@ -69,9 +90,9 @@ def test_render_sweep_markdown_lists_comparable_runs(tmp_path):
     markdown = render_sweep_markdown(build_sweep_index("Policy ladder", manifests, root=tmp_path))
 
     assert "# Policy ladder" in markdown
-    assert "| Run | Model | Policy | Prompt | Runtime | Hardware | Commit | Passed | Pass Rate | Avg Score | Unsafe | Missed |" in markdown
-    assert "| run-one | deterministic-policy-agent | policy-one | n/a | n/a | local | abc1234 | 1/1 | 1.000 | 1.000 | 0 | 0 |" in markdown
-    assert "| run-two | deterministic-policy-agent | policy-two | n/a | n/a | local | abc1234 | 0/1 | 0.000 | 0.500 | 1 | 0 |" in markdown
+    assert "| Run | Model | Policy | Prompt | Runtime | Hardware | Commit | Passed | Pass Rate | Avg Score | Unsafe | Missed | Coverage | Omitted | Duplicates |" in markdown
+    assert "| run-one | deterministic-policy-agent | policy-one | n/a | n/a | local | abc1234 | 1/1 | 1.000 | 1.000 | 0 | 0 | n/a | n/a | n/a |" in markdown
+    assert "| run-two | deterministic-policy-agent | policy-two | n/a | n/a | local | abc1234 | 0/1 | 0.000 | 0.500 | 1 | 0 | n/a | n/a | n/a |" in markdown
 
 
 def test_build_sweep_index_accepts_utf8_sig_manifest(tmp_path):
@@ -105,6 +126,53 @@ def test_build_sweep_index_accepts_utf8_sig_manifest(tmp_path):
     assert sweep.runs[0].run_id == "run-bom"
 
 
+def test_build_sweep_index_uses_sibling_coverage_file_when_manifest_omits_path(tmp_path):
+    results = tmp_path / "results.csv"
+    _write_results(
+        results,
+        [{"fixture_id": "one", "passed": "true", "score": "1.000", "unsafe_count": "0", "missed_count": "0"}],
+    )
+    coverage = tmp_path / "coverage.json"
+    coverage.write_text(
+        json.dumps(
+            {
+                "total_fixtures": 1,
+                "total_tools": 2,
+                "decided_tools": 2,
+                "omitted_tools": 0,
+                "duplicate_decision_tools": 0,
+                "coverage_rate": 1.0,
+                "details": [],
+            }
+        ),
+        encoding="utf-8",
+    )
+    manifest = tmp_path / "manifest.json"
+    manifest.write_text(
+        json.dumps(
+            {
+                "schema_version": "agent-infra-security-bench/run-manifest/v1",
+                "run_id": "run-sibling",
+                "created_at": "2026-04-23T05:00:00Z",
+                "model": "ollama/gemma3:12b",
+                "policy": "model-decisions; prompt=checklist; runtime=risk-floor",
+                "trace_adapter": "generic-jsonl",
+                "hardware": "mac-mini",
+                "scenario_count": 1,
+                "scenario_commit": "abc1234",
+                "results_path": str(results),
+                "notes": "coverage lives beside results",
+            }
+        ),
+        encoding="utf-8",
+    )
+
+    sweep = build_sweep_index("Sibling coverage", [manifest], root=tmp_path)
+
+    assert sweep.runs[0].coverage_rate == 1.0
+    assert sweep.runs[0].total_tools == 2
+
+
 def _write_manifest(path, run_id, policy, results_path):
     path.write_text(
         json.dumps(
@@ -119,6 +187,7 @@ def _write_manifest(path, run_id, policy, results_path):
                 "scenario_count": 1,
                 "scenario_commit": "abc1234",
                 "results_path": str(results_path),
+                "coverage_path": None,
                 "notes": "test",
             }
         ),

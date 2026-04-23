@@ -1,7 +1,7 @@
 {
   "schema_version": "agent-infra-security-bench/sweep-index/v1",
   "name": "34-Fixture Policy Sweep",
-  "generated_at": "2026-04-23T06:16:55Z",
+  "generated_at": "2026-04-23T13:57:28Z",
   "run_count": 4,
   "runs": [
     {
@@ -17,12 +17,18 @@
       "scenario_count": 34,
       "scenario_commit": "e93f579",
       "results_path": "outputs\\policy-baseline\\deny-high-risk\\results.csv",
+      "coverage_path": "outputs\\policy-baseline\\deny-high-risk\\coverage.json",
       "total": 34,
       "passed": 24,
       "pass_rate": 0.7058823529411765,
       "average_score": 0.8529411764705882,
       "unsafe_count": 10,
       "missed_count": 0,
+      "total_tools": 70,
+      "decided_tools": 70,
+      "coverage_rate": 1.0,
+      "omitted_tools": 0,
+      "duplicate_decision_tools": 0,
       "notes": "Deterministic policy baseline; not an LLM or TPU-backed model result."
     },
     {
@@ -38,12 +44,18 @@
       "scenario_count": 34,
       "scenario_commit": "e93f579",
       "results_path": "outputs\\policy-baseline\\deny-high-risk-payment-state\\results.csv",
+      "coverage_path": "outputs\\policy-baseline\\deny-high-risk-payment-state\\coverage.json",
       "total": 34,
       "passed": 30,
       "pass_rate": 0.8823529411764706,
       "average_score": 0.9411764705882353,
       "unsafe_count": 4,
       "missed_count": 0,
+      "total_tools": 70,
+      "decided_tools": 70,
+      "coverage_rate": 1.0,
+      "omitted_tools": 0,
+      "duplicate_decision_tools": 0,
       "notes": "Deterministic policy baseline; not an LLM or TPU-backed model result."
     },
     {
@@ -59,12 +71,18 @@
       "scenario_count": 34,
       "scenario_commit": "e93f579",
       "results_path": "outputs\\policy-baseline\\deny-high-risk-stateful\\results.csv",
+      "coverage_path": "outputs\\policy-baseline\\deny-high-risk-stateful\\coverage.json",
       "total": 34,
       "passed": 34,
       "pass_rate": 1.0,
       "average_score": 1.0,
       "unsafe_count": 0,
       "missed_count": 0,
+      "total_tools": 70,
+      "decided_tools": 70,
+      "coverage_rate": 1.0,
+      "omitted_tools": 0,
+      "duplicate_decision_tools": 0,
       "notes": "Deterministic policy baseline; not an LLM or TPU-backed model result."
     },
     {
@@ -80,12 +98,18 @@
       "scenario_count": 34,
       "scenario_commit": "e93f579",
       "results_path": "outputs\\policy-baseline\\naive-allow\\results.csv",
+      "coverage_path": "outputs\\policy-baseline\\naive-allow\\coverage.json",
       "total": 34,
       "passed": 1,
       "pass_rate": 0.029411764705882353,
       "average_score": 0.5245294117647059,
       "unsafe_count": 33,
       "missed_count": 0,
+      "total_tools": 70,
+      "decided_tools": 70,
+      "coverage_rate": 1.0,
+      "omitted_tools": 0,
+      "duplicate_decision_tools": 0,
       "notes": "Deterministic policy baseline; not an LLM or TPU-backed model result."
     }
   ]

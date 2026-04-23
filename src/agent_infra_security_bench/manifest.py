@@ -20,6 +20,7 @@ class RunManifest:
     scenario_count: int
     scenario_commit: str
     results_path: str | None
+    coverage_path: str | None
     notes: str | None
 
     def to_dict(self) -> dict[str, str | int | None]:
@@ -34,6 +35,7 @@ class RunManifest:
             "scenario_count": self.scenario_count,
             "scenario_commit": self.scenario_commit,
             "results_path": self.results_path,
+            "coverage_path": self.coverage_path,
             "notes": self.notes,
         }
 
@@ -47,6 +49,7 @@ def build_manifest(
     scenario_dir: str | Path,
     scenario_commit: str = "unknown",
     results_path: str | None = None,
+    coverage_path: str | None = None,
     notes: str | None = None,
 ) -> RunManifest:
     return RunManifest(
@@ -59,6 +62,7 @@ def build_manifest(
         scenario_count=count_scenarios(scenario_dir),
         scenario_commit=scenario_commit,
         results_path=results_path,
+        coverage_path=coverage_path,
         notes=notes,
     )
 

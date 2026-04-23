@@ -19,6 +19,7 @@ def test_run_manifest_serializes_reproducibility_fields(tmp_path):
         scenario_count=count_scenarios(scenario_dir),
         scenario_commit="8e7e33e",
         results_path="outputs/synthetic-pass.csv",
+        coverage_path="outputs/synthetic-pass-coverage.json",
         notes="Control run only; not model output.",
     )
 
@@ -33,6 +34,7 @@ def test_run_manifest_serializes_reproducibility_fields(tmp_path):
         "scenario_count": 2,
         "scenario_commit": "8e7e33e",
         "results_path": "outputs/synthetic-pass.csv",
+        "coverage_path": "outputs/synthetic-pass-coverage.json",
         "notes": "Control run only; not model output.",
     }
 
@@ -49,6 +51,7 @@ def test_write_manifest_writes_json(tmp_path):
         scenario_count=0,
         scenario_commit="unknown",
         results_path=None,
+        coverage_path=None,
         notes=None,
     )
 
@@ -58,3 +61,4 @@ def test_write_manifest_writes_json(tmp_path):
     assert payload["run_id"] == "smoke"
     assert payload["scenario_commit"] == "unknown"
     assert payload["results_path"] is None
+    assert payload["coverage_path"] is None

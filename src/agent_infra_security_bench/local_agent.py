@@ -6,6 +6,7 @@ from pathlib import Path
 from typing import Any
 
 from agent_infra_security_bench.adapters import convert_generic_events, write_trace
+from agent_infra_security_bench.coverage_analysis import write_coverage_artifacts
 from agent_infra_security_bench.fixtures import AgentFixture, Tool, load_fixture
 from agent_infra_security_bench.manifest import build_manifest, write_manifest
 from agent_infra_security_bench.payment_state import PaymentStateValidator
@@ -75,6 +76,7 @@ def write_local_agent_run(
     csv_path = run_dir / "results.csv"
     markdown_path.write_text(render_markdown(summary), encoding="utf-8")
     csv_path.write_text(render_csv(summary), encoding="utf-8")
+    coverage = write_coverage_artifacts(run_dir, scenario_dir=scenario_dir, trace_dir=trace_dir)
     manifest = build_manifest(
         model=agent,
         policy="local-boundary-heuristic",
@@ -83,6 +85,7 @@ def write_local_agent_run(
         scenario_dir=Path(scenario_dir),
         scenario_commit=scenario_commit,
         results_path=str(csv_path),
+        coverage_path=str(coverage.json_path),
         notes=(
             "Local heuristic agent baseline that emits generic JSONL events; "
             "not an LLM or TPU-backed model result."

@@ -409,9 +409,12 @@ def test_cli_run_policy_baseline_writes_traces_reports_and_manifest(tmp_path):
     assert payload["total"] == 1
     assert (output_dir / "deny-high-risk" / "traces" / "policy.cli.json").exists()
     assert (output_dir / "deny-high-risk" / "results.md").exists()
+    assert (output_dir / "deny-high-risk" / "coverage.json").exists()
+    assert (output_dir / "deny-high-risk" / "coverage.md").exists()
     manifest = json.loads((output_dir / "deny-high-risk" / "manifest.json").read_text())
     assert manifest["policy"] == "deny-high-risk"
     assert manifest["trace_adapter"] == "policy-agent"
+    assert manifest["coverage_path"] == str(output_dir / "deny-high-risk" / "coverage.json")
 
 
 def test_cli_run_local_agent_writes_raw_events_traces_reports_and_manifest(tmp_path):

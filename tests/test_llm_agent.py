@@ -532,6 +532,9 @@ def test_write_llm_agent_run_uses_model_client_and_scores_adapted_traces(tmp_pat
     assert manifest["trace_adapter"] == "generic-jsonl"
     assert manifest["hardware"] == "local"
     assert manifest["scenario_commit"] == "abc1234"
+    assert manifest["coverage_path"] == str(output_dir / "fake-provider-fake-model" / "coverage.json")
+    assert (output_dir / "fake-provider-fake-model" / "coverage.json").exists()
+    assert (output_dir / "fake-provider-fake-model" / "coverage.md").exists()
 
 
 def test_write_llm_agent_run_records_non_default_defense_policy(tmp_path):

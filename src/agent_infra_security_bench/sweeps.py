@@ -25,12 +25,18 @@ class SweepRun:
     scenario_count: int
     scenario_commit: str
     results_path: str
+    coverage_path: str | None
     total: int
     passed: int
     pass_rate: float
     average_score: float
     unsafe_count: int
     missed_count: int
+    total_tools: int | None
+    decided_tools: int | None
+    coverage_rate: float | None
+    omitted_tools: int | None
+    duplicate_decision_tools: int | None
     notes: str | None
 
     def to_dict(self) -> dict[str, Any]:
@@ -47,12 +53,18 @@ class SweepRun:
             "scenario_count": self.scenario_count,
             "scenario_commit": self.scenario_commit,
             "results_path": self.results_path,
+            "coverage_path": self.coverage_path,
             "total": self.total,
             "passed": self.passed,
             "pass_rate": self.pass_rate,
             "average_score": self.average_score,
             "unsafe_count": self.unsafe_count,
             "missed_count": self.missed_count,
+            "total_tools": self.total_tools,
+            "decided_tools": self.decided_tools,
+            "coverage_rate": self.coverage_rate,
+            "omitted_tools": self.omitted_tools,
+            "duplicate_decision_tools": self.duplicate_decision_tools,
             "notes": self.notes,
         }
 
@@ -106,8 +118,8 @@ def render_sweep_markdown(sweep: SweepIndex) -> str:
         f"- Runs: {sweep.run_count}",
         f"- Generated: {sweep.generated_at}",
         "",
-        "| Run | Model | Policy | Prompt | Runtime | Hardware | Commit | Passed | Pass Rate | Avg Score | Unsafe | Missed |",
-        "| --- | --- | --- | --- | --- | --- | --- | ---: | ---: | ---: | ---: | ---: |",
+        "| Run | Model | Policy | Prompt | Runtime | Hardware | Commit | Passed | Pass Rate | Avg Score | Unsafe | Missed | Coverage | Omitted | Duplicates |",
+        "| --- | --- | --- | --- | --- | --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |",
     ]
     for run in sweep.runs:
         lines.append(
@@ -126,6 +138,9 @@ def render_sweep_markdown(sweep: SweepIndex) -> str:
                     f"{run.average_score:.3f}",
                     str(run.unsafe_count),
                     str(run.missed_count),
+                    _format_float(run.coverage_rate),
+                    _format_int(run.omitted_tools),
+                    _format_int(run.duplicate_decision_tools),
                 ]
             )
             + " |"
@@ -145,6 +160,13 @@ def _load_sweep_run(manifest_path: Path, *, root_path: Path) -> SweepRun:
     raw_results_path = _required_str(manifest, "results_path")
     results_path = _resolve_results_path(raw_results_path, manifest_path=manifest_path, root_path=root_path)
     result_summary = _summarize_results(results_path)
+    coverage_path = _resolve_coverage_path(
+        manifest.get("coverage_path"),
+        manifest_path=manifest_path,
+        root_path=root_path,
+        results_path=results_path,
+    )
+    coverage_summary = _load_coverage_summary(coverage_path) if coverage_path is not None else None
     policy = _required_str(manifest, "policy")
     prompt_profile, runtime_policy = _parse_policy_details(policy)
     return SweepRun(
@@ -160,12 +182,18 @@ def _load_sweep_run(manifest_path: Path, *, root_path: Path) -> SweepRun:
         scenario_count=int(manifest.get("scenario_count", 0)),
         scenario_commit=_required_str(manifest, "scenario_commit"),
         results_path=str(results_path),
+        coverage_path=str(coverage_path) if coverage_path is not None else None,
         total=result_summary["total"],
         passed=result_summary["passed"],
         pass_rate=result_summary["pass_rate"],
         average_score=result_summary["average_score"],
         unsafe_count=result_summary["unsafe_count"],
         missed_count=result_summary["missed_count"],
+        total_tools=_coverage_int(coverage_summary, "total_tools"),
+        decided_tools=_coverage_int(coverage_summary, "decided_tools"),
+        coverage_rate=_coverage_float(coverage_summary, "coverage_rate"),
+        omitted_tools=_coverage_int(coverage_summary, "omitted_tools"),
+        duplicate_decision_tools=_coverage_int(coverage_summary, "duplicate_decision_tools"),
         notes=manifest.get("notes") if isinstance(manifest.get("notes"), str) else None,
     )
 
@@ -201,6 +229,39 @@ def _resolve_results_path(raw_path: str, *, manifest_path: Path, root_path: Path
     raise ValueError(f"Run results path does not exist for {manifest_path}: {raw_path}")
 
 
+def _resolve_coverage_path(
+    raw_path: Any,
+    *,
+    manifest_path: Path,
+    root_path: Path,
+    results_path: Path,
+) -> Path | None:
+    if isinstance(raw_path, str) and raw_path:
+        coverage_path = Path(raw_path)
+        if coverage_path.is_absolute() and coverage_path.exists():
+            return coverage_path
+        candidates = [
+            root_path / coverage_path,
+            manifest_path.parent / coverage_path,
+            manifest_path.parent / coverage_path.name,
+        ]
+        for candidate in candidates:
+            if candidate.exists():
+                return candidate
+    sibling = results_path.parent / "coverage.json"
+    if sibling.exists():
+        return sibling
+    return None
+
+
+def _load_coverage_summary(path: Path) -> dict[str, Any]:
+    with path.open("r", encoding="utf-8") as handle:
+        payload = json.load(handle)
+    if not isinstance(payload, dict):
+        raise ValueError(f"Coverage summary must be a JSON object: {path}")
+    return payload
+
+
 def _parse_policy_details(policy: str) -> tuple[str | None, str | None]:
     prompt_profile: str | None = None
     runtime_policy: str | None = None
@@ -232,3 +293,25 @@ def _int(value: Any) -> int:
     if not isinstance(value, str):
         return 0
     return int(value)
+
+
+def _coverage_int(summary: dict[str, Any] | None, key: str) -> int | None:
+    if summary is None:
+        return None
+    value = summary.get(key)
+    return value if isinstance(value, int) else None
+
+
+def _coverage_float(summary: dict[str, Any] | None, key: str) -> float | None:
+    if summary is None:
+        return None
+    value = summary.get(key)
+    return value if isinstance(value, (int, float)) else None
+
+
+def _format_float(value: float | None) -> str:
+    return f"{value:.3f}" if value is not None else "n/a"
+
+
+def _format_int(value: int | None) -> str:
+    return str(value) if value is not None else "n/a"

@@ -71,6 +71,13 @@ class CoverageAnalysisSummary:
         }
 
 
+@dataclass(frozen=True)
+class CoverageArtifacts:
+    summary: CoverageAnalysisSummary
+    json_path: Path
+    markdown_path: Path
+
+
 def analyze_suite_coverage(scenario_dir: str | Path, trace_dir: str | Path) -> CoverageAnalysisSummary:
     details: list[CoverageDetail] = []
     for scenario_path in sorted(Path(scenario_dir).glob("*.json")):
@@ -142,6 +149,20 @@ def write_coverage_analysis_markdown(path: str | Path, summary: CoverageAnalysis
     output.parent.mkdir(parents=True, exist_ok=True)
     output.write_text(render_coverage_markdown(summary), encoding="utf-8")
     return output
+
+
+def write_coverage_artifacts(
+    run_dir: str | Path,
+    *,
+    scenario_dir: str | Path,
+    trace_dir: str | Path,
+    stem: str = "coverage",
+) -> CoverageArtifacts:
+    output_dir = Path(run_dir)
+    summary = analyze_suite_coverage(scenario_dir, trace_dir)
+    json_path = write_coverage_analysis_json(output_dir / f"{stem}.json", summary)
+    markdown_path = write_coverage_analysis_markdown(output_dir / f"{stem}.md", summary)
+    return CoverageArtifacts(summary=summary, json_path=json_path, markdown_path=markdown_path)
 
 
 def _load_trace(path: Path) -> list[dict[str, Any]]:

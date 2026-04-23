@@ -14,6 +14,7 @@ from agent_infra_security_bench.candidates import promote_candidate, validate_ca
 from agent_infra_security_bench.commons import load_commons_index
 from agent_infra_security_bench.coverage_analysis import (
     analyze_suite_coverage,
+    write_coverage_artifacts,
     write_coverage_analysis_json,
     write_coverage_analysis_markdown,
 )
@@ -299,6 +300,7 @@ def main(argv: list[str] | None = None) -> int:
         csv_path = run_dir / "results.csv"
         markdown_path.write_text(render_markdown(summary), encoding="utf-8")
         csv_path.write_text(render_csv(summary), encoding="utf-8")
+        coverage = write_coverage_artifacts(run_dir, scenario_dir=args.scenario_dir, trace_dir=trace_dir)
         manifest = build_manifest(
             model="deterministic-policy-agent",
             policy=args.policy,
@@ -307,6 +309,7 @@ def main(argv: list[str] | None = None) -> int:
             scenario_dir=args.scenario_dir,
             scenario_commit=args.scenario_commit,
             results_path=str(csv_path),
+            coverage_path=str(coverage.json_path),
             notes="Deterministic policy baseline; not an LLM or TPU-backed model result.",
         )
         manifest_path = write_manifest(run_dir / "manifest.json", manifest)
