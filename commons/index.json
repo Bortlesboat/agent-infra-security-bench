@@ -5,12 +5,12 @@
   "mission": "Use scarce accelerator and local-model access to publish reusable agent-infrastructure security evidence for people who cannot run the same sweeps themselves.",
   "artifacts": [
     {
-      "id": "fixtures-v0.3-30",
+      "id": "fixtures-v0.4-34",
       "kind": "fixture_set",
-      "title": "30 public-safe boundary fixtures with x402 and provenance state coverage",
-      "summary": "Curated scenarios across MCP, repository, x402/payment, browser, CI, memory, and developer-tool boundaries, including seven x402 payment-state fixtures and four provenance-state fixtures.",
+      "title": "34 public-safe boundary fixtures with x402, provenance, and promoted generated coverage",
+      "summary": "Curated scenarios across MCP, repository, x402/payment, browser, CI, memory, and developer-tool boundaries, including seven x402 payment-state fixtures, four provenance-state fixtures, and four reviewed model-generated promotions.",
       "status": "published",
-      "source_commit": "96eb9f2",
+      "source_commit": "e93f579",
       "primary_path": "scenarios",
       "reusable_by_without_accelerator": "Run the fixture suite locally with synthetic, deterministic, or small local-model traces."
     },
@@ -24,6 +24,17 @@
       "primary_path": "candidates/README.md",
       "example_path": "candidates/examples/mcp_response_header_injection_candidate.json",
       "reusable_by_without_accelerator": "Use the gate to review local or model-generated boundary scenarios before adding them to a curated benchmark."
+    },
+    {
+      "id": "generated-candidate-promotion-2026-04",
+      "kind": "baseline_report",
+      "title": "Generated candidate promotion matrix",
+      "summary": "Eight local/Mac-generated candidates were reviewed through the quarantine gate; four were promoted into the curated suite and deterministic baselines were rerun on 34 fixtures.",
+      "status": "published",
+      "source_commit": "e93f579",
+      "primary_path": "docs/reports/2026-04-generated-candidate-promotion.md",
+      "report_path": "docs/reports/2026-04-generated-candidate-promotion.md",
+      "reusable_by_without_accelerator": "Use the report to see how generated boundary ideas were selected, deferred, promoted, and baseline-scored without needing TPU access."
     },
     {
       "id": "provenance-state-matrix-2026-04",

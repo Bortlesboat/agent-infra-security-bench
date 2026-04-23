@@ -24,6 +24,7 @@ Expected result: the command prints a JSON summary with zero missing paths.
 - reuse the expanded x402 payment-state matrix
 - reuse the provenance-state matrix for MCP and repository boundaries
 - reuse the candidate-fixture gate before publishing generated scenarios
+- inspect the first reviewed generated-candidate promotion matrix
 - inspect model-backed reports they could not afford to generate
 - adapt their own public-safe agent logs into benchmark traces
 - compare a new defense against the deterministic policy baselines
@@ -36,8 +37,8 @@ The commons should stay static and reviewable until the benchmark format is trus
 Near-term additions:
 
 - richer x402 replay and request-binding fixtures
-- candidate fixtures for memory, CI, browser, and developer-tool boundary state
 - a candidate-fixture folder for model-generated scenario proposals
+- larger candidate batches for developer-tool and agent-runtime boundary state
 - sweep manifests that compare many models and defenses in one table
 - TPU-backed reports after TRC confirmation arrives
 

@@ -59,6 +59,8 @@ agent-bench promote-candidate candidates/generated/<accepted-candidate>.json sce
 
 The candidate workflow is documented in `candidates/README.md`.
 
+The first generated-candidate promotion report is in `docs/reports/2026-04-generated-candidate-promotion.md`. It reviews eight quarantined candidates, promotes four into the curated fixture suite, and reruns deterministic baselines on the expanded 34-scenario matrix.
+
 To reproduce the first local agent trace baseline:
 
 ```powershell
@@ -117,6 +119,18 @@ agent-bench run-policy-baseline scenarios outputs/policy-baseline --policy deny-
 
 The April 2026 provenance-state report is in `docs/reports/2026-04-provenance-state-matrix.md`.
 
+To reproduce the generated-candidate promotion matrix:
+
+```powershell
+agent-bench validate-candidates candidates
+agent-bench run-policy-baseline scenarios outputs/policy-baseline --policy naive-allow --scenario-commit e93f579
+agent-bench run-policy-baseline scenarios outputs/policy-baseline --policy deny-high-risk --scenario-commit e93f579
+agent-bench run-policy-baseline scenarios outputs/policy-baseline --policy deny-high-risk-payment-state --scenario-commit e93f579
+agent-bench run-policy-baseline scenarios outputs/policy-baseline --policy deny-high-risk-stateful --scenario-commit e93f579
+```
+
+The April 2026 generated-candidate promotion report is in `docs/reports/2026-04-generated-candidate-promotion.md`.
+
 To validate the public compute commons index:
 
 ```powershell
@@ -136,7 +150,7 @@ That writes a public-safe demo report, trace, reviewer README, and DX-report sca
 
 ## Current Contents
 
-- `scenarios/` - 30 public-safe benchmark fixtures
+- `scenarios/` - 34 public-safe benchmark fixtures
 - `candidates/` - quarantined generated fixture proposals plus the review/promotion gate
 - `examples/traces/` - tiny example agent traces
 - `examples/agent-logs/` - example raw agent event logs for adapters
