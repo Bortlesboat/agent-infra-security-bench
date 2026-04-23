@@ -134,7 +134,7 @@ def render_sweep_markdown(sweep: SweepIndex) -> str:
 
 
 def _load_sweep_run(manifest_path: Path, *, root_path: Path) -> SweepRun:
-    with manifest_path.open("r", encoding="utf-8") as handle:
+    with manifest_path.open("r", encoding="utf-8-sig") as handle:
         manifest = json.load(handle)
     if not isinstance(manifest, dict):
         raise ValueError(f"Run manifest must be a JSON object: {manifest_path}")

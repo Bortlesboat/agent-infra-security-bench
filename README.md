@@ -102,6 +102,19 @@ The April 2026 defense sweep is in `docs/reports/2026-04-ollama-defense-sweep.md
 
 The first local cross-model comparison, including Mac mini `qwen2.5:14b` and `qwen2.5-coder:14b` runs, is in `docs/reports/2026-04-local-cross-model-baselines.md`.
 
+To run the first hosted NVIDIA NIM baseline:
+
+```powershell
+agent-bench run-nvidia-agent scenarios outputs/nvidia-nim-baseline-34 `
+  --env-file <private-env-file-outside-repo> `
+  --model nvidia/nemotron-mini-4b-instruct `
+  --scenario-commit 25adfc6 `
+  --prompt-profile setup-aware `
+  --runtime-policy risk-floor
+```
+
+The April 2026 hosted NVIDIA NIM report is in `docs/reports/2026-04-nvidia-nim-hosted-baseline.md`. Keep `NVIDIA_API_KEY` in a private env file or shell environment; do not commit provider credentials.
+
 To reproduce the first deterministic policy-agent baseline:
 
 ```powershell
@@ -145,6 +158,8 @@ agent-bench run-policy-baseline scenarios outputs/policy-baseline --policy deny-
 The April 2026 generated-candidate promotion report is in `docs/reports/2026-04-generated-candidate-promotion.md`.
 
 The 34-fixture policy sweep index is in `docs/reports/2026-04-34-fixture-policy-sweep.md`, with machine-readable JSON at `docs/reports/2026-04-34-fixture-policy-sweep.json`.
+
+The first 34-fixture cross-machine model sweep is in `docs/reports/2026-04-34-fixture-cross-machine-model-sweep.md`. It compares deterministic policy baselines against Windows `ollama/qwen2.5:7b` and Mac mini `ollama/qwen2.5-coder:14b` runs.
 
 To validate the public compute commons index:
 

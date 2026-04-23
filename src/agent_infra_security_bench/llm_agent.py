@@ -2,9 +2,11 @@ from __future__ import annotations
 
 from abc import ABC, abstractmethod
 import json
+import os
 from pathlib import Path
 import re
 from typing import Any
+import urllib.error
 from urllib import request
 
 from agent_infra_security_bench.adapters import convert_generic_events, write_trace
@@ -17,6 +19,8 @@ from agent_infra_security_bench.results import render_csv, render_markdown, scor
 
 DEFAULT_OLLAMA_HOST = "http://127.0.0.1:11434"
 DEFAULT_OLLAMA_MODEL = "qwen2.5:7b"
+DEFAULT_NVIDIA_NIM_BASE_URL = "https://integrate.api.nvidia.com/v1"
+DEFAULT_NVIDIA_NIM_MODEL = "nvidia/nemotron-mini-4b-instruct"
 PROMPT_PROFILES = ("baseline", "setup-aware")
 RUNTIME_POLICIES = ("none", "risk-floor")
 HIGH_RISK_LABELS = {
@@ -83,6 +87,74 @@ class OllamaModelClient(LlmModelClient):
         if not isinstance(model_response, str):
             raise ValueError("Ollama response did not include a text response")
         return model_response
+
+
+class NvidiaNimModelClient(LlmModelClient):
+    provider = "nvidia-nim"
+
+    def __init__(
+        self,
+        model: str | None = None,
+        *,
+        api_key: str | None = None,
+        base_url: str | None = None,
+        env_file: str | Path | None = None,
+        prompt_profile: str = "baseline",
+        timeout: float = 120,
+    ):
+        file_values = _load_simple_env_file(Path(env_file)) if env_file else {}
+        self.model = (
+            model
+            or os.environ.get("NVIDIA_NIM_MODEL")
+            or file_values.get("NVIDIA_NIM_MODEL")
+            or DEFAULT_NVIDIA_NIM_MODEL
+        )
+        self.api_key = api_key or os.environ.get("NVIDIA_API_KEY") or file_values.get("NVIDIA_API_KEY")
+        if not self.api_key:
+            raise ValueError("NVIDIA_API_KEY is required for NVIDIA NIM hosted inference")
+        self.base_url = (
+            base_url
+            or os.environ.get("NVIDIA_NIM_BASE_URL")
+            or file_values.get("NVIDIA_NIM_BASE_URL")
+            or DEFAULT_NVIDIA_NIM_BASE_URL
+        ).rstrip("/")
+        self.prompt_profile = _validate_choice(prompt_profile, PROMPT_PROFILES, "prompt profile")
+        self.timeout = timeout
+
+    def generate_decisions(self, fixture: AgentFixture) -> str:
+        payload = {
+            "model": self.model,
+            "messages": [
+                {
+                    "role": "user",
+                    "content": render_decision_prompt(fixture, prompt_profile=self.prompt_profile),
+                }
+            ],
+            "temperature": 0,
+            "max_tokens": 800,
+            "stream": False,
+        }
+        req = request.Request(
+            f"{self.base_url}/chat/completions",
+            data=json.dumps(payload).encode("utf-8"),
+            headers={
+                "Authorization": f"Bearer {self.api_key}",
+                "Content-Type": "application/json",
+                "Accept": "application/json",
+                "User-Agent": "BoundaryBench-NVIDIA-NIM/2026-04-23",
+            },
+            method="POST",
+        )
+        try:
+            with request.urlopen(req, timeout=self.timeout) as response:
+                data = json.loads(response.read().decode("utf-8"))
+        except urllib.error.HTTPError as exc:
+            body = exc.read().decode("utf-8", errors="replace")
+            raise RuntimeError(f"HTTP {exc.code} from NVIDIA NIM API: {body[:1000]}") from exc
+        except urllib.error.URLError as exc:
+            raise RuntimeError(f"Could not reach NVIDIA NIM API: {exc}") from exc
+
+        return _extract_chat_completion_text(data)
 
 
 def render_decision_prompt(fixture: AgentFixture, *, prompt_profile: str = "baseline") -> str:
@@ -183,6 +255,7 @@ def write_llm_agent_run(
     scenario_commit: str = "unknown",
     prompt_profile: str = "baseline",
     runtime_policy: str = "none",
+    hardware: str = "local",
 ) -> LocalAgentRun:
     prompt_profile = _validate_choice(prompt_profile, PROMPT_PROFILES, "prompt profile")
     runtime_policy = _validate_choice(runtime_policy, RUNTIME_POLICIES, "runtime policy")
@@ -217,7 +290,7 @@ def write_llm_agent_run(
         model=agent,
         policy=_policy_label(prompt_profile, runtime_policy),
         trace_adapter="generic-jsonl",
-        hardware="local",
+        hardware=hardware,
         scenario_dir=Path(scenario_dir),
         scenario_commit=scenario_commit,
         results_path=str(csv_path),
@@ -249,6 +322,7 @@ def write_ollama_agent_run(
     scenario_commit: str = "unknown",
     prompt_profile: str = "baseline",
     runtime_policy: str = "none",
+    hardware: str = "local",
 ) -> LocalAgentRun:
     return write_llm_agent_run(
         scenario_dir,
@@ -257,6 +331,37 @@ def write_ollama_agent_run(
         scenario_commit=scenario_commit,
         prompt_profile=prompt_profile,
         runtime_policy=runtime_policy,
+        hardware=hardware,
+    )
+
+
+def write_nvidia_nim_agent_run(
+    scenario_dir: str | Path,
+    output_dir: str | Path,
+    *,
+    model: str | None = None,
+    env_file: str | Path | None = None,
+    base_url: str | None = None,
+    timeout: float = 120,
+    scenario_commit: str = "unknown",
+    prompt_profile: str = "baseline",
+    runtime_policy: str = "none",
+    hardware: str = "hosted",
+) -> LocalAgentRun:
+    return write_llm_agent_run(
+        scenario_dir,
+        output_dir,
+        client=NvidiaNimModelClient(
+            model=model,
+            env_file=env_file,
+            base_url=base_url,
+            timeout=timeout,
+            prompt_profile=prompt_profile,
+        ),
+        scenario_commit=scenario_commit,
+        prompt_profile=prompt_profile,
+        runtime_policy=runtime_policy,
+        hardware=hardware,
     )
 
 
@@ -278,6 +383,42 @@ def _load_model_json(raw_response: str) -> Any:
         return json.loads(match.group(1))
 
 
+def _extract_chat_completion_text(chat_response: dict[str, Any]) -> str:
+    choices = chat_response.get("choices")
+    if not isinstance(choices, list) or not choices:
+        raise ValueError("NVIDIA NIM response did not include choices")
+    first = choices[0]
+    if not isinstance(first, dict):
+        raise ValueError("NVIDIA NIM response choice was not an object")
+    message = first.get("message")
+    if isinstance(message, dict) and isinstance(message.get("content"), str):
+        return message["content"]
+    text = first.get("text")
+    if isinstance(text, str):
+        return text
+    raise ValueError("NVIDIA NIM response did not include text content")
+
+
+def _load_simple_env_file(path: Path) -> dict[str, str]:
+    if not path.exists():
+        return {}
+
+    values: dict[str, str] = {}
+    for raw_line in path.read_text(encoding="utf-8").splitlines():
+        line = raw_line.strip()
+        if not line or line.startswith("#") or "=" not in line:
+            continue
+        key, value = line.split("=", 1)
+        key = key.strip()
+        value = value.strip()
+        if not key:
+            continue
+        if len(value) >= 2 and value[0] == value[-1] and value[0] in {"'", '"'}:
+            value = value[1:-1]
+        values[key] = value
+    return values
+
+
 def _normalize_decision(value: Any) -> str | None:
     if not isinstance(value, str):
         return None
@@ -294,8 +435,10 @@ def _risk_floor_decision(
 ) -> tuple[str, str] | None:
     if tool.risk in HIGH_RISK_LABELS:
         return "block", f"trusted high-risk label {tool.risk}"
-    if tool.risk == "payment" and not payment_validator.allows(tool.metadata.get("payment_state")):
-        return "block", "payment state indicates reused or mismatched proof material"
+    if tool.risk == "payment":
+        if not payment_validator.allows(tool.metadata.get("payment_state")):
+            return "block", "payment state indicates reused or mismatched proof material"
+        return "allow", "payment state matches approved request and fresh proof material"
     if not provenance_allows(tool.metadata.get("provenance_state")):
         return "block", "tool provenance is shadowed, unverified, or approval-bound state changed"
     if tool.risk in SAFE_WORKFLOW_RISKS:

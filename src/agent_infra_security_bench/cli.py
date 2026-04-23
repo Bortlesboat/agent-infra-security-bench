@@ -20,7 +20,10 @@ from agent_infra_security_bench.llm_agent import (
     DEFAULT_OLLAMA_MODEL,
     PROMPT_PROFILES,
     RUNTIME_POLICIES,
+    DEFAULT_NVIDIA_NIM_BASE_URL,
+    DEFAULT_NVIDIA_NIM_MODEL,
     write_ollama_agent_run,
+    write_nvidia_nim_agent_run,
 )
 from agent_infra_security_bench.manifest import build_manifest, write_manifest
 from agent_infra_security_bench.policy_agent import available_policies, write_policy_traces
@@ -131,6 +134,21 @@ def main(argv: list[str] | None = None) -> int:
     ollama_parser.add_argument("--scenario-commit", default="unknown")
     ollama_parser.add_argument("--prompt-profile", choices=PROMPT_PROFILES, default="baseline")
     ollama_parser.add_argument("--runtime-policy", choices=RUNTIME_POLICIES, default="none")
+    ollama_parser.add_argument("--hardware", default="local")
+
+    nvidia_parser = subparsers.add_parser(
+        "run-nvidia-agent", help="Run a NVIDIA NIM hosted model agent and adapt raw JSONL events"
+    )
+    nvidia_parser.add_argument("scenario_dir", type=Path)
+    nvidia_parser.add_argument("output_dir", type=Path)
+    nvidia_parser.add_argument("--model", default=DEFAULT_NVIDIA_NIM_MODEL)
+    nvidia_parser.add_argument("--base-url", default=DEFAULT_NVIDIA_NIM_BASE_URL)
+    nvidia_parser.add_argument("--env-file", type=Path)
+    nvidia_parser.add_argument("--timeout", type=float, default=120)
+    nvidia_parser.add_argument("--scenario-commit", default="unknown")
+    nvidia_parser.add_argument("--prompt-profile", choices=PROMPT_PROFILES, default="baseline")
+    nvidia_parser.add_argument("--runtime-policy", choices=RUNTIME_POLICIES, default="none")
+    nvidia_parser.add_argument("--hardware", default="hosted")
 
     boundarypay_parser = subparsers.add_parser(
         "boundarypay-demo", help="Write BoundaryPay Guard Jupiter/Solana submission artifacts"
@@ -297,6 +315,37 @@ def main(argv: list[str] | None = None) -> int:
             scenario_commit=args.scenario_commit,
             prompt_profile=args.prompt_profile,
             runtime_policy=args.runtime_policy,
+            hardware=args.hardware,
+        )
+        print(
+            json.dumps(
+                {
+                    "agent": run.agent,
+                    "total": run.total,
+                    "passed": run.passed,
+                    "pass_rate": run.pass_rate,
+                    "raw_events": str(run.raw_event_dir),
+                    "traces": str(run.trace_dir),
+                    "results": str(run.results_csv),
+                    "manifest": str(run.manifest_path),
+                },
+                indent=2,
+                sort_keys=True,
+            )
+        )
+        return 0
+    if args.command == "run-nvidia-agent":
+        run = write_nvidia_nim_agent_run(
+            args.scenario_dir,
+            args.output_dir,
+            model=args.model,
+            env_file=args.env_file,
+            base_url=args.base_url,
+            timeout=args.timeout,
+            scenario_commit=args.scenario_commit,
+            prompt_profile=args.prompt_profile,
+            runtime_policy=args.runtime_policy,
+            hardware=args.hardware,
         )
         print(
             json.dumps(

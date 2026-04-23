@@ -489,10 +489,21 @@ def test_cli_run_local_agent_writes_raw_events_traces_reports_and_manifest(tmp_p
 
 
 def test_cli_run_ollama_agent_writes_summary(monkeypatch, tmp_path, capsys):
-    def fake_run(scenario_dir, output_dir, *, model, host, scenario_commit, prompt_profile, runtime_policy):
+    def fake_run(
+        scenario_dir,
+        output_dir,
+        *,
+        model,
+        host,
+        scenario_commit,
+        prompt_profile,
+        runtime_policy,
+        hardware,
+    ):
         run_dir = output_dir / "ollama-qwen2.5-7b"
         assert prompt_profile == "setup-aware"
         assert runtime_policy == "risk-floor"
+        assert hardware == "mac-mini"
         return LocalAgentRun(
             agent=f"ollama/{model}",
             raw_event_dir=run_dir / "raw-events",
@@ -522,6 +533,8 @@ def test_cli_run_ollama_agent_writes_summary(monkeypatch, tmp_path, capsys):
             "setup-aware",
             "--runtime-policy",
             "risk-floor",
+            "--hardware",
+            "mac-mini",
         ]
     )
 
@@ -530,6 +543,69 @@ def test_cli_run_ollama_agent_writes_summary(monkeypatch, tmp_path, capsys):
     assert payload["agent"] == "ollama/qwen2.5:7b"
     assert payload["passed"] == 13
     assert payload["total"] == 20
+
+
+def test_cli_run_nvidia_agent_writes_summary(monkeypatch, tmp_path, capsys):
+    def fake_run(
+        scenario_dir,
+        output_dir,
+        *,
+        model,
+        env_file,
+        base_url,
+        timeout,
+        scenario_commit,
+        prompt_profile,
+        runtime_policy,
+        hardware,
+    ):
+        run_dir = output_dir / "nvidia-nim-nvidia-nemotron-mini-4b-instruct"
+        assert model == "nvidia/nemotron-mini-4b-instruct"
+        assert env_file == tmp_path / "nvidia.env"
+        assert base_url == "https://integrate.api.nvidia.com/v1"
+        assert timeout == 9
+        assert prompt_profile == "setup-aware"
+        assert runtime_policy == "risk-floor"
+        assert hardware == "hosted"
+        return LocalAgentRun(
+            agent=f"nvidia-nim/{model}",
+            raw_event_dir=run_dir / "raw-events",
+            trace_dir=run_dir / "traces",
+            results_markdown=run_dir / "results.md",
+            results_csv=run_dir / "results.csv",
+            manifest_path=run_dir / "manifest.json",
+            total=3,
+            passed=2,
+            pass_rate=0.667,
+        )
+
+    monkeypatch.setattr(cli, "write_nvidia_nim_agent_run", fake_run, raising=False)
+
+    exit_code = cli.main(
+        [
+            "run-nvidia-agent",
+            str(tmp_path / "scenarios"),
+            str(tmp_path / "outputs"),
+            "--model",
+            "nvidia/nemotron-mini-4b-instruct",
+            "--env-file",
+            str(tmp_path / "nvidia.env"),
+            "--timeout",
+            "9",
+            "--scenario-commit",
+            "abc1234",
+            "--prompt-profile",
+            "setup-aware",
+            "--runtime-policy",
+            "risk-floor",
+        ]
+    )
+
+    payload = json.loads(capsys.readouterr().out)
+    assert exit_code == 0
+    assert payload["agent"] == "nvidia-nim/nvidia/nemotron-mini-4b-instruct"
+    assert payload["passed"] == 2
+    assert payload["total"] == 3
 
 
 def test_cli_validate_candidates_reports_candidate_gate_summary(tmp_path, capsys):

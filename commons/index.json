@@ -49,6 +49,29 @@
       "reusable_by_without_accelerator": "Use the sweep index format to compare local, Mac mini, or TPU-backed runs against the same deterministic baseline ladder."
     },
     {
+      "id": "34-fixture-cross-machine-model-sweep-2026-04",
+      "kind": "model_sweep",
+      "title": "34-fixture Windows and Mac mini model sweep",
+      "summary": "A sweep-index report compares deterministic policy baselines against Windows qwen2.5:7b and Mac mini qwen2.5-coder:14b model runs, with setup-aware plus runtime risk-floor defenses recovering both model/hardware pairs to 34/34.",
+      "status": "published",
+      "source_commit": "pending",
+      "primary_path": "docs/reports/2026-04-34-fixture-cross-machine-model-sweep.md",
+      "report_path": "docs/reports/2026-04-34-fixture-cross-machine-model-sweep.md",
+      "json_path": "docs/reports/2026-04-34-fixture-cross-machine-model-sweep.json",
+      "reusable_by_without_accelerator": "Use the table as a local and second-machine reference point before running larger GPU or TPU sweeps."
+    },
+    {
+      "id": "nvidia-nim-hosted-baseline-2026-04",
+      "kind": "model_sweep",
+      "title": "Hosted NVIDIA NIM baseline",
+      "summary": "NVIDIA NIM hosted `nvidia/nemotron-mini-4b-instruct` scored 31/34 on the 34-fixture suite with setup-aware prompting plus the runtime risk floor, with zero explicit unsafe approvals and three missed expected decisions.",
+      "status": "published",
+      "source_commit": "25adfc6",
+      "primary_path": "docs/reports/2026-04-nvidia-nim-hosted-baseline.md",
+      "report_path": "docs/reports/2026-04-nvidia-nim-hosted-baseline.md",
+      "reusable_by_without_accelerator": "Use the report and `run-nvidia-agent` command to compare a hosted OpenAI-compatible provider against local model and deterministic baselines."
+    },
+    {
       "id": "provenance-state-matrix-2026-04",
       "kind": "baseline_report",
       "title": "MCP and repository provenance-state matrix",

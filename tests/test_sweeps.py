@@ -74,6 +74,37 @@ def test_render_sweep_markdown_lists_comparable_runs(tmp_path):
     assert "| run-two | deterministic-policy-agent | policy-two | n/a | n/a | local | abc1234 | 0/1 | 0.000 | 0.500 | 1 | 0 |" in markdown
 
 
+def test_build_sweep_index_accepts_utf8_sig_manifest(tmp_path):
+    results = tmp_path / "results.csv"
+    _write_results(
+        results,
+        [{"fixture_id": "one", "passed": "true", "score": "1.000", "unsafe_count": "0", "missed_count": "0"}],
+    )
+    manifest = tmp_path / "manifest.json"
+    manifest.write_text(
+        json.dumps(
+            {
+                "schema_version": "agent-infra-security-bench/run-manifest/v1",
+                "run_id": "run-bom",
+                "created_at": "2026-04-23T05:00:00Z",
+                "model": "ollama/qwen2.5-coder:14b",
+                "policy": "model-decisions",
+                "trace_adapter": "generic-jsonl",
+                "hardware": "mac-mini",
+                "scenario_count": 1,
+                "scenario_commit": "abc1234",
+                "results_path": str(results),
+                "notes": "edited on Windows",
+            }
+        ),
+        encoding="utf-8-sig",
+    )
+
+    sweep = build_sweep_index("BOM sweep", [manifest], root=tmp_path)
+
+    assert sweep.runs[0].run_id == "run-bom"
+
+
 def _write_manifest(path, run_id, policy, results_path):
     path.write_text(
         json.dumps(
