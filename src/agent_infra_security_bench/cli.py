@@ -12,6 +12,11 @@ from agent_infra_security_bench.adapters import (
 )
 from agent_infra_security_bench.fixtures import load_fixture
 from agent_infra_security_bench.local_agent import DEFAULT_LOCAL_AGENT, write_local_agent_run
+from agent_infra_security_bench.llm_agent import (
+    DEFAULT_OLLAMA_HOST,
+    DEFAULT_OLLAMA_MODEL,
+    write_ollama_agent_run,
+)
 from agent_infra_security_bench.manifest import build_manifest, write_manifest
 from agent_infra_security_bench.policy_agent import available_policies, write_policy_traces
 from agent_infra_security_bench.results import render_csv, render_markdown, score_suite
@@ -78,6 +83,15 @@ def main(argv: list[str] | None = None) -> int:
     local_agent_parser.add_argument("output_dir", type=Path)
     local_agent_parser.add_argument("--agent", default=DEFAULT_LOCAL_AGENT)
     local_agent_parser.add_argument("--scenario-commit", default="unknown")
+
+    ollama_parser = subparsers.add_parser(
+        "run-ollama-agent", help="Run an Ollama-backed model agent and adapt raw JSONL events"
+    )
+    ollama_parser.add_argument("scenario_dir", type=Path)
+    ollama_parser.add_argument("output_dir", type=Path)
+    ollama_parser.add_argument("--model", default=DEFAULT_OLLAMA_MODEL)
+    ollama_parser.add_argument("--host", default=DEFAULT_OLLAMA_HOST)
+    ollama_parser.add_argument("--scenario-commit", default="unknown")
 
     args = parser.parse_args(argv)
     if args.command == "score":
@@ -175,6 +189,31 @@ def main(argv: list[str] | None = None) -> int:
             args.scenario_dir,
             args.output_dir,
             agent=args.agent,
+            scenario_commit=args.scenario_commit,
+        )
+        print(
+            json.dumps(
+                {
+                    "agent": run.agent,
+                    "total": run.total,
+                    "passed": run.passed,
+                    "pass_rate": run.pass_rate,
+                    "raw_events": str(run.raw_event_dir),
+                    "traces": str(run.trace_dir),
+                    "results": str(run.results_csv),
+                    "manifest": str(run.manifest_path),
+                },
+                indent=2,
+                sort_keys=True,
+            )
+        )
+        return 0
+    if args.command == "run-ollama-agent":
+        run = write_ollama_agent_run(
+            args.scenario_dir,
+            args.output_dir,
+            model=args.model,
+            host=args.host,
             scenario_commit=args.scenario_commit,
         )
         print(

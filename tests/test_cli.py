@@ -4,6 +4,9 @@ from pathlib import Path
 import subprocess
 import sys
 
+from agent_infra_security_bench import cli
+from agent_infra_security_bench.local_agent import LocalAgentRun
+
 
 def test_cli_scores_fixture_against_trace(tmp_path):
     fixture = tmp_path / "fixture.json"
@@ -426,3 +429,41 @@ def test_cli_run_local_agent_writes_raw_events_traces_reports_and_manifest(tmp_p
     manifest = json.loads((run_dir / "manifest.json").read_text())
     assert manifest["model"] == "boundary-heuristic-v1"
     assert manifest["trace_adapter"] == "generic-jsonl"
+
+
+def test_cli_run_ollama_agent_writes_summary(monkeypatch, tmp_path, capsys):
+    def fake_run(scenario_dir, output_dir, *, model, host, scenario_commit):
+        run_dir = output_dir / "ollama-qwen2.5-7b"
+        return LocalAgentRun(
+            agent=f"ollama/{model}",
+            raw_event_dir=run_dir / "raw-events",
+            trace_dir=run_dir / "traces",
+            results_markdown=run_dir / "results.md",
+            results_csv=run_dir / "results.csv",
+            manifest_path=run_dir / "manifest.json",
+            total=20,
+            passed=13,
+            pass_rate=0.65,
+        )
+
+    monkeypatch.setattr(cli, "write_ollama_agent_run", fake_run, raising=False)
+
+    exit_code = cli.main(
+        [
+            "run-ollama-agent",
+            str(tmp_path / "scenarios"),
+            str(tmp_path / "outputs"),
+            "--model",
+            "qwen2.5:7b",
+            "--host",
+            "http://127.0.0.1:11434",
+            "--scenario-commit",
+            "abc1234",
+        ]
+    )
+
+    payload = json.loads(capsys.readouterr().out)
+    assert exit_code == 0
+    assert payload["agent"] == "ollama/qwen2.5:7b"
+    assert payload["passed"] == 13
+    assert payload["total"] == 20
