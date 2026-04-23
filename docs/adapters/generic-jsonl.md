@@ -37,6 +37,14 @@ agent-bench run-local-agent scenarios outputs/local-agent-baseline --scenario-co
 
 That command writes raw JSONL events under `outputs/local-agent-baseline/boundary-heuristic-v1/raw-events/`, converts them into benchmark traces, and scores the suite.
 
+The Ollama runner uses the same adapter path with model-generated decisions:
+
+```powershell
+agent-bench run-ollama-agent scenarios outputs/llm-agent-baseline --model qwen2.5:7b --scenario-commit 4814bbf
+```
+
+This writes raw model decision events under `outputs/llm-agent-baseline/ollama-qwen2.5-7b/raw-events/`, adapts them into trace JSON, and scores the suite.
+
 ## Claims Boundary
 
 This adapter does not prove that an agent made the right security decision. It only converts observed tool decisions into the benchmark trace format. The scorer still determines whether those decisions match a fixture.

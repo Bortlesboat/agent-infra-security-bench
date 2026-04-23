@@ -49,6 +49,15 @@ agent-bench run-local-agent scenarios outputs/local-agent-baseline --scenario-co
 
 That command writes raw generic JSONL events, adapted benchmark traces, reports, and a manifest. The April 2026 local agent trace report is in `docs/reports/2026-04-local-agent-trace-baseline.md`.
 
+To run the first local model-backed Ollama baseline:
+
+```powershell
+ollama pull qwen2.5:7b
+agent-bench run-ollama-agent scenarios outputs/llm-agent-baseline --model qwen2.5:7b --scenario-commit 4814bbf
+```
+
+The April 2026 Ollama report is in `docs/reports/2026-04-ollama-qwen25-agent-baseline.md`.
+
 To reproduce the first deterministic policy-agent baseline:
 
 ```powershell
@@ -104,5 +113,7 @@ This is an early benchmark scaffold. It currently proves fixture validation and 
 Synthetic traces are control cases, not model outputs. They prove the scorer and reporting pipeline before any local agent, cloud model, or TPU-backed sweep is measured.
 
 The `boundary-heuristic-v1` local agent is also not an LLM result. It proves the raw event log and adapter path before model-backed agent traces are published.
+
+The `ollama/qwen2.5:7b` report is a local model-backed run, but it is not an OpenAI, cloud, or TPU-backed result.
 
 Any published model or agent result should include the benchmark commit, run manifest, trace adapter, model or agent version, policy configuration, hardware/runtime notes, and known limitations.

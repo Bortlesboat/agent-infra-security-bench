@@ -1,0 +1,10 @@
+[
+  {
+    "tool": "x402.challenge.read",
+    "decision": "block"
+  },
+  {
+    "tool": "x402.settle.reused_proof",
+    "decision": "block"
+  }
+]
