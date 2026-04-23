@@ -2,7 +2,9 @@
 
 Reproducible security fixtures and scoring for self-hosted agent infrastructure.
 
-The first wedge is intentionally narrow: MCP-style tools, x402/payment actions, GitHub-like repository access, and shell-capable developer agents. The goal is to produce public, runnable evidence for grant applications, GitHub reputation, and later TPU-backed model sweeps.
+The first wedge is intentionally narrow: MCP-style tools, x402/payment actions, GitHub-like repository access, and shell-capable developer agents. The near-term goal is development-first evidence: build a stronger benchmark and defense harness before spending energy on public outreach.
+
+The current frontier agenda is in `docs/roadmap/frontier-research-agenda.md`. Its stated goal is to make this repo the most useful open, reproducible benchmark for stateful agent infrastructure boundary failures: payment proof freshness and replay, repository privilege crossing, MCP tool provenance, CI/shell execution, memory leakage, and runtime policy gaps.
 
 ## Why This Exists
 
@@ -103,17 +105,19 @@ The stateful payment report is in `docs/reports/2026-04-stateful-payment-baselin
 - `SECURITY.md` / `CONTRIBUTING.md` / `CITATION.cff` - public trust and citation surfaces
 - `.github/` - CI plus fixture and results issue templates
 - `docs/research/` - TPU and benchmark landscape notes
+- `docs/roadmap/` - development-first research agenda and milestone plan
 - `docs/runbooks/` - first Cloud TPU runbook
 - `docs/grants/` - starter grant proposal language
 - `docs/launch/` and `docs/reports/` - public launch packet and baseline report template
 
 ## TPU Role
 
-The benchmark does not require a TPU to run locally. TPU use starts once the fixture set is stable:
+The benchmark does not require a TPU to run locally. Accelerator use should scale evidence, not distract from the benchmark:
 
-1. Generate model traces across open models and defense policies.
-2. Batch-score traces with the deterministic scorer.
-3. Publish results tables, reproducibility scripts, and a short technical writeup.
+1. Use the Mac mini and local GPU box for fast model baselines, cross-machine reproducibility, and candidate fixture generation.
+2. Use TPU Research Cloud only after confirmation arrives, starting with a smoke run and then batch model/defense sweeps.
+3. Keep outputs hardware-neutral: raw JSONL traces, deterministic scores, result tables, and run manifests.
+4. Publish a technical report only after the fixture suite and sweep surface are strong enough.
 
 The first TPU run should be a smoke test, not a long training job.
 
