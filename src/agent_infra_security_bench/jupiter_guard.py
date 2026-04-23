@@ -4,6 +4,7 @@ import json
 import os
 from pathlib import Path
 from typing import Any
+from urllib.error import HTTPError, URLError
 from urllib.parse import urlencode
 from urllib.request import Request, urlopen
 
@@ -29,6 +30,10 @@ BOUND_FIELDS = (
     "slippage_bps",
     "swap_mode",
 )
+
+
+class JupiterPriceFetchError(RuntimeError):
+    pass
 
 
 def evaluate_payment_intent(
@@ -71,8 +76,17 @@ def fetch_jupiter_price_snapshot(
     request = Request(f"{base_url}?{query}")
     if api_key:
         request.add_header("x-api-key", api_key)
-    with urlopen(request, timeout=10) as response:
-        payload = json.loads(response.read().decode("utf-8"))
+    try:
+        with urlopen(request, timeout=10) as response:
+            payload = json.loads(response.read().decode("utf-8"))
+    except HTTPError as exc:
+        raise JupiterPriceFetchError(
+            f"Jupiter Price V3 returned HTTP {exc.code}; set JUPITER_API_KEY or rerun with --mode fixture"
+        ) from exc
+    except (OSError, URLError) as exc:
+        raise JupiterPriceFetchError(
+            f"Jupiter Price V3 request failed; set JUPITER_API_KEY, check network access, or rerun with --mode fixture: {exc}"
+        ) from exc
     price = _extract_price(payload, token_mint)
     return {
         "source": "live",

@@ -13,7 +13,7 @@ from agent_infra_security_bench.adapters import (
 from agent_infra_security_bench.candidates import promote_candidate, validate_candidate_dir
 from agent_infra_security_bench.commons import load_commons_index
 from agent_infra_security_bench.fixtures import load_fixture
-from agent_infra_security_bench.jupiter_guard import write_boundarypay_demo
+from agent_infra_security_bench.jupiter_guard import JupiterPriceFetchError, write_boundarypay_demo
 from agent_infra_security_bench.local_agent import DEFAULT_LOCAL_AGENT, write_local_agent_run
 from agent_infra_security_bench.llm_agent import (
     DEFAULT_OLLAMA_HOST,
@@ -286,7 +286,17 @@ def main(argv: list[str] | None = None) -> int:
         )
         return 0
     if args.command == "boundarypay-demo":
-        summary = write_boundarypay_demo(args.output_dir, mode=args.mode)
+        try:
+            summary = write_boundarypay_demo(args.output_dir, mode=args.mode)
+        except JupiterPriceFetchError as exc:
+            print(
+                json.dumps(
+                    {"error": "jupiter_price_fetch_failed", "message": str(exc)},
+                    indent=2,
+                    sort_keys=True,
+                )
+            )
+            return 2
         print(json.dumps(summary, indent=2, sort_keys=True))
         return 0
 

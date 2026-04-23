@@ -5,6 +5,7 @@ import subprocess
 import sys
 
 from agent_infra_security_bench import cli
+from agent_infra_security_bench.jupiter_guard import JupiterPriceFetchError
 from agent_infra_security_bench.local_agent import LocalAgentRun
 
 
@@ -578,3 +579,19 @@ def test_cli_boundarypay_demo_writes_artifacts(tmp_path, capsys):
     assert payload["blocked"] >= 3
     assert (output_dir / "boundarypay-report.json").exists()
     assert (output_dir / "DX-REPORT.md").exists()
+
+
+def test_cli_boundarypay_demo_reports_live_fetch_errors(monkeypatch, tmp_path, capsys):
+    def fail_fetch(output_dir, *, mode):
+        raise JupiterPriceFetchError("Jupiter Price V3 returned HTTP 403; set JUPITER_API_KEY")
+
+    monkeypatch.setattr(cli, "write_boundarypay_demo", fail_fetch)
+
+    exit_code = cli.main(["boundarypay-demo", str(tmp_path / "boundarypay"), "--mode", "live"])
+
+    payload = json.loads(capsys.readouterr().out)
+    assert exit_code == 2
+    assert payload == {
+        "error": "jupiter_price_fetch_failed",
+        "message": "Jupiter Price V3 returned HTTP 403; set JUPITER_API_KEY",
+    }
