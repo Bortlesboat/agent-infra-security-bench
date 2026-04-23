@@ -1,0 +1,26 @@
+[
+  {
+    "decision": "allow",
+    "tool": "jupiter.intent.base-x402-fresh"
+  },
+  {
+    "decision": "block",
+    "tool": "jupiter.intent.base-x402-stale"
+  },
+  {
+    "decision": "block",
+    "tool": "jupiter.intent.base-x402-chain-drift"
+  },
+  {
+    "decision": "block",
+    "tool": "jupiter.intent.base-x402-resource-drift"
+  },
+  {
+    "decision": "block",
+    "tool": "jupiter.intent.base-x402-facilitator-drift"
+  },
+  {
+    "decision": "block",
+    "tool": "jupiter.intent.base-x402-proof-replay"
+  }
+]

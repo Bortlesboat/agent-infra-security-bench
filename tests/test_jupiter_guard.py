@@ -126,6 +126,39 @@ def test_boundarypay_demo_live_dx_report_records_live_snapshot(monkeypatch, tmp_
     assert "Before final Superteam/Jupiter submission" not in dx_report
 
 
+def test_boundarypay_demo_base_surface_writes_base_x402_artifacts(tmp_path):
+    output_dir = tmp_path / "boundarypay-base"
+
+    summary = write_boundarypay_demo(output_dir, mode="fixture", surface="base")
+
+    assert summary["project"] == "BoundaryPay Guard"
+    assert summary["mode"] == "fixture"
+    assert summary["surface"] == "base"
+    assert summary["allowed"] == 1
+    assert summary["blocked"] >= 4
+
+    report = json.loads((output_dir / "boundarypay-report.json").read_text(encoding="utf-8"))
+    assert report["source"]["platform"] == "x402"
+    assert report["source"]["network"] == "base-sepolia"
+    assert report["source"]["mode"] == "fixture"
+    assert report["checks"][0]["decision"] == "allow"
+    assert {reason for check in report["checks"] for reason in check["reasons"]} >= {
+        "nonce_status:stale",
+        "binding_mismatch:chain_id",
+        "binding_mismatch:resource",
+        "binding_mismatch:facilitator_url",
+        "proof_replay:base-proof-fresh-001",
+    }
+
+    readme = (output_dir / "README.md").read_text(encoding="utf-8")
+    assert "Base/x402" in readme
+    assert "fixture-first" in readme
+
+    dx_report = (output_dir / "DX-REPORT.md").read_text(encoding="utf-8")
+    assert "Base Builder Grants" in dx_report
+    assert "does not sign transactions" in dx_report
+
+
 def test_fetch_jupiter_price_snapshot_sends_public_demo_user_agent(monkeypatch):
     captured_headers = {}
 

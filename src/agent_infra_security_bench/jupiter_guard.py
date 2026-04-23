@@ -12,6 +12,13 @@ from urllib.request import Request, urlopen
 DEFAULT_SOL_MINT = "So11111111111111111111111111111111111111112"
 DEFAULT_USDC_MINT = "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v"
 JUPITER_PRICE_V3_URL = "https://lite-api.jup.ag/price/v3"
+DEFAULT_BASE_CHAIN_ID = "84532"
+DEFAULT_BASE_NETWORK = "base-sepolia"
+DEFAULT_BASE_ASSET = "USDC"
+DEFAULT_BASE_FACILITATOR = "https://x402.org"
+DEFAULT_BASE_FACILITATOR_URL = "https://x402.org/facilitator/base-sepolia"
+DEFAULT_BASE_RESOURCE = "https://api.bitcoinsapi.com/v1/premium/fees?confirm_target=2"
+DEFAULT_BASE_RECIPIENT = "base:0x0000000000000000000000000000000000004020"
 PUBLIC_DEMO_USER_AGENT = (
     "agent-infra-security-bench/0.1 "
     "(+https://github.com/Bortlesboat/agent-infra-security-bench)"
@@ -105,17 +112,20 @@ def fetch_jupiter_price_snapshot(
     }
 
 
-def write_boundarypay_demo(output_dir: Path, *, mode: str = "fixture") -> dict[str, Any]:
+def write_boundarypay_demo(
+    output_dir: Path,
+    *,
+    mode: str = "fixture",
+    surface: str = "jupiter",
+) -> dict[str, Any]:
     if mode not in {"fixture", "live"}:
         raise ValueError("mode must be 'fixture' or 'live'")
+    if surface not in {"jupiter", "base"}:
+        raise ValueError("surface must be 'jupiter' or 'base'")
 
     output_dir.mkdir(parents=True, exist_ok=True)
-    price_snapshot = (
-        fetch_jupiter_price_snapshot(api_key=os.environ.get("JUPITER_API_KEY"))
-        if mode == "live"
-        else _fixture_price_snapshot()
-    )
-    intents = _demo_intents(price_snapshot)
+    source_metadata = _load_source_metadata(mode=mode, surface=surface)
+    intents = _demo_intents(source_metadata, surface=surface)
     seen_proofs: set[str] = set()
     checks = [
         evaluate_payment_intent(intent, seen_proofs=seen_proofs) | {"intent": intent}
@@ -126,11 +136,8 @@ def write_boundarypay_demo(output_dir: Path, *, mode: str = "fixture") -> dict[s
     report = {
         "project": "BoundaryPay Guard",
         "mode": mode,
-        "source": {
-            "platform": "jupiter",
-            "price_endpoint": JUPITER_PRICE_V3_URL,
-            "price_snapshot": price_snapshot,
-        },
+        "surface": surface,
+        "source": source_metadata,
         "summary": {"allowed": allowed, "blocked": blocked, "total": len(checks)},
         "checks": checks,
     }
@@ -149,11 +156,18 @@ def write_boundarypay_demo(output_dir: Path, *, mode: str = "fixture") -> dict[s
         ),
         encoding="utf-8",
     )
-    (output_dir / "README.md").write_text(_readme_text(mode, allowed, blocked), encoding="utf-8")
-    (output_dir / "DX-REPORT.md").write_text(_dx_report_text(mode), encoding="utf-8")
+    (output_dir / "README.md").write_text(
+        _readme_text(mode, allowed, blocked, surface=surface),
+        encoding="utf-8",
+    )
+    (output_dir / "DX-REPORT.md").write_text(
+        _dx_report_text(mode, surface=surface),
+        encoding="utf-8",
+    )
     return {
         "project": "BoundaryPay Guard",
         "mode": mode,
+        "surface": surface,
         "allowed": allowed,
         "blocked": blocked,
         "output_dir": str(output_dir),
@@ -184,7 +198,23 @@ def _fixture_price_snapshot() -> dict[str, Any]:
     }
 
 
-def _demo_intents(price_snapshot: dict[str, Any]) -> list[dict[str, Any]]:
+def _load_source_metadata(*, mode: str, surface: str) -> dict[str, Any]:
+    if surface == "jupiter":
+        return (
+            fetch_jupiter_price_snapshot(api_key=os.environ.get("JUPITER_API_KEY"))
+            if mode == "live"
+            else _fixture_price_snapshot()
+        )
+    return _base_fixture_source()
+
+
+def _demo_intents(source_metadata: dict[str, Any], *, surface: str) -> list[dict[str, Any]]:
+    if surface == "base":
+        return _base_demo_intents(source_metadata)
+    return _jupiter_demo_intents(source_metadata)
+
+
+def _jupiter_demo_intents(price_snapshot: dict[str, Any]) -> list[dict[str, Any]]:
     base = {
         "platform": "jupiter",
         "approved_platform": "jupiter",
@@ -236,25 +266,155 @@ def _demo_intents(price_snapshot: dict[str, Any]) -> list[dict[str, Any]]:
     ]
 
 
-def _readme_text(mode: str, allowed: int, blocked: int) -> str:
+def _base_fixture_source() -> dict[str, Any]:
+    return {
+        "mode": "fixture",
+        "platform": "x402",
+        "network": DEFAULT_BASE_NETWORK,
+        "chain_id": DEFAULT_BASE_CHAIN_ID,
+        "asset": DEFAULT_BASE_ASSET,
+        "facilitator": DEFAULT_BASE_FACILITATOR,
+        "facilitator_url": DEFAULT_BASE_FACILITATOR_URL,
+        "resource": DEFAULT_BASE_RESOURCE,
+        "note": "Deterministic Base/x402 fixture for public-safe grant review runs.",
+    }
+
+
+def _base_demo_intents(source_metadata: dict[str, Any]) -> list[dict[str, Any]]:
+    base = {
+        "platform": "x402",
+        "approved_platform": "x402",
+        "nonce_status": "fresh",
+        "amount_usd": "2.50",
+        "approved_amount_usd": "2.50",
+        "asset": DEFAULT_BASE_ASSET,
+        "approved_asset": DEFAULT_BASE_ASSET,
+        "chain_id": DEFAULT_BASE_CHAIN_ID,
+        "approved_chain_id": DEFAULT_BASE_CHAIN_ID,
+        "facilitator": DEFAULT_BASE_FACILITATOR,
+        "approved_facilitator": DEFAULT_BASE_FACILITATOR,
+        "facilitator_url": DEFAULT_BASE_FACILITATOR_URL,
+        "approved_facilitator_url": DEFAULT_BASE_FACILITATOR_URL,
+        "recipient": DEFAULT_BASE_RECIPIENT,
+        "approved_recipient": DEFAULT_BASE_RECIPIENT,
+        "resource": DEFAULT_BASE_RESOURCE,
+        "approved_resource": DEFAULT_BASE_RESOURCE,
+        "route": "x402:GET:/v1/premium/fees",
+        "approved_route": "x402:GET:/v1/premium/fees",
+        "source_mode": source_metadata.get("mode"),
+        "source_network": source_metadata.get("network"),
+    }
+    return [
+        base
+        | {
+            "intent_id": "base-x402-fresh",
+            "proof_id": "base-proof-fresh-001",
+            "request_id": "base-charge-001",
+            "approved_request_id": "base-charge-001",
+        },
+        base
+        | {
+            "intent_id": "base-x402-stale",
+            "proof_id": "base-proof-stale-001",
+            "request_id": "base-charge-002",
+            "approved_request_id": "base-charge-002",
+            "nonce_status": "stale",
+        },
+        base
+        | {
+            "intent_id": "base-x402-chain-drift",
+            "proof_id": "base-proof-chain-001",
+            "request_id": "base-charge-003",
+            "approved_request_id": "base-charge-003",
+            "chain_id": "8453",
+        },
+        base
+        | {
+            "intent_id": "base-x402-resource-drift",
+            "proof_id": "base-proof-resource-001",
+            "request_id": "base-charge-004",
+            "approved_request_id": "base-charge-004",
+            "resource": "https://api.bitcoinsapi.com/v1/premium/fees?confirm_target=6",
+        },
+        base
+        | {
+            "intent_id": "base-x402-facilitator-drift",
+            "proof_id": "base-proof-facilitator-001",
+            "request_id": "base-charge-005",
+            "approved_request_id": "base-charge-005",
+            "facilitator_url": "https://shadow.example/x402/base-sepolia",
+        },
+        base
+        | {
+            "intent_id": "base-x402-proof-replay",
+            "proof_id": "base-proof-fresh-001",
+            "request_id": "base-charge-006",
+            "approved_request_id": "base-charge-006",
+        },
+    ]
+
+
+def _readme_text(mode: str, allowed: int, blocked: int, *, surface: str) -> str:
+    if surface == "base":
+        intro = "This artifact demonstrates a Base/x402 request-boundary guard for AI agents."
+        claims = (
+            "It is fixture-first and public-safe. It does not sign transactions, move funds, "
+            "or claim a production Base settlement flow."
+        )
+    else:
+        intro = "This artifact demonstrates a Jupiter-style payment intent guard for AI agents."
+        claims = (
+            "The demo is public-safe and non-custodial. It does not sign transactions, place orders, "
+            "hold wallet keys, or execute swaps."
+        )
+
     return f"""# BoundaryPay Guard Demo
 
-This artifact demonstrates a Jupiter-style payment intent guard for AI agents.
+{intro}
 
 Mode: `{mode}`
+Surface: `{surface}`
 
 Result summary:
 
 - Allowed: {allowed}
 - Blocked: {blocked}
 
-The demo is public-safe and non-custodial. It does not sign transactions, place orders,
-hold wallet keys, or execute swaps. It shows how replay, stale authorization, amount
-drift, route drift, and platform/token binding issues can be blocked before execution.
+{claims} It shows how replay, stale authorization, amount drift, route drift, resource
+drift, and facilitator/network binding issues can be blocked before execution.
 """
 
 
-def _dx_report_text(mode: str) -> str:
+def _dx_report_text(mode: str, *, surface: str) -> str:
+    if surface == "base":
+        return """# BoundaryPay Guard DX Report
+
+## Current Run
+
+This generated report was created for the `base` surface in `fixture` mode. The lane is
+intentionally fixture-first so grant reviewers can inspect approval-bound Base/x402 request
+state without requiring wallet funding, signing, or live facilitator access.
+
+## Base Builder Funding Fit
+
+- Base Builder Rewards and Base Builder Grants favor shipped public work with clear technical proof.
+- The most useful review artifact here is a reproducible trace that shows a fresh Base/x402
+  request allowed while stale, replayed, cross-network, or facilitator-drifted requests are blocked.
+- This lane is positioned as agent payment safety infrastructure, not a wallet or merchant processor.
+
+## What Needs Live Follow-Up
+
+- Optional Base Sepolia or facilitator-backed trace once a low-risk test wallet and spend limits exist.
+- Public project social links and a one-minute hosted walkthrough for the Base nomination form.
+- A short build update that explains why the guard blocks network/resource/facilitator drift.
+
+## Claims Boundary
+
+- This lane does not sign transactions, move funds, or call a live facilitator.
+- It exists to prove the safety boundary logic that a Base-native x402 integration should preserve.
+- The honest next step after this proof is a narrowly scoped Sepolia validation, not a mainnet demo.
+"""
+
     if mode == "live":
         current_run = """This generated report was created in `live` mode. Jupiter Price V3 returned a live snapshot for the public SOL mint, and the guard evaluated the same deterministic payment-boundary cases against that live source metadata."""
     else:
