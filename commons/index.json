@@ -18,9 +18,9 @@
       "id": "candidate-fixture-gate-2026-04",
       "kind": "candidate_pipeline",
       "title": "Adversarial fixture candidate gate",
-      "summary": "A quarantine format, validator, public-safety scan, and promote-only-after-accepted command for generated fixture proposals.",
+      "summary": "A quarantine format, validator, public-safety and vocabulary checks, repair helper, and promote-only-after-accepted command for generated fixture proposals.",
       "status": "published",
-      "source_commit": "e187afd",
+      "source_commit": "6346ef1",
       "primary_path": "candidates/README.md",
       "example_path": "candidates/examples/mcp_response_header_injection_candidate.json",
       "reusable_by_without_accelerator": "Use the gate to review local or model-generated boundary scenarios before adding them to a curated benchmark."
