@@ -121,6 +121,20 @@ agent-bench run-nvidia-agent scenarios outputs/nvidia-nim-baseline-34 `
 
 The April 2026 hosted NVIDIA NIM report is in `docs/reports/2026-04-nvidia-nim-hosted-baseline.md`. The original setup-aware plus risk-floor hosted row scored `31/34`; the follow-up `checklist` prompt plus the same runtime policy reached `34/34` with full `70/70` tool-decision coverage. Keep `NVIDIA_API_KEY` in a private env file or shell environment; do not commit provider credentials.
 
+To run the same benchmark through any OpenAI-compatible backend, including a TPU-hosted `vllm` server:
+
+```powershell
+agent-bench run-openai-agent scenarios outputs/openai-compatible-baseline `
+  --model Qwen/Qwen2.5-7B-Instruct `
+  --base-url http://127.0.0.1:8000/v1 `
+  --scenario-commit 1ab0b14 `
+  --prompt-profile checklist `
+  --runtime-policy risk-floor `
+  --hardware tpu-v6e
+```
+
+The first live Cloud TPU report is in `docs/reports/2026-04-tpu-v6e-qwen-baseline.md`. That run used `vllm-tpu` on a temporary `v6e-8` host, passed the 3-fixture smoke `3/3`, then passed the full 34-fixture checklist baseline `34/34` with full `70/70` tool-decision coverage.
+
 To reproduce the first deterministic policy-agent baseline:
 
 ```powershell
@@ -165,7 +179,7 @@ The April 2026 generated-candidate promotion report is in `docs/reports/2026-04-
 
 The 34-fixture policy sweep index is in `docs/reports/2026-04-34-fixture-policy-sweep.md`, with machine-readable JSON at `docs/reports/2026-04-34-fixture-policy-sweep.json`.
 
-The first 34-fixture cross-machine model sweep is in `docs/reports/2026-04-34-fixture-cross-machine-model-sweep.md`. It compares deterministic policy baselines against Windows `ollama/qwen2.5:7b`, Mac mini `ollama/qwen2.5-coder:14b`, and Mac mini `ollama/gemma3:12b` runs, including the new `checklist` prompt profile that lifts Gemma to `34/34`.
+The first 34-fixture cross-machine model sweep is in `docs/reports/2026-04-34-fixture-cross-machine-model-sweep.md`. It compares deterministic policy baselines against Windows `ollama/qwen2.5:7b`, Mac mini `ollama/qwen2.5-coder:14b`, Mac mini `ollama/gemma3:12b`, and the first Cloud TPU `v6e` `Qwen/Qwen2.5-7B-Instruct` row, including the new `checklist` prompt profile that lifts both Gemma and the TPU-served Qwen row to `34/34`.
 
 To classify failed expected actions by cause:
 

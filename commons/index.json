@@ -51,14 +51,25 @@
     {
       "id": "34-fixture-cross-machine-model-sweep-2026-04",
       "kind": "model_sweep",
-      "title": "34-fixture Windows and Mac mini model sweep",
-      "summary": "A sweep-index report compares deterministic policy baselines against Windows qwen2.5:7b, Mac mini qwen2.5-coder:14b, and Mac mini gemma3:12b model runs, separating safety, utility, and completeness so Qwen baseline over-blocking and Gemma baseline omissions are visible as different failure shapes.",
+      "title": "34-fixture local, Mac mini, and TPU model sweep",
+      "summary": "A sweep-index report compares deterministic policy baselines against Windows qwen2.5:7b, Mac mini qwen2.5-coder:14b, Mac mini gemma3:12b, and the first Cloud TPU v6e Qwen2.5-7B-Instruct row, separating safety, utility, and completeness so over-blocking, omissions, and fully covered defended rows remain visibly distinct.",
       "status": "published",
-      "source_commit": "59d581d",
+      "source_commit": "1ab0b14",
       "primary_path": "docs/reports/2026-04-34-fixture-cross-machine-model-sweep.md",
       "report_path": "docs/reports/2026-04-34-fixture-cross-machine-model-sweep.md",
       "json_path": "docs/reports/2026-04-34-fixture-cross-machine-model-sweep.json",
-      "reusable_by_without_accelerator": "Use the table as a local and second-machine reference point before running larger GPU or TPU sweeps."
+      "reusable_by_without_accelerator": "Use the table as a local, second-machine, and TPU reference point before running the harder frontier omission/state fixture pack."
+    },
+    {
+      "id": "tpu-v6e-qwen-baseline-2026-04",
+      "kind": "model_sweep",
+      "title": "First Cloud TPU v6e baseline",
+      "summary": "The first live Cloud TPU BoundaryBench row served Qwen/Qwen2.5-7B-Instruct through vLLM TPU on a temporary v6e-8 host, passed the 3-fixture smoke 3/3, then passed the full 34-fixture checklist plus risk-floor baseline 34/34 with full 70/70 tool coverage.",
+      "status": "published",
+      "source_commit": "1ab0b14",
+      "primary_path": "docs/reports/2026-04-tpu-v6e-qwen-baseline.md",
+      "report_path": "docs/reports/2026-04-tpu-v6e-qwen-baseline.md",
+      "reusable_by_without_accelerator": "Use the report to understand the tested TPU provisioning, OpenAI-compatible serving, smoke, baseline, artifact copy-back, and shutdown path before spending another TPU session."
     },
     {
       "id": "nvidia-nim-hosted-baseline-2026-04",
@@ -174,13 +185,13 @@
     {
       "id": "tpu-first-runbook",
       "kind": "runbook",
-      "title": "No-spend-first Cloud TPU runbook",
-      "summary": "A cautious TPU setup path that keeps VM creation paused until TRC confirmation and starts with a smoke run judged on safety, utility, and completeness.",
-      "status": "ready_waiting_for_trc_confirmation",
-      "source_commit": "59d581d",
+      "title": "Grant-safe Cloud TPU runbook",
+      "summary": "A tested TPU setup path for approved zones, direct TPU VMs, OpenAI-compatible serving, smoke and full-suite runs, artifact copy-back, and explicit delete-plus-verify shutdown discipline.",
+      "status": "published",
+      "source_commit": "1ab0b14",
       "primary_path": "docs/runbooks/cloud-tpu-first-run.md",
       "runbook_path": "docs/runbooks/cloud-tpu-first-run.md",
-      "reusable_by_without_accelerator": "People without TPU access can still reproduce the local scorer path and inspect how accelerator-backed runs will be manifested."
+      "reusable_by_without_accelerator": "People without TPU access can still reproduce the local scorer path and inspect the exact TPU provisioning and artifact protocol used for the first live run."
     }
   ]
 }
