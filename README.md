@@ -67,6 +67,8 @@ agent-bench run-ollama-agent scenarios outputs/llm-defense-sweep --model qwen2.5
 
 The April 2026 defense sweep is in `docs/reports/2026-04-ollama-defense-sweep.md`.
 
+The first local cross-model comparison, including Mac mini `qwen2.5:14b` and `qwen2.5-coder:14b` runs, is in `docs/reports/2026-04-local-cross-model-baselines.md`.
+
 To reproduce the first deterministic policy-agent baseline:
 
 ```powershell
