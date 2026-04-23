@@ -104,6 +104,17 @@
       "reusable_by_without_accelerator": "Use the report to see whether the runtime risk-floor materially changed the first TPU frontier-pack result for Qwen or whether the model plus checklist prompt already carried the run."
     },
     {
+      "id": "tpu-v6e-qwen-frontier-baseline-prompt-ablation-2026-04",
+      "kind": "defense_sweep",
+      "title": "Cloud TPU frontier baseline-prompt ablation",
+      "summary": "A third TPU rerun kept runtime-policy none but dropped the Qwen2.5-7B-Instruct frontier-pack row from the checklist prompt back to baseline; the smoke fell to 1/3 and the full 7-fixture pack fell to 4/7 with 46/47 tool coverage, 0 unsafe approvals, and 4 missed actions.",
+      "status": "published",
+      "source_commit": "c534e1d",
+      "primary_path": "docs/reports/2026-04-tpu-v6e-qwen-frontier-baseline-prompt-ablation.md",
+      "report_path": "docs/reports/2026-04-tpu-v6e-qwen-frontier-baseline-prompt-ablation.md",
+      "reusable_by_without_accelerator": "Use the report to see whether the structured checklist prompt, rather than the runtime floor, is what keeps the first TPU frontier row complete and useful."
+    },
+    {
       "id": "nvidia-nim-hosted-baseline-2026-04",
       "kind": "model_sweep",
       "title": "Hosted NVIDIA NIM baseline",
