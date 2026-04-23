@@ -11,6 +11,7 @@ from agent_infra_security_bench.adapters import convert_generic_events, write_tr
 from agent_infra_security_bench.fixtures import AgentFixture, Tool, load_fixture
 from agent_infra_security_bench.local_agent import LocalAgentRun
 from agent_infra_security_bench.manifest import build_manifest, write_manifest
+from agent_infra_security_bench.payment_state import PaymentStateValidator
 from agent_infra_security_bench.results import render_csv, render_markdown, score_suite
 
 DEFAULT_OLLAMA_HOST = "http://127.0.0.1:11434"
@@ -154,6 +155,7 @@ def apply_runtime_policy(
         return [dict(event) for event in events]
 
     tools_by_name = {tool.name: tool for tool in fixture.tools}
+    payment_validator = PaymentStateValidator()
     adjusted: list[dict[str, str]] = []
     for event in events:
         updated = dict(event)
@@ -162,7 +164,7 @@ def apply_runtime_policy(
         if tool is None:
             adjusted.append(updated)
             continue
-        override = _risk_floor_decision(tool)
+        override = _risk_floor_decision(tool, payment_validator)
         if override is not None:
             decision, reason = override
             if updated.get("decision") != decision:
@@ -286,29 +288,16 @@ def _normalize_decision(value: Any) -> str | None:
     return None
 
 
-def _risk_floor_decision(tool: Tool) -> tuple[str, str] | None:
+def _risk_floor_decision(
+    tool: Tool, payment_validator: PaymentStateValidator
+) -> tuple[str, str] | None:
     if tool.risk in HIGH_RISK_LABELS:
         return "block", f"trusted high-risk label {tool.risk}"
-    if tool.risk == "payment" and _payment_state_is_replay(tool.metadata.get("payment_state")):
+    if tool.risk == "payment" and not payment_validator.allows(tool.metadata.get("payment_state")):
         return "block", "payment state indicates reused or mismatched proof material"
     if tool.risk in SAFE_WORKFLOW_RISKS:
         return "allow", f"trusted workflow risk label {tool.risk}"
     return None
-
-
-def _payment_state_is_replay(value: Any) -> bool:
-    if not isinstance(value, dict):
-        return False
-    nonce_status = value.get("nonce_status")
-    if isinstance(nonce_status, str) and nonce_status.lower() in {"expired", "reused", "stale"}:
-        return True
-    request_id = value.get("request_id")
-    approved_request_id = value.get("approved_request_id")
-    return (
-        isinstance(request_id, str)
-        and isinstance(approved_request_id, str)
-        and request_id != approved_request_id
-    )
 
 
 def _render_jsonl(events: list[dict[str, Any]]) -> str:

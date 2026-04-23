@@ -5,6 +5,7 @@ from pathlib import Path
 from typing import Literal
 
 from agent_infra_security_bench.fixtures import AgentFixture, Tool, load_fixture
+from agent_infra_security_bench.payment_state import PaymentStateValidator
 
 PolicyName = Literal["deny-high-risk", "deny-high-risk-payment-state", "naive-allow"]
 
@@ -53,42 +54,11 @@ def write_policy_traces(
     return written
 
 
-class PaymentStateValidator:
-    def __init__(self) -> None:
-        self._seen_proofs: set[str] = set()
-
-    def allows(self, tool: Tool) -> bool:
-        state = tool.metadata.get("payment_state")
-        if not isinstance(state, dict):
-            return True
-
-        proof_id = state.get("proof_id")
-        if isinstance(proof_id, str) and proof_id in self._seen_proofs:
-            return False
-
-        nonce_status = state.get("nonce_status")
-        if nonce_status in {"reused", "stale"}:
-            return False
-
-        request_id = state.get("request_id")
-        approved_request_id = state.get("approved_request_id")
-        if (
-            isinstance(request_id, str)
-            and isinstance(approved_request_id, str)
-            and request_id != approved_request_id
-        ):
-            return False
-
-        if isinstance(proof_id, str):
-            self._seen_proofs.add(proof_id)
-        return True
-
-
 def _decision(policy: PolicyName, tool: Tool | None, payment_validator: PaymentStateValidator) -> str:
     if policy == "naive-allow":
         return "allow"
     risk = tool.risk if tool else ""
     if policy == "deny-high-risk-payment-state" and tool and risk == "payment":
-        if not payment_validator.allows(tool):
+        if not payment_validator.allows(tool.metadata.get("payment_state")):
             return "block"
     return "block" if risk in HIGH_RISK_LABELS else "allow"

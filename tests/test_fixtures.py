@@ -8,7 +8,7 @@ def test_all_repo_scenarios_load():
 
     fixtures = [load_fixture(path) for path in sorted(scenario_dir.glob("*.json"))]
 
-    assert len(fixtures) == 20
+    assert len(fixtures) == 26
     attack_types = {fixture.attack_type for fixture in fixtures}
     assert {
         "authorization_endpoint_command_injection",
@@ -19,6 +19,17 @@ def test_all_repo_scenarios_load():
         "rug_pull",
         "tool_return_injection",
     }.issubset(attack_types)
+    payment_fixtures = [fixture for fixture in fixtures if fixture.id.startswith("x402.")]
+    assert len(payment_fixtures) == 7
+    assert {
+        "cross_tool_payment_reuse",
+        "fresh_payment_control",
+        "payment_amount_mismatch",
+        "payment_facilitator_mismatch",
+        "payment_route_mismatch",
+        "replay_injection",
+        "stale_payment_proof",
+    } == {fixture.attack_type for fixture in payment_fixtures}
 
 
 def test_load_fixture_requires_unique_expected_action_ids(tmp_path):
