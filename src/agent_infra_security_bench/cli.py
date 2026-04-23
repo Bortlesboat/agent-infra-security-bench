@@ -27,12 +27,15 @@ from agent_infra_security_bench.failure_analysis import (
 from agent_infra_security_bench.jupiter_guard import JupiterPriceFetchError, write_boundarypay_demo
 from agent_infra_security_bench.local_agent import DEFAULT_LOCAL_AGENT, write_local_agent_run
 from agent_infra_security_bench.llm_agent import (
+    DEFAULT_OPENAI_COMPAT_BASE_URL,
+    DEFAULT_OPENAI_COMPAT_MODEL,
     DEFAULT_OLLAMA_HOST,
     DEFAULT_OLLAMA_MODEL,
     PROMPT_PROFILES,
     RUNTIME_POLICIES,
     DEFAULT_NVIDIA_NIM_BASE_URL,
     DEFAULT_NVIDIA_NIM_MODEL,
+    write_openai_agent_run,
     write_ollama_agent_run,
     write_nvidia_nim_agent_run,
 )
@@ -162,6 +165,23 @@ def main(argv: list[str] | None = None) -> int:
     ollama_parser.add_argument("--prompt-profile", choices=PROMPT_PROFILES, default="baseline")
     ollama_parser.add_argument("--runtime-policy", choices=RUNTIME_POLICIES, default="none")
     ollama_parser.add_argument("--hardware", default="local")
+
+    openai_parser = subparsers.add_parser(
+        "run-openai-agent",
+        help="Run an OpenAI-compatible model agent and adapt raw JSONL events",
+    )
+    openai_parser.add_argument("scenario_dir", type=Path)
+    openai_parser.add_argument("output_dir", type=Path)
+    openai_parser.add_argument("--model", default=DEFAULT_OPENAI_COMPAT_MODEL)
+    openai_parser.add_argument("--base-url", default=DEFAULT_OPENAI_COMPAT_BASE_URL)
+    openai_parser.add_argument("--api-key")
+    openai_parser.add_argument("--api-key-env")
+    openai_parser.add_argument("--env-file", type=Path)
+    openai_parser.add_argument("--timeout", type=float, default=120)
+    openai_parser.add_argument("--scenario-commit", default="unknown")
+    openai_parser.add_argument("--prompt-profile", choices=PROMPT_PROFILES, default="baseline")
+    openai_parser.add_argument("--runtime-policy", choices=RUNTIME_POLICIES, default="none")
+    openai_parser.add_argument("--hardware", default="hosted")
 
     nvidia_parser = subparsers.add_parser(
         "run-nvidia-agent", help="Run a NVIDIA NIM hosted model agent and adapt raw JSONL events"
@@ -358,6 +378,38 @@ def main(argv: list[str] | None = None) -> int:
             args.output_dir,
             model=args.model,
             host=args.host,
+            scenario_commit=args.scenario_commit,
+            prompt_profile=args.prompt_profile,
+            runtime_policy=args.runtime_policy,
+            hardware=args.hardware,
+        )
+        print(
+            json.dumps(
+                {
+                    "agent": run.agent,
+                    "total": run.total,
+                    "passed": run.passed,
+                    "pass_rate": run.pass_rate,
+                    "raw_events": str(run.raw_event_dir),
+                    "traces": str(run.trace_dir),
+                    "results": str(run.results_csv),
+                    "manifest": str(run.manifest_path),
+                },
+                indent=2,
+                sort_keys=True,
+            )
+        )
+        return 0
+    if args.command == "run-openai-agent":
+        run = write_openai_agent_run(
+            args.scenario_dir,
+            args.output_dir,
+            model=args.model,
+            base_url=args.base_url,
+            api_key=args.api_key,
+            api_key_env=args.api_key_env,
+            env_file=args.env_file,
+            timeout=args.timeout,
             scenario_commit=args.scenario_commit,
             prompt_profile=args.prompt_profile,
             runtime_policy=args.runtime_policy,

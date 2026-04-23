@@ -611,6 +611,81 @@ def test_cli_run_nvidia_agent_writes_summary(monkeypatch, tmp_path, capsys):
     assert payload["total"] == 3
 
 
+def test_cli_run_openai_agent_writes_summary(monkeypatch, tmp_path, capsys):
+    def fake_run(
+        scenario_dir,
+        output_dir,
+        *,
+        model,
+        base_url,
+        api_key,
+        api_key_env,
+        env_file,
+        timeout,
+        scenario_commit,
+        prompt_profile,
+        runtime_policy,
+        hardware,
+    ):
+        run_dir = output_dir / "openai-compatible-meta-llama-Llama-3.1-8B-Instruct"
+        assert model == "meta-llama/Llama-3.1-8B-Instruct"
+        assert base_url == "http://127.0.0.1:8000/v1"
+        assert api_key == "local-test-key"
+        assert api_key_env == "TPU_API_KEY"
+        assert env_file == tmp_path / "tpu.env"
+        assert timeout == 15
+        assert prompt_profile == "checklist"
+        assert runtime_policy == "risk-floor"
+        assert hardware == "tpu-v6e"
+        return LocalAgentRun(
+            agent=f"openai-compatible/{model}",
+            raw_event_dir=run_dir / "raw-events",
+            trace_dir=run_dir / "traces",
+            results_markdown=run_dir / "results.md",
+            results_csv=run_dir / "results.csv",
+            manifest_path=run_dir / "manifest.json",
+            total=34,
+            passed=31,
+            pass_rate=0.912,
+        )
+
+    monkeypatch.setattr(cli, "write_openai_agent_run", fake_run, raising=False)
+
+    exit_code = cli.main(
+        [
+            "run-openai-agent",
+            str(tmp_path / "scenarios"),
+            str(tmp_path / "outputs"),
+            "--model",
+            "meta-llama/Llama-3.1-8B-Instruct",
+            "--base-url",
+            "http://127.0.0.1:8000/v1",
+            "--api-key",
+            "local-test-key",
+            "--api-key-env",
+            "TPU_API_KEY",
+            "--env-file",
+            str(tmp_path / "tpu.env"),
+            "--timeout",
+            "15",
+            "--scenario-commit",
+            "abc1234",
+            "--prompt-profile",
+            "checklist",
+            "--runtime-policy",
+            "risk-floor",
+            "--hardware",
+            "tpu-v6e",
+        ]
+    )
+
+    payload = json.loads(capsys.readouterr().out)
+    assert exit_code == 0
+    assert payload["agent"] == "openai-compatible/meta-llama/Llama-3.1-8B-Instruct"
+    assert payload["passed"] == 31
+    assert payload["total"] == 34
+
+
 def test_cli_validate_candidates_reports_candidate_gate_summary(tmp_path, capsys):
     candidate_dir = tmp_path / "candidates"
     candidate_dir.mkdir()

@@ -21,6 +21,8 @@ from agent_infra_security_bench.results import render_csv, render_markdown, scor
 
 DEFAULT_OLLAMA_HOST = "http://127.0.0.1:11434"
 DEFAULT_OLLAMA_MODEL = "qwen2.5:7b"
+DEFAULT_OPENAI_COMPAT_BASE_URL = "http://127.0.0.1:8000/v1"
+DEFAULT_OPENAI_COMPAT_MODEL = "meta-llama/Llama-3.1-8B-Instruct"
 DEFAULT_NVIDIA_NIM_BASE_URL = "https://integrate.api.nvidia.com/v1"
 DEFAULT_NVIDIA_NIM_MODEL = "nvidia/nemotron-mini-4b-instruct"
 PROMPT_PROFILES = ("baseline", "setup-aware", "exhaustive", "checklist")
@@ -167,6 +169,80 @@ class NvidiaNimModelClient(LlmModelClient):
                     time.sleep(self.retry_delay_seconds * attempt)
                     continue
                 raise RuntimeError(f"Could not reach NVIDIA NIM API: {exc}") from exc
+
+        return _extract_chat_completion_text(data)
+
+
+class OpenAICompatibleModelClient(LlmModelClient):
+    provider = "openai-compatible"
+
+    def __init__(
+        self,
+        model: str = DEFAULT_OPENAI_COMPAT_MODEL,
+        *,
+        api_key: str | None = None,
+        api_key_env: str | None = None,
+        base_url: str = DEFAULT_OPENAI_COMPAT_BASE_URL,
+        env_file: str | Path | None = None,
+        prompt_profile: str = "baseline",
+        timeout: float = 120,
+        max_attempts: int = 3,
+        retry_delay_seconds: float = 1.0,
+    ):
+        file_values = _load_simple_env_file(Path(env_file)) if env_file else {}
+        self.model = model
+        self.base_url = base_url.rstrip("/")
+        self.api_key_env = api_key_env
+        self.api_key = api_key or _resolve_optional_env(api_key_env, file_values)
+        self.prompt_profile = _validate_choice(prompt_profile, PROMPT_PROFILES, "prompt profile")
+        self.timeout = timeout
+        self.max_attempts = max(1, max_attempts)
+        self.retry_delay_seconds = max(0.0, retry_delay_seconds)
+
+    def generate_decisions(self, fixture: AgentFixture) -> str:
+        payload = {
+            "model": self.model,
+            "messages": [
+                {
+                    "role": "user",
+                    "content": render_decision_prompt(fixture, prompt_profile=self.prompt_profile),
+                }
+            ],
+            "temperature": 0,
+            "max_tokens": 800,
+            "stream": False,
+        }
+        headers = {
+            "Content-Type": "application/json",
+            "Accept": "application/json",
+            "User-Agent": "BoundaryBench-OpenAI-Compatible/2026-04-23",
+        }
+        if self.api_key:
+            headers["Authorization"] = f"Bearer {self.api_key}"
+        req = request.Request(
+            f"{self.base_url}/chat/completions",
+            data=json.dumps(payload).encode("utf-8"),
+            headers=headers,
+            method="POST",
+        )
+        for attempt in range(1, self.max_attempts + 1):
+            try:
+                with request.urlopen(req, timeout=self.timeout) as response:
+                    data = json.loads(response.read().decode("utf-8"))
+                break
+            except urllib.error.HTTPError as exc:
+                body = exc.read().decode("utf-8", errors="replace")
+                if attempt < self.max_attempts and _should_retry_nvidia_http_status(exc.code):
+                    time.sleep(self.retry_delay_seconds * attempt)
+                    continue
+                raise RuntimeError(
+                    f"HTTP {exc.code} from OpenAI-compatible API: {body[:1000]}"
+                ) from exc
+            except urllib.error.URLError as exc:
+                if attempt < self.max_attempts:
+                    time.sleep(self.retry_delay_seconds * attempt)
+                    continue
+                raise RuntimeError(f"Could not reach OpenAI-compatible API: {exc}") from exc
 
         return _extract_chat_completion_text(data)
 
@@ -397,6 +473,40 @@ def write_nvidia_nim_agent_run(
     )
 
 
+def write_openai_agent_run(
+    scenario_dir: str | Path,
+    output_dir: str | Path,
+    *,
+    model: str = DEFAULT_OPENAI_COMPAT_MODEL,
+    api_key: str | None = None,
+    api_key_env: str | None = None,
+    base_url: str = DEFAULT_OPENAI_COMPAT_BASE_URL,
+    env_file: str | Path | None = None,
+    timeout: float = 120,
+    scenario_commit: str = "unknown",
+    prompt_profile: str = "baseline",
+    runtime_policy: str = "none",
+    hardware: str = "hosted",
+) -> LocalAgentRun:
+    return write_llm_agent_run(
+        scenario_dir,
+        output_dir,
+        client=OpenAICompatibleModelClient(
+            model=model,
+            api_key=api_key,
+            api_key_env=api_key_env,
+            base_url=base_url,
+            env_file=env_file,
+            timeout=timeout,
+            prompt_profile=prompt_profile,
+        ),
+        scenario_commit=scenario_commit,
+        prompt_profile=prompt_profile,
+        runtime_policy=runtime_policy,
+        hardware=hardware,
+    )
+
+
 def _tool_payload(tool: Tool) -> dict[str, Any]:
     payload: dict[str, Any] = {"name": tool.name, "risk": tool.risk}
     payload.update(tool.metadata)
@@ -449,6 +559,12 @@ def _load_simple_env_file(path: Path) -> dict[str, str]:
             value = value[1:-1]
         values[key] = value
     return values
+
+
+def _resolve_optional_env(key: str | None, file_values: dict[str, str]) -> str | None:
+    if not key:
+        return None
+    return os.environ.get(key) or file_values.get(key)
 
 
 def _should_retry_nvidia_http_status(status_code: int) -> bool:

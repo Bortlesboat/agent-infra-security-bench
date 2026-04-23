@@ -4,7 +4,7 @@ Date: 2026-04-23
 
 ## Stated Goal
 
-Use the newly granted 30-day Cloud TPU window for project `gmail-claude-485913` to publish the first strong TPU-backed BoundaryBench evidence, then use the remaining window to push the benchmark into a more frontier-style omission and state-pressure regime.
+Use the newly granted 30-day Cloud TPU window for the grant-approved Google Cloud project to publish the first strong TPU-backed BoundaryBench evidence, then use the remaining window to push the benchmark into a more frontier-style omission and state-pressure regime.
 
 This sprint should produce public, reusable documentation and benchmark artifacts on GitHub, not just a private compute experiment.
 
@@ -81,10 +81,10 @@ The project should never pause TPU usage waiting for a perfect frontier pack des
 
 ### Preferred TPU Shape
 
-- project: `gmail-claude-485913`
+- project: keep the literal project ID local and out of the public repo
 - primary zone: `us-east1-d`
 - primary accelerator: `spot v6e-8`
-- fallback accelerator: `spot v5e-8`
+- fallback accelerator: TPU `v5e` in `us-central1-a` using the live `gcloud` accelerator name `v5litepod-8`
 - fallback zone: `us-central1-a`
 
 Do not start with `v4` for serving. Even though quota exists, `v5e/v6e` is the correct inference lane for this benchmark.

@@ -5,10 +5,12 @@ import urllib.error
 from agent_infra_security_bench.llm_agent import (
     LlmModelClient,
     NvidiaNimModelClient,
+    OpenAICompatibleModelClient,
     apply_runtime_policy,
     parse_model_decisions,
     render_decision_prompt,
     write_llm_agent_run,
+    write_openai_agent_run,
 )
 from agent_infra_security_bench.results import score_suite
 
@@ -723,3 +725,311 @@ def test_nvidia_nim_client_retries_transient_gateway_errors(tmp_path, monkeypatc
 
     assert attempts["count"] == 2
     assert json.loads(response)["decisions"][0]["tool"] == "repo.read_public_issue"
+
+
+def test_openai_compatible_client_calls_chat_completions(tmp_path, monkeypatch):
+    fixture_path = tmp_path / "fixture.json"
+    _write_fixture(fixture_path)
+    from agent_infra_security_bench.fixtures import load_fixture
+
+    fixture = load_fixture(fixture_path)
+    captured = {}
+
+    class FakeResponse:
+        def __enter__(self):
+            return self
+
+        def __exit__(self, exc_type, exc, traceback):
+            return False
+
+        def read(self):
+            return json.dumps(
+                {
+                    "choices": [
+                        {
+                            "message": {
+                                "content": json.dumps(
+                                    {
+                                        "decisions": [
+                                            {
+                                                "tool": "repo.read_public_issue",
+                                                "decision": "allow",
+                                                "reason": "public read",
+                                            }
+                                        ]
+                                    }
+                                )
+                            }
+                        }
+                    ]
+                }
+            ).encode("utf-8")
+
+    def fake_urlopen(request, timeout):
+        captured["url"] = request.full_url
+        captured["timeout"] = timeout
+        captured["headers"] = dict(request.headers)
+        captured["payload"] = json.loads(request.data.decode("utf-8"))
+        return FakeResponse()
+
+    monkeypatch.setattr("agent_infra_security_bench.llm_agent.request.urlopen", fake_urlopen)
+
+    client = OpenAICompatibleModelClient(
+        model="meta-llama/Llama-3.1-8B-Instruct",
+        base_url="http://127.0.0.1:8000/v1",
+        api_key="local-test-key",
+    )
+    response = client.generate_decisions(fixture)
+
+    assert client.agent == "openai-compatible/meta-llama/Llama-3.1-8B-Instruct"
+    assert captured["url"] == "http://127.0.0.1:8000/v1/chat/completions"
+    assert captured["timeout"] == 120
+    assert captured["headers"]["Authorization"] == "Bearer local-test-key"
+    assert captured["payload"]["model"] == "meta-llama/Llama-3.1-8B-Instruct"
+    assert captured["payload"]["stream"] is False
+    assert "Fixture:" in captured["payload"]["messages"][0]["content"]
+    assert json.loads(response)["decisions"][0]["tool"] == "repo.read_public_issue"
+
+
+def test_openai_compatible_client_can_skip_auth_header_for_local_server(tmp_path, monkeypatch):
+    fixture_path = tmp_path / "fixture.json"
+    _write_fixture(fixture_path)
+    from agent_infra_security_bench.fixtures import load_fixture
+
+    fixture = load_fixture(fixture_path)
+    captured = {}
+
+    class FakeResponse:
+        def __enter__(self):
+            return self
+
+        def __exit__(self, exc_type, exc, traceback):
+            return False
+
+        def read(self):
+            return json.dumps(
+                {
+                    "choices": [
+                        {
+                            "message": {
+                                "content": json.dumps(
+                                    {
+                                        "decisions": [
+                                            {
+                                                "tool": "repo.read_public_issue",
+                                                "decision": "allow",
+                                                "reason": "public read",
+                                            }
+                                        ]
+                                    }
+                                )
+                            }
+                        }
+                    ]
+                }
+            ).encode("utf-8")
+
+    def fake_urlopen(request, timeout):
+        captured["headers"] = dict(request.headers)
+        return FakeResponse()
+
+    monkeypatch.setattr("agent_infra_security_bench.llm_agent.request.urlopen", fake_urlopen)
+
+    client = OpenAICompatibleModelClient(
+        model="meta-llama/Llama-3.1-8B-Instruct",
+        base_url="http://127.0.0.1:8000/v1",
+        api_key=None,
+    )
+    client.generate_decisions(fixture)
+
+    assert "Authorization" not in captured["headers"]
+
+
+def test_openai_compatible_client_loads_api_key_from_env_file(tmp_path, monkeypatch):
+    fixture_path = tmp_path / "fixture.json"
+    _write_fixture(fixture_path)
+    from agent_infra_security_bench.fixtures import load_fixture
+
+    fixture = load_fixture(fixture_path)
+    env_file = tmp_path / "openai-compatible.env"
+    env_file.write_text("TPU_API_KEY=local-env-key\n", encoding="utf-8")
+    captured = {}
+
+    class FakeResponse:
+        def __enter__(self):
+            return self
+
+        def __exit__(self, exc_type, exc, traceback):
+            return False
+
+        def read(self):
+            return json.dumps(
+                {
+                    "choices": [
+                        {
+                            "message": {
+                                "content": json.dumps(
+                                    {
+                                        "decisions": [
+                                            {
+                                                "tool": "repo.read_public_issue",
+                                                "decision": "allow",
+                                                "reason": "public read",
+                                            }
+                                        ]
+                                    }
+                                )
+                            }
+                        }
+                    ]
+                }
+            ).encode("utf-8")
+
+    def fake_urlopen(request, timeout):
+        captured["headers"] = dict(request.headers)
+        return FakeResponse()
+
+    monkeypatch.delenv("TPU_API_KEY", raising=False)
+    monkeypatch.setattr("agent_infra_security_bench.llm_agent.request.urlopen", fake_urlopen)
+
+    client = OpenAICompatibleModelClient(
+        model="meta-llama/Llama-3.1-8B-Instruct",
+        base_url="http://127.0.0.1:8000/v1",
+        env_file=env_file,
+        api_key_env="TPU_API_KEY",
+    )
+    client.generate_decisions(fixture)
+
+    assert captured["headers"]["Authorization"] == "Bearer local-env-key"
+
+
+def test_openai_compatible_client_retries_transient_gateway_errors(tmp_path, monkeypatch):
+    fixture_path = tmp_path / "fixture.json"
+    _write_fixture(fixture_path)
+    from agent_infra_security_bench.fixtures import load_fixture
+
+    fixture = load_fixture(fixture_path)
+    attempts = {"count": 0}
+
+    class FakeResponse:
+        def __enter__(self):
+            return self
+
+        def __exit__(self, exc_type, exc, traceback):
+            return False
+
+        def read(self):
+            return json.dumps(
+                {
+                    "choices": [
+                        {
+                            "message": {
+                                "content": json.dumps(
+                                    {
+                                        "decisions": [
+                                            {
+                                                "tool": "repo.read_public_issue",
+                                                "decision": "allow",
+                                                "reason": "public read",
+                                            }
+                                        ]
+                                    }
+                                )
+                            }
+                        }
+                    ]
+                }
+            ).encode("utf-8")
+
+    def fake_urlopen(request, timeout):
+        attempts["count"] += 1
+        if attempts["count"] == 1:
+            raise urllib.error.HTTPError(
+                request.full_url,
+                503,
+                "Service Unavailable",
+                hdrs=None,
+                fp=io.BytesIO(b'{"error":"temporary"}'),
+            )
+        return FakeResponse()
+
+    monkeypatch.setattr("agent_infra_security_bench.llm_agent.request.urlopen", fake_urlopen)
+    monkeypatch.setattr("agent_infra_security_bench.llm_agent.time.sleep", lambda _: None)
+
+    client = OpenAICompatibleModelClient(
+        model="meta-llama/Llama-3.1-8B-Instruct",
+        base_url="http://127.0.0.1:8000/v1",
+        api_key="local-test-key",
+    )
+    response = client.generate_decisions(fixture)
+
+    assert attempts["count"] == 2
+    assert json.loads(response)["decisions"][0]["tool"] == "repo.read_public_issue"
+
+
+def test_write_openai_agent_run_uses_generic_client(tmp_path, monkeypatch):
+    scenario_dir = tmp_path / "scenarios"
+    output_dir = tmp_path / "openai-agent"
+    scenario_dir.mkdir()
+    _write_fixture(scenario_dir / "fixture.json")
+
+    class FakeResponse:
+        def __enter__(self):
+            return self
+
+        def __exit__(self, exc_type, exc, traceback):
+            return False
+
+        def read(self):
+            return json.dumps(
+                {
+                    "choices": [
+                        {
+                            "message": {
+                                "content": json.dumps(
+                                    {
+                                        "decisions": [
+                                            {
+                                                "tool": "repo.read_public_issue",
+                                                "decision": "allow",
+                                                "reason": "public read",
+                                            },
+                                            {
+                                                "tool": "repo.private_export",
+                                                "decision": "block",
+                                                "reason": "private export",
+                                            },
+                                        ]
+                                    }
+                                )
+                            }
+                        }
+                    ]
+                }
+            ).encode("utf-8")
+
+    monkeypatch.setattr(
+        "agent_infra_security_bench.llm_agent.request.urlopen",
+        lambda request, timeout: FakeResponse(),
+    )
+
+    run = write_openai_agent_run(
+        scenario_dir,
+        output_dir,
+        model="meta-llama/Llama-3.1-8B-Instruct",
+        base_url="http://127.0.0.1:8000/v1",
+        api_key="local-test-key",
+        scenario_commit="abc1234",
+        hardware="tpu-v6e",
+    )
+
+    summary = score_suite(scenario_dir, run.trace_dir)
+
+    assert run.agent == "openai-compatible/meta-llama/Llama-3.1-8B-Instruct"
+    assert summary.total == 1
+    assert summary.passed == 1
+    manifest = json.loads(run.manifest_path.read_text())
+    assert manifest["hardware"] == "tpu-v6e"
+    assert manifest["coverage_path"] == str(
+        output_dir / "openai-compatible-meta-llama-Llama-3.1-8B-Instruct" / "coverage.json"
+    )
