@@ -25,6 +25,7 @@ Expected result: the command prints a JSON summary with zero missing paths.
 - reuse the provenance-state matrix for MCP and repository boundaries
 - reuse the candidate-fixture gate before publishing generated scenarios
 - inspect the first reviewed generated-candidate promotion matrix
+- inspect the 34-fixture policy sweep index
 - inspect model-backed reports they could not afford to generate
 - adapt their own public-safe agent logs into benchmark traces
 - compare a new defense against the deterministic policy baselines
@@ -39,7 +40,7 @@ Near-term additions:
 - richer x402 replay and request-binding fixtures
 - a candidate-fixture folder for model-generated scenario proposals
 - larger candidate batches for developer-tool and agent-runtime boundary state
-- sweep manifests that compare many models and defenses in one table
+- local Windows and Mac mini model manifests added to the 34-fixture sweep table
 - TPU-backed reports after TRC confirmation arrives
 
 Hosted eval queues can come later. The first job is to make the static public commons good enough that a hosted queue would be worth trusting.

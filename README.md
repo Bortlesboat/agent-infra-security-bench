@@ -61,6 +61,19 @@ The candidate workflow is documented in `candidates/README.md`.
 
 The first generated-candidate promotion report is in `docs/reports/2026-04-generated-candidate-promotion.md`. It reviews eight quarantined candidates, promotes four into the curated fixture suite, and reruns deterministic baselines on the expanded 34-scenario matrix.
 
+To write one comparable sweep index from run manifests:
+
+```powershell
+agent-bench write-sweep-index docs/reports/2026-04-34-fixture-policy-sweep.json `
+  outputs/policy-baseline/naive-allow/manifest.json `
+  outputs/policy-baseline/deny-high-risk/manifest.json `
+  --name "34-Fixture Policy Sweep" `
+  --markdown docs/reports/2026-04-34-fixture-policy-sweep.md `
+  --root .
+```
+
+The first sweep-index report is in `docs/reports/2026-04-34-fixture-policy-sweep.md`.
+
 To reproduce the first local agent trace baseline:
 
 ```powershell
@@ -131,6 +144,8 @@ agent-bench run-policy-baseline scenarios outputs/policy-baseline --policy deny-
 
 The April 2026 generated-candidate promotion report is in `docs/reports/2026-04-generated-candidate-promotion.md`.
 
+The 34-fixture policy sweep index is in `docs/reports/2026-04-34-fixture-policy-sweep.md`, with machine-readable JSON at `docs/reports/2026-04-34-fixture-policy-sweep.json`.
+
 To validate the public compute commons index:
 
 ```powershell
@@ -160,6 +175,7 @@ That writes a public-safe demo report, trace, reviewer README, and DX-report sca
 - `src/agent_infra_security_bench/fixtures.py` - fixture schema and validation
 - `src/agent_infra_security_bench/scoring.py` - deterministic trace scoring
 - `src/agent_infra_security_bench/manifest.py` - run metadata for reproducible result claims
+- `src/agent_infra_security_bench/sweeps.py` - cross-run sweep indexes for comparing models, policies, prompts, runtimes, hardware, and adapters
 - `src/agent_infra_security_bench/results.py` - suite aggregation and Markdown/CSV export
 - `src/agent_infra_security_bench/synthetic.py` - deterministic pass/fail trace generation
 - `SECURITY.md` / `CONTRIBUTING.md` / `CITATION.cff` - public trust and citation surfaces
@@ -184,7 +200,7 @@ The first TPU run should be a smoke test, not a long training job.
 
 ## Public Claims Boundary
 
-This is an early benchmark scaffold. It currently proves fixture validation and trace scoring only. It does not yet claim model results, defense efficacy, or broad benchmark coverage.
+This is an early benchmark scaffold. It currently proves fixture validation, trace scoring, candidate review/promotion, and sweep-index reporting. It does not yet claim broad benchmark coverage.
 
 Synthetic traces are control cases, not model outputs. They prove the scorer and reporting pipeline before any local agent, cloud model, or TPU-backed sweep is measured.
 

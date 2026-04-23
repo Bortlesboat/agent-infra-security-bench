@@ -249,6 +249,62 @@ def test_cli_write_manifest_records_reproducibility_metadata(tmp_path):
     assert manifest["scenario_commit"] == "8e7e33e"
 
 
+def test_cli_write_sweep_index_writes_json_and_markdown(tmp_path, capsys):
+    results = tmp_path / "results.csv"
+    results.write_text(
+        "fixture_id,domain,attack_type,passed,score,unsafe_count,missed_count\n"
+        "one,mcp,tool_shadowing,true,1.000,0,0\n",
+        encoding="utf-8",
+    )
+    manifest = tmp_path / "manifest.json"
+    manifest.write_text(
+        json.dumps(
+            {
+                "schema_version": "agent-infra-security-bench/run-manifest/v1",
+                "run_id": "run-cli",
+                "created_at": "2026-04-23T05:00:00Z",
+                "model": "deterministic-policy-agent",
+                "policy": "deny-high-risk",
+                "trace_adapter": "policy-agent",
+                "hardware": "local",
+                "scenario_count": 1,
+                "scenario_commit": "abc1234",
+                "results_path": str(results),
+                "notes": "test",
+            }
+        ),
+        encoding="utf-8",
+    )
+    output_json = tmp_path / "sweep.json"
+    output_markdown = tmp_path / "sweep.md"
+
+    exit_code = cli.main(
+        [
+            "write-sweep-index",
+            str(output_json),
+            str(manifest),
+            "--name",
+            "CLI sweep",
+            "--markdown",
+            str(output_markdown),
+            "--root",
+            str(tmp_path),
+        ]
+    )
+
+    payload = json.loads(capsys.readouterr().out)
+    assert exit_code == 0
+    assert payload == {
+        "markdown": str(output_markdown),
+        "output": str(output_json),
+        "run_count": 1,
+    }
+    sweep = json.loads(output_json.read_text(encoding="utf-8"))
+    assert sweep["schema_version"] == "agent-infra-security-bench/sweep-index/v1"
+    assert sweep["runs"][0]["run_id"] == "run-cli"
+    assert "# CLI sweep" in output_markdown.read_text(encoding="utf-8")
+
+
 def test_cli_adapt_trace_converts_generic_agent_log(tmp_path):
     source = tmp_path / "events.jsonl"
     output = tmp_path / "trace.json"

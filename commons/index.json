@@ -37,6 +37,18 @@
       "reusable_by_without_accelerator": "Use the report to see how generated boundary ideas were selected, deferred, promoted, and baseline-scored without needing TPU access."
     },
     {
+      "id": "34-fixture-policy-sweep-2026-04",
+      "kind": "sweep_index",
+      "title": "34-fixture policy sweep index",
+      "summary": "A machine-readable cross-run index and Markdown table compare deterministic policy baselines on the 34-fixture suite.",
+      "status": "published",
+      "source_commit": "ed092d5",
+      "primary_path": "docs/reports/2026-04-34-fixture-policy-sweep.md",
+      "report_path": "docs/reports/2026-04-34-fixture-policy-sweep.md",
+      "json_path": "docs/reports/2026-04-34-fixture-policy-sweep.json",
+      "reusable_by_without_accelerator": "Use the sweep index format to compare local, Mac mini, or TPU-backed runs against the same deterministic baseline ladder."
+    },
+    {
       "id": "provenance-state-matrix-2026-04",
       "kind": "baseline_report",
       "title": "MCP and repository provenance-state matrix",

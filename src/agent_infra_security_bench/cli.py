@@ -26,6 +26,11 @@ from agent_infra_security_bench.manifest import build_manifest, write_manifest
 from agent_infra_security_bench.policy_agent import available_policies, write_policy_traces
 from agent_infra_security_bench.results import render_csv, render_markdown, score_suite
 from agent_infra_security_bench.scoring import score_trace
+from agent_infra_security_bench.sweeps import (
+    build_sweep_index,
+    render_sweep_markdown,
+    write_sweep_index,
+)
 from agent_infra_security_bench.synthetic import write_synthetic_traces
 
 
@@ -65,6 +70,15 @@ def main(argv: list[str] | None = None) -> int:
     manifest_parser.add_argument("--scenario-commit", default="unknown")
     manifest_parser.add_argument("--results")
     manifest_parser.add_argument("--notes")
+
+    sweep_parser = subparsers.add_parser(
+        "write-sweep-index", help="Write a cross-run sweep index from run manifests"
+    )
+    sweep_parser.add_argument("output", type=Path)
+    sweep_parser.add_argument("manifests", nargs="+", type=Path)
+    sweep_parser.add_argument("--name", default="BoundaryBench Sweep")
+    sweep_parser.add_argument("--markdown", type=Path)
+    sweep_parser.add_argument("--root", type=Path)
 
     commons_parser = subparsers.add_parser(
         "validate-commons", help="Validate the public compute commons index"
@@ -167,6 +181,22 @@ def main(argv: list[str] | None = None) -> int:
         )
         path = write_manifest(args.output, manifest)
         print(json.dumps({"path": str(path), "run_id": manifest.run_id}, indent=2, sort_keys=True))
+        return 0
+    if args.command == "write-sweep-index":
+        sweep = build_sweep_index(args.name, args.manifests, root=args.root)
+        output = write_sweep_index(args.output, sweep)
+        markdown_path = None
+        if args.markdown:
+            args.markdown.parent.mkdir(parents=True, exist_ok=True)
+            args.markdown.write_text(render_sweep_markdown(sweep), encoding="utf-8")
+            markdown_path = str(args.markdown)
+        print(
+            json.dumps(
+                {"output": str(output), "markdown": markdown_path, "run_count": sweep.run_count},
+                indent=2,
+                sort_keys=True,
+            )
+        )
         return 0
     if args.command == "validate-commons":
         index = load_commons_index(args.index, root=args.root)
