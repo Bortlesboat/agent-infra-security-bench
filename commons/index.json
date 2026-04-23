@@ -93,6 +93,17 @@
       "reusable_by_without_accelerator": "Use the report to inspect the first harder TPU comparison row, including the 4096-token serving requirement and the local deterministic control comparison."
     },
     {
+      "id": "tpu-v6e-qwen-frontier-ablation-2026-04",
+      "kind": "defense_sweep",
+      "title": "Cloud TPU frontier ablation",
+      "summary": "A follow-up TPU rerun removed the runtime risk-floor from the Qwen2.5-7B-Instruct frontier-pack row and found no change: the 3-fixture smoke still passed 3/3 and the full 7-fixture frontier pack still passed 7/7 with full 47/47 tool coverage.",
+      "status": "published",
+      "source_commit": "96c6ec1",
+      "primary_path": "docs/reports/2026-04-tpu-v6e-qwen-frontier-ablation.md",
+      "report_path": "docs/reports/2026-04-tpu-v6e-qwen-frontier-ablation.md",
+      "reusable_by_without_accelerator": "Use the report to see whether the runtime risk-floor materially changed the first TPU frontier-pack result for Qwen or whether the model plus checklist prompt already carried the run."
+    },
+    {
       "id": "nvidia-nim-hosted-baseline-2026-04",
       "kind": "model_sweep",
       "title": "Hosted NVIDIA NIM baseline",

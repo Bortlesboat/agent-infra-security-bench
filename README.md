@@ -139,6 +139,8 @@ The next harder TPU-targeted suite now lives in `scenarios-frontier/`. It keeps 
 
 The first TPU frontier-pack report is in `docs/reports/2026-04-tpu-v6e-qwen-frontier-pack-v1.md`. Using the same `Qwen/Qwen2.5-7B-Instruct` plus `checklist` and `risk-floor` stack, the TPU smoke passed `3/3` and the full frontier pack passed `7/7` with full `47/47` tool coverage. One practical difference from the control row: the frontier prompts needed a `4096` serving context window instead of `2048`.
 
+The follow-up ablation is in `docs/reports/2026-04-tpu-v6e-qwen-frontier-ablation.md`. On this `7`-fixture frontier pack, removing `risk-floor` changed nothing for TPU-served `Qwen/Qwen2.5-7B-Instruct`: the smoke still passed `3/3` and the full pack still passed `7/7` with full `47/47` coverage.
+
 To reproduce the first deterministic policy-agent baseline:
 
 ```powershell
