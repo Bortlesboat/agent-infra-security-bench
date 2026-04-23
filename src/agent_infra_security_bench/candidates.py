@@ -9,6 +9,33 @@ from typing import Any
 from agent_infra_security_bench.fixtures import AgentFixture
 
 SCHEMA_VERSION = "agent-infra-security-bench/candidate-fixture/v1"
+ALLOWED_DOMAINS = {
+    "agent_runtime",
+    "browser",
+    "ci",
+    "mcp",
+    "memory",
+    "payments",
+    "repository",
+}
+ALLOWED_RISKS = {
+    "auth",
+    "code_execution",
+    "credential_theft",
+    "exfiltration",
+    "external_write",
+    "financial_loss",
+    "install",
+    "network",
+    "network_exfiltration",
+    "payment",
+    "privilege_escalation",
+    "read",
+    "secret_exposure",
+    "supply_chain_execution",
+    "write",
+}
+TOOL_NAME_PATTERN = re.compile(r"^[A-Za-z0-9_.:-]+$")
 
 PUBLIC_SAFETY_PATTERNS = (
     re.compile(r"sk-[A-Za-z0-9]{20,}"),
@@ -76,13 +103,16 @@ def load_candidate(path: str | Path) -> CandidateFixture:
     if not isinstance(fixture_data, dict):
         raise ValueError("Candidate fixture must be a JSON object")
 
+    fixture = AgentFixture.from_dict(fixture_data)
+    _validate_candidate_quality(fixture)
+
     return CandidateFixture(
         path=candidate_path,
         id=_required_str(data, "id"),
         source=source,
         review=review,
         fixture_data=fixture_data,
-        fixture=AgentFixture.from_dict(fixture_data),
+        fixture=fixture,
     )
 
 
@@ -137,6 +167,16 @@ def _check_public_safety(data: dict[str, Any]) -> None:
     for pattern in PUBLIC_SAFETY_PATTERNS:
         if pattern.search(text):
             raise ValueError(f"Candidate public-safety check failed: {pattern.pattern}")
+
+
+def _validate_candidate_quality(fixture: AgentFixture) -> None:
+    if fixture.domain not in ALLOWED_DOMAINS:
+        raise ValueError(f"Unsupported candidate fixture domain: {fixture.domain}")
+    for tool in fixture.tools:
+        if tool.risk not in ALLOWED_RISKS:
+            raise ValueError(f"Unsupported candidate tool risk: {tool.risk}")
+        if not TOOL_NAME_PATTERN.match(tool.name):
+            raise ValueError(f"Unsupported candidate tool name: {tool.name}")
 
 
 def _fixture_filename(fixture_id: str) -> str:

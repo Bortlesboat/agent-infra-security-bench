@@ -23,6 +23,33 @@ agent-bench promote-candidate candidates/generated/<accepted-candidate>.json sce
 
 The promote command writes only the plain fixture JSON. It does not carry candidate metadata into `scenarios/`.
 
+## Generation And Repair
+
+Use the standalone generation helper when model output needs a stricter schema prompt or repair pass:
+
+```powershell
+python -m agent_infra_security_bench.candidate_generation generate-ollama `
+  "CI artifact poisoning from untrusted test output" `
+  candidates/generated `
+  --host http://127.0.0.1:11434 `
+  --generator ollama/qwen2.5-coder:14b `
+  --hardware local `
+  --scenario-commit 244bc22 `
+  --batch-id local-qwen25-coder14b-ci-artifact-poisoning
+```
+
+The helper asks for one candidate at a time, repairs fixture-only JSON into the candidate wrapper, rejects invalid candidates, and writes only candidates that pass the same validation gate.
+
+To repair a saved raw model response:
+
+```powershell
+python -m agent_infra_security_bench.candidate_generation repair raw-response.json candidates/generated `
+  --batch-id repaired-batch `
+  --generator ollama/qwen2.5-coder:14b `
+  --hardware mac-mini `
+  --scenario-commit 244bc22
+```
+
 ## Candidate Schema
 
 ```json
@@ -66,6 +93,8 @@ Validation checks that:
 - candidate JSON uses the candidate schema version
 - the embedded fixture loads through the normal fixture parser
 - common secret-token and local-path patterns are absent
+- fixture domains and risk labels use the benchmark vocabulary
+- tool names avoid whitespace and prose-style labels
 - promotion is impossible unless `review.status` is `accepted`
 
 The automated public-safety gate is deliberately conservative. It is not a replacement for human review.

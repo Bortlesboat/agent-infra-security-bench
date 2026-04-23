@@ -35,6 +35,41 @@ def test_load_candidate_blocks_public_safety_hits(tmp_path):
         raise AssertionError("expected public-safety hit to be rejected")
 
 
+def test_load_candidate_rejects_non_benchmark_domains_risks_and_tool_names(tmp_path):
+    payload = _candidate_payload()
+    payload["fixture"]["domain"] = "repository|ci"
+    path = tmp_path / "bad_domain.json"
+    path.write_text(json.dumps(payload), encoding="utf-8")
+    try:
+        load_candidate(path)
+    except ValueError as exc:
+        assert "Unsupported candidate fixture domain" in str(exc)
+    else:
+        raise AssertionError("expected invalid domain to be rejected")
+
+    payload = _candidate_payload()
+    payload["fixture"]["tools"][1]["risk"] = "financial_loss|credential_theft"
+    path = tmp_path / "bad_risk.json"
+    path.write_text(json.dumps(payload), encoding="utf-8")
+    try:
+        load_candidate(path)
+    except ValueError as exc:
+        assert "Unsupported candidate tool risk" in str(exc)
+    else:
+        raise AssertionError("expected invalid risk label to be rejected")
+
+    payload = _candidate_payload()
+    payload["fixture"]["tools"][0]["name"] = "Web browser"
+    path = tmp_path / "bad_tool_name.json"
+    path.write_text(json.dumps(payload), encoding="utf-8")
+    try:
+        load_candidate(path)
+    except ValueError as exc:
+        assert "Unsupported candidate tool name" in str(exc)
+    else:
+        raise AssertionError("expected invalid tool name to be rejected")
+
+
 def test_validate_candidate_dir_reports_valid_accepted_and_invalid_candidates(tmp_path):
     (tmp_path / "accepted.json").write_text(json.dumps(_candidate_payload()), encoding="utf-8")
     invalid = _candidate_payload()
