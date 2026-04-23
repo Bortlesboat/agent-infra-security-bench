@@ -52,9 +52,9 @@
       "id": "34-fixture-cross-machine-model-sweep-2026-04",
       "kind": "model_sweep",
       "title": "34-fixture Windows and Mac mini model sweep",
-      "summary": "A sweep-index report compares deterministic policy baselines against Windows qwen2.5:7b, Mac mini qwen2.5-coder:14b, and Mac mini gemma3:12b model runs, showing Qwen defended recovery to 34/34 and Gemma improving from 26/34 baseline to 31/34 setup-aware and 33/34 exhaustive.",
+      "summary": "A sweep-index report compares deterministic policy baselines against Windows qwen2.5:7b, Mac mini qwen2.5-coder:14b, and Mac mini gemma3:12b model runs, showing Qwen defended recovery to 34/34 and Gemma improving from 26/34 baseline to 31/34 setup-aware, 33/34 exhaustive, and 34/34 checklist coverage.",
       "status": "published",
-      "source_commit": "3602404",
+      "source_commit": "baab3c6",
       "primary_path": "docs/reports/2026-04-34-fixture-cross-machine-model-sweep.md",
       "report_path": "docs/reports/2026-04-34-fixture-cross-machine-model-sweep.md",
       "json_path": "docs/reports/2026-04-34-fixture-cross-machine-model-sweep.json",
@@ -64,9 +64,9 @@
       "id": "nvidia-nim-hosted-baseline-2026-04",
       "kind": "model_sweep",
       "title": "Hosted NVIDIA NIM baseline",
-      "summary": "NVIDIA NIM hosted `nvidia/nemotron-mini-4b-instruct` scored 31/34 on the 34-fixture suite with setup-aware prompting plus the runtime risk floor, with zero explicit unsafe approvals and three missed expected decisions.",
+      "summary": "NVIDIA NIM hosted `nvidia/nemotron-mini-4b-instruct` first scored 31/34 with setup-aware prompting plus the runtime risk floor, then improved to 34/34 with the checklist prompt profile and full 70/70 tool-decision coverage.",
       "status": "published",
-      "source_commit": "1b8a829",
+      "source_commit": "baab3c6",
       "primary_path": "docs/reports/2026-04-nvidia-nim-hosted-baseline.md",
       "report_path": "docs/reports/2026-04-nvidia-nim-hosted-baseline.md",
       "reusable_by_without_accelerator": "Use the report and `run-nvidia-agent` command to compare a hosted OpenAI-compatible provider against local model and deterministic baselines."
@@ -82,6 +82,18 @@
       "report_path": "docs/reports/2026-04-gemma-defended-miss-analysis.md",
       "json_path": "docs/reports/2026-04-gemma-defended-miss-analysis.json",
       "reusable_by_without_accelerator": "Use the report and `agent-bench analyze-failures` command to explain why a model run missed expected actions without rerunning the model."
+    },
+    {
+      "id": "gemma-checklist-coverage-analysis-2026-04",
+      "kind": "coverage_analysis",
+      "title": "Gemma checklist coverage analysis",
+      "summary": "A tool-decision coverage report shows that the Mac mini gemma3:12b checklist run reached 34/34 with zero omitted or duplicate tool decisions across 70 listed tools.",
+      "status": "published",
+      "source_commit": "baab3c6",
+      "primary_path": "docs/reports/2026-04-gemma-checklist-coverage-analysis.md",
+      "report_path": "docs/reports/2026-04-gemma-checklist-coverage-analysis.md",
+      "json_path": "docs/reports/2026-04-gemma-checklist-coverage-analysis.json",
+      "reusable_by_without_accelerator": "Use the report and `agent-bench analyze-coverage` command to measure omitted or duplicated tool decisions without rerunning the model."
     },
     {
       "id": "provenance-state-matrix-2026-04",
