@@ -13,6 +13,7 @@ from agent_infra_security_bench.adapters import (
 from agent_infra_security_bench.candidates import promote_candidate, validate_candidate_dir
 from agent_infra_security_bench.commons import load_commons_index
 from agent_infra_security_bench.fixtures import load_fixture
+from agent_infra_security_bench.jupiter_guard import write_boundarypay_demo
 from agent_infra_security_bench.local_agent import DEFAULT_LOCAL_AGENT, write_local_agent_run
 from agent_infra_security_bench.llm_agent import (
     DEFAULT_OLLAMA_HOST,
@@ -116,6 +117,12 @@ def main(argv: list[str] | None = None) -> int:
     ollama_parser.add_argument("--scenario-commit", default="unknown")
     ollama_parser.add_argument("--prompt-profile", choices=PROMPT_PROFILES, default="baseline")
     ollama_parser.add_argument("--runtime-policy", choices=RUNTIME_POLICIES, default="none")
+
+    boundarypay_parser = subparsers.add_parser(
+        "boundarypay-demo", help="Write BoundaryPay Guard Jupiter/Solana submission artifacts"
+    )
+    boundarypay_parser.add_argument("output_dir", type=Path)
+    boundarypay_parser.add_argument("--mode", choices=["fixture", "live"], default="fixture")
 
     args = parser.parse_args(argv)
     if args.command == "score":
@@ -277,6 +284,10 @@ def main(argv: list[str] | None = None) -> int:
                 sort_keys=True,
             )
         )
+        return 0
+    if args.command == "boundarypay-demo":
+        summary = write_boundarypay_demo(args.output_dir, mode=args.mode)
+        print(json.dumps(summary, indent=2, sort_keys=True))
         return 0
 
     return 1

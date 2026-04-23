@@ -563,3 +563,18 @@ def test_cli_promote_candidate_writes_reviewed_fixture(tmp_path, capsys):
     assert exit_code == 0
     assert payload["fixture_id"] == "mcp.candidate.shadow_origin"
     assert payload["output"] == str(scenario_dir / "mcp_candidate_shadow_origin.json")
+
+
+def test_cli_boundarypay_demo_writes_artifacts(tmp_path, capsys):
+    output_dir = tmp_path / "boundarypay"
+
+    exit_code = cli.main(["boundarypay-demo", str(output_dir), "--mode", "fixture"])
+
+    payload = json.loads(capsys.readouterr().out)
+    assert exit_code == 0
+    assert payload["project"] == "BoundaryPay Guard"
+    assert payload["mode"] == "fixture"
+    assert payload["allowed"] == 1
+    assert payload["blocked"] >= 3
+    assert (output_dir / "boundarypay-report.json").exists()
+    assert (output_dir / "DX-REPORT.md").exists()

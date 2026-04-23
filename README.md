@@ -125,6 +125,14 @@ agent-bench validate-commons commons/index.json --root .
 
 Expected result: the command prints a JSON summary with zero missing paths.
 
+To write the first BoundaryPay Guard submission artifact for Jupiter/Solana-aligned hackathons and bounties:
+
+```powershell
+agent-bench boundarypay-demo outputs/boundarypay-guard --mode fixture
+```
+
+That writes a public-safe demo report, trace, reviewer README, and DX-report scaffold. The demo is documented in `docs/demos/boundarypay-guard/README.md`.
+
 ## Current Contents
 
 - `scenarios/` - 30 public-safe benchmark fixtures
@@ -143,6 +151,7 @@ Expected result: the command prints a JSON summary with zero missing paths.
 - `.github/` - CI plus fixture and results issue templates
 - `docs/research/` - TPU and benchmark landscape notes
 - `docs/roadmap/` - development-first research agenda and milestone plan
+- `docs/demos/` - submission-ready public demos such as BoundaryPay Guard
 - `docs/runbooks/` - first Cloud TPU runbook
 - `docs/grants/` - starter grant proposal language
 - `docs/launch/` and `docs/reports/` - public launch packet and baseline report template
