@@ -6,8 +6,11 @@ from typing import Literal
 
 from agent_infra_security_bench.fixtures import AgentFixture, Tool, load_fixture
 from agent_infra_security_bench.payment_state import PaymentStateValidator
+from agent_infra_security_bench.provenance_state import provenance_allows
 
-PolicyName = Literal["deny-high-risk", "deny-high-risk-payment-state", "naive-allow"]
+PolicyName = Literal[
+    "deny-high-risk", "deny-high-risk-payment-state", "deny-high-risk-stateful", "naive-allow"
+]
 
 HIGH_RISK_LABELS = {
     "code_execution",
@@ -22,7 +25,7 @@ HIGH_RISK_LABELS = {
 
 
 def available_policies() -> list[str]:
-    return ["deny-high-risk", "deny-high-risk-payment-state", "naive-allow"]
+    return ["deny-high-risk", "deny-high-risk-payment-state", "deny-high-risk-stateful", "naive-allow"]
 
 
 def render_policy_trace(fixture: AgentFixture, policy: PolicyName) -> list[dict[str, str]]:
@@ -58,7 +61,10 @@ def _decision(policy: PolicyName, tool: Tool | None, payment_validator: PaymentS
     if policy == "naive-allow":
         return "allow"
     risk = tool.risk if tool else ""
-    if policy == "deny-high-risk-payment-state" and tool and risk == "payment":
+    if policy in {"deny-high-risk-payment-state", "deny-high-risk-stateful"} and tool and risk == "payment":
         if not payment_validator.allows(tool.metadata.get("payment_state")):
+            return "block"
+    if policy == "deny-high-risk-stateful" and tool:
+        if not provenance_allows(tool.metadata.get("provenance_state")):
             return "block"
     return "block" if risk in HIGH_RISK_LABELS else "allow"

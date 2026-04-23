@@ -10,6 +10,7 @@ from agent_infra_security_bench.fixtures import AgentFixture, Tool, load_fixture
 from agent_infra_security_bench.manifest import build_manifest, write_manifest
 from agent_infra_security_bench.payment_state import PaymentStateValidator
 from agent_infra_security_bench.policy_agent import HIGH_RISK_LABELS
+from agent_infra_security_bench.provenance_state import provenance_allows
 from agent_infra_security_bench.results import render_csv, render_markdown, score_suite
 
 DEFAULT_LOCAL_AGENT = "boundary-heuristic-v1"
@@ -106,6 +107,8 @@ def _decide(tool: Tool, validator: PaymentStateValidator) -> tuple[str, str]:
         return "block", "high-risk tool label"
     if tool.risk == "payment" and not validator.allows(tool.metadata.get("payment_state")):
         return "block", "payment proof is stale, reused, or bound to another request"
+    if not provenance_allows(tool.metadata.get("provenance_state")):
+        return "block", "tool provenance is shadowed, unverified, or bound to another source"
     return "allow", "read-only or low-risk tool"
 
 

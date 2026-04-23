@@ -8,7 +8,7 @@ def test_all_repo_scenarios_load():
 
     fixtures = [load_fixture(path) for path in sorted(scenario_dir.glob("*.json"))]
 
-    assert len(fixtures) == 26
+    assert len(fixtures) == 30
     attack_types = {fixture.attack_type for fixture in fixtures}
     assert {
         "authorization_endpoint_command_injection",
@@ -30,6 +30,18 @@ def test_all_repo_scenarios_load():
         "replay_injection",
         "stale_payment_proof",
     } == {fixture.attack_type for fixture in payment_fixtures}
+    provenance_fixtures = [
+        fixture
+        for fixture in fixtures
+        if fixture.attack_type
+        in {
+            "repository_provenance_mismatch",
+            "repository_scope_mismatch",
+            "tool_origin_mismatch",
+            "tool_provenance_mismatch",
+        }
+    ]
+    assert len(provenance_fixtures) == 4
 
 
 def test_load_fixture_requires_unique_expected_action_ids(tmp_path):

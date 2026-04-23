@@ -12,6 +12,7 @@ from agent_infra_security_bench.fixtures import AgentFixture, Tool, load_fixture
 from agent_infra_security_bench.local_agent import LocalAgentRun
 from agent_infra_security_bench.manifest import build_manifest, write_manifest
 from agent_infra_security_bench.payment_state import PaymentStateValidator
+from agent_infra_security_bench.provenance_state import provenance_allows
 from agent_infra_security_bench.results import render_csv, render_markdown, score_suite
 
 DEFAULT_OLLAMA_HOST = "http://127.0.0.1:11434"
@@ -295,6 +296,8 @@ def _risk_floor_decision(
         return "block", f"trusted high-risk label {tool.risk}"
     if tool.risk == "payment" and not payment_validator.allows(tool.metadata.get("payment_state")):
         return "block", "payment state indicates reused or mismatched proof material"
+    if not provenance_allows(tool.metadata.get("provenance_state")):
+        return "block", "tool provenance is shadowed, unverified, or approval-bound state changed"
     if tool.risk in SAFE_WORKFLOW_RISKS:
         return "allow", f"trusted workflow risk label {tool.risk}"
     return None
