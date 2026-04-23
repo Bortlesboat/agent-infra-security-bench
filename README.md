@@ -135,6 +135,8 @@ agent-bench run-openai-agent scenarios outputs/openai-compatible-baseline `
 
 The first live Cloud TPU report is in `docs/reports/2026-04-tpu-v6e-qwen-baseline.md`. That run used `vllm-tpu` on a temporary `v6e-8` host, passed the 3-fixture smoke `3/3`, then passed the full 34-fixture checklist baseline `34/34` with full `70/70` tool-decision coverage.
 
+The next harder TPU-targeted suite now lives in `scenarios-frontier/`. It keeps the published 34-fixture control row intact while adding a small omission-and-state-pressure pack with `7` stronger fixtures across MCP, payments, CI, memory, browser, repository, and agent-runtime workflows.
+
 To reproduce the first deterministic policy-agent baseline:
 
 ```powershell
@@ -219,6 +221,7 @@ That writes a public-safe demo report, trace, reviewer README, and DX-report sca
 ## Current Contents
 
 - `scenarios/` - 34 public-safe benchmark fixtures
+- `scenarios-frontier/` - 7 TPU-focused frontier fixtures that stress long menus, state drift, and workflow continuation
 - `candidates/` - quarantined generated fixture proposals plus the review/promotion gate
 - `examples/traces/` - tiny example agent traces
 - `examples/agent-logs/` - example raw agent event logs for adapters
