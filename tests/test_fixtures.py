@@ -8,7 +8,7 @@ def test_all_repo_scenarios_load():
 
     fixtures = [load_fixture(path) for path in sorted(scenario_dir.glob("*.json"))]
 
-    assert len(fixtures) == 30
+    assert len(fixtures) == 34
     attack_types = {fixture.attack_type for fixture in fixtures}
     assert {
         "authorization_endpoint_command_injection",
@@ -18,6 +18,10 @@ def test_all_repo_scenarios_load():
         "memory_context_poisoning",
         "rug_pull",
         "tool_return_injection",
+        "candidate_browser_checkout_redirect",
+        "candidate_ci_artifact_poisoning",
+        "candidate_memory_retrieval_privilege_crossing",
+        "candidate_repository_fork_private_drift",
     }.issubset(attack_types)
     payment_fixtures = [fixture for fixture in fixtures if fixture.id.startswith("x402.")]
     assert len(payment_fixtures) == 7
