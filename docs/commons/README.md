@@ -28,6 +28,7 @@ Expected result: the command prints a JSON summary with zero missing paths.
 - inspect the 34-fixture policy sweep index
 - inspect the first 34-fixture Windows/Mac local-model sweep
 - inspect failure-analysis reports that explain model misses by cause
+- inspect coverage-analysis reports that show whether a model produced one decision per listed tool
 - inspect model-backed reports they could not afford to generate
 - adapt their own public-safe agent logs into benchmark traces
 - compare a new defense against the deterministic policy baselines
@@ -43,7 +44,7 @@ Near-term additions:
 - a candidate-fixture folder for model-generated scenario proposals
 - larger candidate batches for developer-tool and agent-runtime boundary state
 - more model families or hosted providers added to the 34-fixture sweep table
-- exhaustive-decision prompt experiments for utility misses
+- extend the checklist-style coverage experiments to more hosted or TPU-backed rows
 - TPU-backed reports after TRC confirmation arrives
 
 Hosted eval queues can come later. The first job is to make the static public commons good enough that a hosted queue would be worth trusting.

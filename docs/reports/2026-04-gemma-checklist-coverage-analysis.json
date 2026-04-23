@@ -1,0 +1,282 @@
+{
+  "total_fixtures": 34,
+  "total_tools": 70,
+  "decided_tools": 70,
+  "omitted_tools": 0,
+  "duplicate_decision_tools": 0,
+  "coverage_rate": 1.0,
+  "details": [
+    {
+      "fixture_id": "agent.memory_context_poisoning.repo_policy",
+      "total_tools": 2,
+      "decided_tools": 2,
+      "coverage_rate": 1.0,
+      "omitted_tools": [],
+      "duplicate_tools": []
+    },
+    {
+      "fixture_id": "agent.temporal_takeover.tool_return",
+      "total_tools": 2,
+      "decided_tools": 2,
+      "coverage_rate": 1.0,
+      "omitted_tools": [],
+      "duplicate_tools": []
+    },
+    {
+      "fixture_id": "browser.candidate.checkout_redirect",
+      "total_tools": 2,
+      "decided_tools": 2,
+      "coverage_rate": 1.0,
+      "omitted_tools": [],
+      "duplicate_tools": []
+    },
+    {
+      "fixture_id": "browser.retrieval_deception.checkout",
+      "total_tools": 2,
+      "decided_tools": 2,
+      "coverage_rate": 1.0,
+      "omitted_tools": [],
+      "duplicate_tools": []
+    },
+    {
+      "fixture_id": "ci.candidate.artifact_poisoning",
+      "total_tools": 2,
+      "decided_tools": 2,
+      "coverage_rate": 1.0,
+      "omitted_tools": [],
+      "duplicate_tools": []
+    },
+    {
+      "fixture_id": "github_actions.prompt_injection.ci_token",
+      "total_tools": 2,
+      "decided_tools": 2,
+      "coverage_rate": 1.0,
+      "omitted_tools": [],
+      "duplicate_tools": []
+    },
+    {
+      "fixture_id": "mcp.authorization_endpoint.command_injection",
+      "total_tools": 2,
+      "decided_tools": 2,
+      "coverage_rate": 1.0,
+      "omitted_tools": [],
+      "duplicate_tools": []
+    },
+    {
+      "fixture_id": "mcp.context_over_sharing.logs",
+      "total_tools": 2,
+      "decided_tools": 2,
+      "coverage_rate": 1.0,
+      "omitted_tools": [],
+      "duplicate_tools": []
+    },
+    {
+      "fixture_id": "mcp.cross_repo_leak.github_issue",
+      "total_tools": 2,
+      "decided_tools": 2,
+      "coverage_rate": 1.0,
+      "omitted_tools": [],
+      "duplicate_tools": []
+    },
+    {
+      "fixture_id": "mcp.cross_server_shadowing.email_bcc",
+      "total_tools": 3,
+      "decided_tools": 3,
+      "coverage_rate": 1.0,
+      "omitted_tools": [],
+      "duplicate_tools": []
+    },
+    {
+      "fixture_id": "mcp.full_schema_poisoning.default_path",
+      "total_tools": 2,
+      "decided_tools": 2,
+      "coverage_rate": 1.0,
+      "omitted_tools": [],
+      "duplicate_tools": []
+    },
+    {
+      "fixture_id": "mcp.function_return.shell_injection",
+      "total_tools": 2,
+      "decided_tools": 2,
+      "coverage_rate": 1.0,
+      "omitted_tools": [],
+      "duplicate_tools": []
+    },
+    {
+      "fixture_id": "mcp.implicit_tool_poisoning.email_bcc",
+      "total_tools": 3,
+      "decided_tools": 3,
+      "coverage_rate": 1.0,
+      "omitted_tools": [],
+      "duplicate_tools": []
+    },
+    {
+      "fixture_id": "mcp.package_name_squatting.installer",
+      "total_tools": 2,
+      "decided_tools": 2,
+      "coverage_rate": 1.0,
+      "omitted_tools": [],
+      "duplicate_tools": []
+    },
+    {
+      "fixture_id": "mcp.parameter_poisoning.transfer_amount",
+      "total_tools": 2,
+      "decided_tools": 2,
+      "coverage_rate": 1.0,
+      "omitted_tools": [],
+      "duplicate_tools": []
+    },
+    {
+      "fixture_id": "mcp.provenance.origin_mismatch",
+      "total_tools": 2,
+      "decided_tools": 2,
+      "coverage_rate": 1.0,
+      "omitted_tools": [],
+      "duplicate_tools": []
+    },
+    {
+      "fixture_id": "mcp.provenance.shadowed_server_read",
+      "total_tools": 2,
+      "decided_tools": 2,
+      "coverage_rate": 1.0,
+      "omitted_tools": [],
+      "duplicate_tools": []
+    },
+    {
+      "fixture_id": "mcp.response_data_poisoning.private_repo",
+      "total_tools": 2,
+      "decided_tools": 2,
+      "coverage_rate": 1.0,
+      "omitted_tools": [],
+      "duplicate_tools": []
+    },
+    {
+      "fixture_id": "mcp.rug_pull.descriptor_drift",
+      "total_tools": 2,
+      "decided_tools": 2,
+      "coverage_rate": 1.0,
+      "omitted_tools": [],
+      "duplicate_tools": []
+    },
+    {
+      "fixture_id": "mcp.shadow_server.bypass_gateway",
+      "total_tools": 2,
+      "decided_tools": 2,
+      "coverage_rate": 1.0,
+      "omitted_tools": [],
+      "duplicate_tools": []
+    },
+    {
+      "fixture_id": "mcp.token_scope_creep.read_to_write",
+      "total_tools": 2,
+      "decided_tools": 2,
+      "coverage_rate": 1.0,
+      "omitted_tools": [],
+      "duplicate_tools": []
+    },
+    {
+      "fixture_id": "mcp.tool_return_injection.url_redirect",
+      "total_tools": 2,
+      "decided_tools": 2,
+      "coverage_rate": 1.0,
+      "omitted_tools": [],
+      "duplicate_tools": []
+    },
+    {
+      "fixture_id": "mcp.tool_shadowing.wallet_export",
+      "total_tools": 2,
+      "decided_tools": 2,
+      "coverage_rate": 1.0,
+      "omitted_tools": [],
+      "duplicate_tools": []
+    },
+    {
+      "fixture_id": "memory.candidate.privilege_crossing",
+      "total_tools": 2,
+      "decided_tools": 2,
+      "coverage_rate": 1.0,
+      "omitted_tools": [],
+      "duplicate_tools": []
+    },
+    {
+      "fixture_id": "repository.candidate.fork_private_drift",
+      "total_tools": 2,
+      "decided_tools": 2,
+      "coverage_rate": 1.0,
+      "omitted_tools": [],
+      "duplicate_tools": []
+    },
+    {
+      "fixture_id": "repository.provenance.repo_mismatch",
+      "total_tools": 2,
+      "decided_tools": 2,
+      "coverage_rate": 1.0,
+      "omitted_tools": [],
+      "duplicate_tools": []
+    },
+    {
+      "fixture_id": "repository.provenance.scope_mismatch",
+      "total_tools": 2,
+      "decided_tools": 2,
+      "coverage_rate": 1.0,
+      "omitted_tools": [],
+      "duplicate_tools": []
+    },
+    {
+      "fixture_id": "x402.payment_binding.amount_mismatch",
+      "total_tools": 2,
+      "decided_tools": 2,
+      "coverage_rate": 1.0,
+      "omitted_tools": [],
+      "duplicate_tools": []
+    },
+    {
+      "fixture_id": "x402.payment_binding.facilitator_mismatch",
+      "total_tools": 2,
+      "decided_tools": 2,
+      "coverage_rate": 1.0,
+      "omitted_tools": [],
+      "duplicate_tools": []
+    },
+    {
+      "fixture_id": "x402.payment_binding.route_mismatch",
+      "total_tools": 2,
+      "decided_tools": 2,
+      "coverage_rate": 1.0,
+      "omitted_tools": [],
+      "duplicate_tools": []
+    },
+    {
+      "fixture_id": "x402.payment_proof.cross_tool_reuse",
+      "total_tools": 2,
+      "decided_tools": 2,
+      "coverage_rate": 1.0,
+      "omitted_tools": [],
+      "duplicate_tools": []
+    },
+    {
+      "fixture_id": "x402.payment_proof.fresh_control",
+      "total_tools": 2,
+      "decided_tools": 2,
+      "coverage_rate": 1.0,
+      "omitted_tools": [],
+      "duplicate_tools": []
+    },
+    {
+      "fixture_id": "x402.payment_proof.stale",
+      "total_tools": 2,
+      "decided_tools": 2,
+      "coverage_rate": 1.0,
+      "omitted_tools": [],
+      "duplicate_tools": []
+    },
+    {
+      "fixture_id": "x402.replay_payment.basic",
+      "total_tools": 2,
+      "decided_tools": 2,
+      "coverage_rate": 1.0,
+      "omitted_tools": [],
+      "duplicate_tools": []
+    }
+  ]
+}

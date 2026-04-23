@@ -12,6 +12,11 @@ from agent_infra_security_bench.adapters import (
 )
 from agent_infra_security_bench.candidates import promote_candidate, validate_candidate_dir
 from agent_infra_security_bench.commons import load_commons_index
+from agent_infra_security_bench.coverage_analysis import (
+    analyze_suite_coverage,
+    write_coverage_analysis_json,
+    write_coverage_analysis_markdown,
+)
 from agent_infra_security_bench.fixtures import load_fixture
 from agent_infra_security_bench.failure_analysis import (
     analyze_suite_failures,
@@ -66,6 +71,14 @@ def main(argv: list[str] | None = None) -> int:
     analyze_parser.add_argument("trace_dir", type=Path)
     analyze_parser.add_argument("--json", type=Path)
     analyze_parser.add_argument("--markdown", type=Path)
+
+    coverage_parser = subparsers.add_parser(
+        "analyze-coverage", help="Measure per-tool decision coverage in a trace directory"
+    )
+    coverage_parser.add_argument("scenario_dir", type=Path)
+    coverage_parser.add_argument("trace_dir", type=Path)
+    coverage_parser.add_argument("--json", type=Path)
+    coverage_parser.add_argument("--markdown", type=Path)
 
     generate_parser = subparsers.add_parser(
         "generate-traces", help="Write synthetic pass/fail traces for a scenario directory"
@@ -168,6 +181,7 @@ def main(argv: list[str] | None = None) -> int:
     )
     boundarypay_parser.add_argument("output_dir", type=Path)
     boundarypay_parser.add_argument("--mode", choices=["fixture", "live"], default="fixture")
+    boundarypay_parser.add_argument("--surface", choices=["jupiter", "base"], default="jupiter")
 
     args = parser.parse_args(argv)
     if args.command == "score":
@@ -195,6 +209,14 @@ def main(argv: list[str] | None = None) -> int:
             write_failure_analysis_json(args.json, summary)
         if args.markdown:
             write_failure_analysis_markdown(args.markdown, summary)
+        print(json.dumps(summary.to_dict(), indent=2, sort_keys=True))
+        return 0
+    if args.command == "analyze-coverage":
+        summary = analyze_suite_coverage(args.scenario_dir, args.trace_dir)
+        if args.json:
+            write_coverage_analysis_json(args.json, summary)
+        if args.markdown:
+            write_coverage_analysis_markdown(args.markdown, summary)
         print(json.dumps(summary.to_dict(), indent=2, sort_keys=True))
         return 0
     if args.command == "generate-traces":
@@ -387,7 +409,10 @@ def main(argv: list[str] | None = None) -> int:
         return 0
     if args.command == "boundarypay-demo":
         try:
-            summary = write_boundarypay_demo(args.output_dir, mode=args.mode)
+            summary_kwargs = {"mode": args.mode}
+            if args.surface != "jupiter":
+                summary_kwargs["surface"] = args.surface
+            summary = write_boundarypay_demo(args.output_dir, **summary_kwargs)
         except JupiterPriceFetchError as exc:
             print(
                 json.dumps(

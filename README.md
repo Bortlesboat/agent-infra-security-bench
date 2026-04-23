@@ -113,7 +113,7 @@ agent-bench run-nvidia-agent scenarios outputs/nvidia-nim-baseline-34 `
   --runtime-policy risk-floor
 ```
 
-The April 2026 hosted NVIDIA NIM report is in `docs/reports/2026-04-nvidia-nim-hosted-baseline.md`. Keep `NVIDIA_API_KEY` in a private env file or shell environment; do not commit provider credentials.
+The April 2026 hosted NVIDIA NIM report is in `docs/reports/2026-04-nvidia-nim-hosted-baseline.md`. The original setup-aware plus risk-floor hosted row scored `31/34`; the follow-up `checklist` prompt plus the same runtime policy reached `34/34` with full `70/70` tool-decision coverage. Keep `NVIDIA_API_KEY` in a private env file or shell environment; do not commit provider credentials.
 
 To reproduce the first deterministic policy-agent baseline:
 
@@ -159,7 +159,7 @@ The April 2026 generated-candidate promotion report is in `docs/reports/2026-04-
 
 The 34-fixture policy sweep index is in `docs/reports/2026-04-34-fixture-policy-sweep.md`, with machine-readable JSON at `docs/reports/2026-04-34-fixture-policy-sweep.json`.
 
-The first 34-fixture cross-machine model sweep is in `docs/reports/2026-04-34-fixture-cross-machine-model-sweep.md`. It compares deterministic policy baselines against Windows `ollama/qwen2.5:7b`, Mac mini `ollama/qwen2.5-coder:14b`, and Mac mini `ollama/gemma3:12b` runs.
+The first 34-fixture cross-machine model sweep is in `docs/reports/2026-04-34-fixture-cross-machine-model-sweep.md`. It compares deterministic policy baselines against Windows `ollama/qwen2.5:7b`, Mac mini `ollama/qwen2.5-coder:14b`, and Mac mini `ollama/gemma3:12b` runs, including the new `checklist` prompt profile that lifts Gemma to `34/34`.
 
 To classify failed expected actions by cause:
 
@@ -168,6 +168,14 @@ agent-bench analyze-failures scenarios outputs/34-model-sweep/ollama-gemma3-12b-
 ```
 
 The Gemma defended miss analysis is in `docs/reports/2026-04-gemma-defended-miss-analysis.md`. It shows the remaining `gemma3:12b` setup-aware defended failures were omitted safe decisions, not unsafe approvals; the follow-up `exhaustive` prompt improved Gemma to `33/34`.
+
+To measure whether a run produced one decision per listed tool:
+
+```powershell
+agent-bench analyze-coverage scenarios outputs/34-model-sweep/ollama-gemma3-12b-prompt-checklist-runtime-risk-floor/traces --markdown outputs/gemma-coverage.md --json outputs/gemma-coverage.json
+```
+
+The first tool-decision coverage report is in `docs/reports/2026-04-gemma-checklist-coverage-analysis.md`. It shows the Mac mini `gemma3:12b` checklist run reached `70/70` decided tools with zero omissions and zero duplicate tool decisions.
 
 To validate the public compute commons index:
 
@@ -198,6 +206,7 @@ That writes a public-safe demo report, trace, reviewer README, and DX-report sca
 - `src/agent_infra_security_bench/fixtures.py` - fixture schema and validation
 - `src/agent_infra_security_bench/scoring.py` - deterministic trace scoring
 - `src/agent_infra_security_bench/failure_analysis.py` - failure classification for omitted decisions, unsafe approvals, and wrong blocks
+- `src/agent_infra_security_bench/coverage_analysis.py` - per-tool decision coverage analysis for omitted and duplicate tool decisions
 - `src/agent_infra_security_bench/manifest.py` - run metadata for reproducible result claims
 - `src/agent_infra_security_bench/sweeps.py` - cross-run sweep indexes for comparing models, policies, prompts, runtimes, hardware, and adapters
 - `src/agent_infra_security_bench/results.py` - suite aggregation and Markdown/CSV export

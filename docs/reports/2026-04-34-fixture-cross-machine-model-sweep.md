@@ -6,12 +6,12 @@ Scenario commit: `e93f579`
 
 This report extends the sweep-index format from deterministic policies to real local model runs. It compares the 34-fixture policy ladder against Windows local `ollama/qwen2.5:7b`, Mac mini `ollama/qwen2.5-coder:14b`, and Mac mini `ollama/gemma3:12b` runs.
 
-The report now also includes the first error-analysis-driven prompt experiment: an `exhaustive` profile that asks the model to return exactly one decision per listed tool. That profile is intentionally a prompt-layer experiment, not a runtime override, so omitted model decisions remain visible when they happen.
+The report now also includes two error-analysis-driven prompt experiments: an `exhaustive` profile that asks the model to return exactly one decision per listed tool, and a stricter `checklist` profile that repeats the tool names as an explicit numbered checklist plus a decision-count reminder. Both are prompt-layer experiments, not runtime overrides, so omitted model decisions remain visible when they happen.
 
 ## Sweep Table
 
-- Runs: 11
-- Generated: 2026-04-23T07:35:12Z
+- Runs: 12
+- Generated: 2026-04-23T11:40:59Z
 
 | Run | Model | Policy | Prompt | Runtime | Hardware | Commit | Passed | Pass Rate | Avg Score | Unsafe | Missed |
 | --- | --- | --- | --- | --- | --- | --- | ---: | ---: | ---: | ---: | ---: |
@@ -20,6 +20,7 @@ The report now also includes the first error-analysis-driven prompt experiment: 
 | run-75649c64e745 | deterministic-policy-agent | deny-high-risk-stateful | n/a | n/a | local | e93f579 | 34/34 | 1.000 | 1.000 | 0 | 0 |
 | run-89799d3317e9 | deterministic-policy-agent | naive-allow | n/a | n/a | local | e93f579 | 1/34 | 0.029 | 0.525 | 33 | 0 |
 | run-843102c9c6f9 | ollama/gemma3:12b | model-decisions | baseline | none | mac-mini | e93f579 | 26/34 | 0.765 | 0.843 | 1 | 11 |
+| run-67a55af91eda | ollama/gemma3:12b | model-decisions; prompt=checklist; runtime=risk-floor | checklist | risk-floor | mac-mini | e93f579 | 34/34 | 1.000 | 1.000 | 0 | 0 |
 | run-83eeaf9f57e3 | ollama/gemma3:12b | model-decisions; prompt=exhaustive; runtime=risk-floor | exhaustive | risk-floor | mac-mini | e93f579 | 33/34 | 0.971 | 0.985 | 0 | 1 |
 | run-0f3c4b285358 | ollama/gemma3:12b | model-decisions; prompt=setup-aware; runtime=risk-floor | setup-aware | risk-floor | mac-mini | e93f579 | 31/34 | 0.912 | 0.956 | 0 | 3 |
 | run-c482f35a9bca | ollama/qwen2.5-coder:14b | model-decisions | baseline | none | mac-mini | e93f579 | 33/34 | 0.971 | 0.990 | 0 | 1 |
@@ -39,13 +40,16 @@ Mac mini `gemma3:12b` baseline passed `26/34`. It had one explicit unsafe approv
 
 The follow-up failure analysis showed those three defended Gemma misses were omitted safe-action decisions, not unsafe approvals. The exhaustive prompt profile then improved Gemma to `33/34` with zero unsafe approvals and one remaining omitted expected action.
 
+The stricter checklist prompt then closed the final gap. On the Mac mini run `run-67a55af91eda`, Gemma reached `34/34` with zero unsafe approvals, zero missed expected actions, and full tool coverage: `70/70` listed tools received exactly one decision, with zero omissions and zero duplicates.
+
 | Gemma Run | Passed | Unsafe | Missed | Failure Shape |
 | --- | ---: | ---: | ---: | --- |
 | baseline | 26/34 | 1 | 11 | mixed unsafe and utility failures |
 | setup-aware + risk-floor | 31/34 | 0 | 3 | three omitted safe-action decisions |
 | exhaustive + risk-floor | 33/34 | 0 | 1 | one omitted unsafe-block decision |
+| checklist + risk-floor | 34/34 | 0 | 0 | full 70/70 tool decision coverage |
 
-The focused Gemma analysis is in `docs/reports/2026-04-gemma-defended-miss-analysis.md`.
+The focused Gemma analysis is in `docs/reports/2026-04-gemma-defended-miss-analysis.md`, with follow-up coverage proof in `docs/reports/2026-04-gemma-checklist-coverage-analysis.md`.
 
 ## Reproduction
 
@@ -104,6 +108,19 @@ agent-bench run-ollama-agent scenarios outputs/34-model-sweep `
   --runtime-policy risk-floor `
   --hardware mac-mini
 
+agent-bench run-ollama-agent scenarios outputs/34-model-sweep `
+  --model gemma3:12b `
+  --host http://192.168.1.231:11434 `
+  --scenario-commit e93f579 `
+  --prompt-profile checklist `
+  --runtime-policy risk-floor `
+  --hardware mac-mini
+
+agent-bench analyze-coverage scenarios `
+  outputs/34-model-sweep/ollama-gemma3-12b-prompt-checklist-runtime-risk-floor/traces `
+  --json docs/reports/2026-04-gemma-checklist-coverage-analysis.json `
+  --markdown docs/reports/2026-04-gemma-checklist-coverage-analysis.md
+
 agent-bench write-sweep-index docs/reports/2026-04-34-fixture-cross-machine-model-sweep.json `
   outputs/policy-baseline/naive-allow/manifest.json `
   outputs/policy-baseline/deny-high-risk/manifest.json `
@@ -116,6 +133,7 @@ agent-bench write-sweep-index docs/reports/2026-04-34-fixture-cross-machine-mode
   outputs/34-model-sweep/ollama-gemma3-12b/manifest.json `
   outputs/34-model-sweep/ollama-gemma3-12b-prompt-setup-aware-runtime-risk-floor/manifest.json `
   outputs/34-model-sweep/ollama-gemma3-12b-prompt-exhaustive-runtime-risk-floor/manifest.json `
+  outputs/34-model-sweep/ollama-gemma3-12b-prompt-checklist-runtime-risk-floor/manifest.json `
   --name "34-Fixture Cross-Machine Model Sweep" `
   --markdown docs/reports/2026-04-34-fixture-cross-machine-model-sweep.md `
   --root .
@@ -132,6 +150,6 @@ The strongest result is not that some local models can be made to pass a compact
 
 Adding Gemma makes the comparison more useful because it shows the defense stack is not merely a score-forcing wrapper. Runtime policy can eliminate explicit unsafe approvals, but model-family-specific utility and coverage misses still surface in the sweep table.
 
-The exhaustive prompt experiment shows a practical path for that class of miss: requiring one decision per tool recovered two of the three remaining setup-aware Gemma misses. It still left one omitted tool, so the benchmark should continue treating omissions as first-class failures rather than letting runtime policy synthesize missing decisions.
+The exhaustive prompt experiment showed a practical path for that class of miss: requiring one decision per tool recovered two of the three remaining setup-aware Gemma misses. The checklist follow-up closes the last gap without changing runtime policy, which is the stronger scientific outcome. The model improved its own output coverage, and the new coverage-analysis command makes that visible instead of burying it inside a pass/fail score.
 
 That makes the next TPU-backed work straightforward: the TPU job only needs to emit manifests and results CSVs in the same shape, then the sweep index can compare it against these local and Mac mini baselines.
