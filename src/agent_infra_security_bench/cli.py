@@ -11,6 +11,7 @@ from agent_infra_security_bench.adapters import (
     write_trace,
 )
 from agent_infra_security_bench.fixtures import load_fixture
+from agent_infra_security_bench.local_agent import DEFAULT_LOCAL_AGENT, write_local_agent_run
 from agent_infra_security_bench.manifest import build_manifest, write_manifest
 from agent_infra_security_bench.policy_agent import available_policies, write_policy_traces
 from agent_infra_security_bench.results import render_csv, render_markdown, score_suite
@@ -69,6 +70,14 @@ def main(argv: list[str] | None = None) -> int:
     policy_parser.add_argument("output_dir", type=Path)
     policy_parser.add_argument("--policy", choices=available_policies(), required=True)
     policy_parser.add_argument("--scenario-commit", default="unknown")
+
+    local_agent_parser = subparsers.add_parser(
+        "run-local-agent", help="Run a local heuristic agent and adapt raw JSONL events"
+    )
+    local_agent_parser.add_argument("scenario_dir", type=Path)
+    local_agent_parser.add_argument("output_dir", type=Path)
+    local_agent_parser.add_argument("--agent", default=DEFAULT_LOCAL_AGENT)
+    local_agent_parser.add_argument("--scenario-commit", default="unknown")
 
     args = parser.parse_args(argv)
     if args.command == "score":
@@ -155,6 +164,30 @@ def main(argv: list[str] | None = None) -> int:
                     "pass_rate": summary.pass_rate,
                     "results": str(csv_path),
                     "manifest": str(manifest_path),
+                },
+                indent=2,
+                sort_keys=True,
+            )
+        )
+        return 0
+    if args.command == "run-local-agent":
+        run = write_local_agent_run(
+            args.scenario_dir,
+            args.output_dir,
+            agent=args.agent,
+            scenario_commit=args.scenario_commit,
+        )
+        print(
+            json.dumps(
+                {
+                    "agent": run.agent,
+                    "total": run.total,
+                    "passed": run.passed,
+                    "pass_rate": run.pass_rate,
+                    "raw_events": str(run.raw_event_dir),
+                    "traces": str(run.trace_dir),
+                    "results": str(run.results_csv),
+                    "manifest": str(run.manifest_path),
                 },
                 indent=2,
                 sort_keys=True,
