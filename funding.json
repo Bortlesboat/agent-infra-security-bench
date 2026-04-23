@@ -1,0 +1,99 @@
+{
+  "$schema": "https://fundingjson.org/schema/v1.1.0.json",
+  "version": "v1.1.0",
+  "entity": {
+    "type": "individual",
+    "role": "maintainer",
+    "name": "Andrew Barnes",
+    "email": "169967362+Bortlesboat@users.noreply.github.com",
+    "phone": "",
+    "description": "Andrew Barnes is an independent open-source developer working publicly as Bortlesboat on AI-agent infrastructure security, Bitcoin fee intelligence, x402/payment tooling, and developer infrastructure. Funding supports public-good development, documentation, maintenance, and reproducible security-evaluation work.",
+    "webpageUrl": {
+      "url": "https://github.com/Bortlesboat",
+      "wellKnown": ""
+    }
+  },
+  "projects": [
+    {
+      "guid": "agent-infra-security-bench",
+      "name": "Agent Infrastructure Security Bench",
+      "description": "Agent Infrastructure Security Bench is an open-source benchmark for evaluating whether tool-using AI agents preserve repository, tool, identity, browser, memory, shell, and payment boundaries under indirect prompt injection and tool poisoning. The project provides public-safe scenarios, deterministic scoring, run manifests, trace adapters, baseline reports, and guidance for runtime controls such as stateful x402/payment proof validation.",
+      "webpageUrl": {
+        "url": "https://github.com/Bortlesboat/agent-infra-security-bench",
+        "wellKnown": ""
+      },
+      "repositoryUrl": {
+        "url": "https://github.com/Bortlesboat/agent-infra-security-bench",
+        "wellKnown": ""
+      },
+      "licenses": [
+        "spdx:MIT"
+      ],
+      "tags": [
+        "ai-safety",
+        "security",
+        "developer-tools",
+        "open-source",
+        "agent-evals",
+        "mcp",
+        "payments",
+        "testing"
+      ]
+    }
+  ],
+  "funding": {
+    "channels": [
+      {
+        "guid": "github-sponsors",
+        "type": "payment-provider",
+        "address": "https://github.com/sponsors/Bortlesboat",
+        "description": "GitHub Sponsors is the preferred public funding channel for individual and recurring support."
+      },
+      {
+        "guid": "email-contact",
+        "type": "other",
+        "address": "169967362+Bortlesboat@users.noreply.github.com",
+        "description": "Contact by email for grant, sponsorship, or institutional funding coordination."
+      }
+    ],
+    "plans": [
+      {
+        "guid": "benchmark-expansion",
+        "status": "active",
+        "name": "Benchmark expansion grant",
+        "description": "One-time support to expand the benchmark scenario suite, publish real-agent baseline reports, improve trace/scoring tooling, and document stateful agent-boundary controls.",
+        "amount": 35000,
+        "currency": "USD",
+        "frequency": "one-time",
+        "channels": [
+          "github-sponsors",
+          "email-contact"
+        ]
+      },
+      {
+        "guid": "monthly-maintenance",
+        "status": "active",
+        "name": "Monthly maintenance support",
+        "description": "Recurring support for maintaining the benchmark, reviewing public-safe scenario contributions, publishing baseline reports, and keeping documentation current.",
+        "amount": 1500,
+        "currency": "USD",
+        "frequency": "monthly",
+        "channels": [
+          "github-sponsors"
+        ]
+      },
+      {
+        "guid": "goodwill-support",
+        "status": "active",
+        "name": "Goodwill support",
+        "description": "One-time support of any amount for the open-source project.",
+        "amount": 0,
+        "currency": "USD",
+        "frequency": "one-time",
+        "channels": [
+          "github-sponsors"
+        ]
+      }
+    ]
+  }
+}
