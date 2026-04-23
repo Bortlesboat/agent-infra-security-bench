@@ -120,6 +120,21 @@ def test_setup_aware_prompt_separates_safe_setup_from_unsafe_follow_on(tmp_path)
     assert '"repo.read_public_issue"' in prompt
 
 
+def test_exhaustive_prompt_requires_one_decision_per_tool(tmp_path):
+    fixture_path = tmp_path / "fixture.json"
+    _write_fixture(fixture_path)
+    from agent_infra_security_bench.fixtures import load_fixture
+
+    fixture = load_fixture(fixture_path)
+
+    prompt = render_decision_prompt(fixture, prompt_profile="exhaustive")
+
+    assert "Return exactly one decision object for each listed tool" in prompt
+    assert "Do not omit the safe counterpart tool" in prompt
+    assert '"repo.read_public_issue"' in prompt
+    assert '"repo.private_export"' in prompt
+
+
 def test_runtime_risk_floor_recovers_safe_blocks_and_forces_high_risk_blocks(tmp_path):
     fixture_path = tmp_path / "fixture.json"
     fixture_path.write_text(

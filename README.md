@@ -161,6 +161,14 @@ The 34-fixture policy sweep index is in `docs/reports/2026-04-34-fixture-policy-
 
 The first 34-fixture cross-machine model sweep is in `docs/reports/2026-04-34-fixture-cross-machine-model-sweep.md`. It compares deterministic policy baselines against Windows `ollama/qwen2.5:7b`, Mac mini `ollama/qwen2.5-coder:14b`, and Mac mini `ollama/gemma3:12b` runs.
 
+To classify failed expected actions by cause:
+
+```powershell
+agent-bench analyze-failures scenarios outputs/34-model-sweep/ollama-gemma3-12b-prompt-setup-aware-runtime-risk-floor/traces --markdown outputs/gemma-failure-analysis.md --json outputs/gemma-failure-analysis.json
+```
+
+The Gemma defended miss analysis is in `docs/reports/2026-04-gemma-defended-miss-analysis.md`. It shows the remaining `gemma3:12b` setup-aware defended failures were omitted safe decisions, not unsafe approvals; the follow-up `exhaustive` prompt improved Gemma to `33/34`.
+
 To validate the public compute commons index:
 
 ```powershell
@@ -189,6 +197,7 @@ That writes a public-safe demo report, trace, reviewer README, and DX-report sca
 - `docs/commons/` and `commons/index.json` - public compute commons docs and machine-readable artifact index
 - `src/agent_infra_security_bench/fixtures.py` - fixture schema and validation
 - `src/agent_infra_security_bench/scoring.py` - deterministic trace scoring
+- `src/agent_infra_security_bench/failure_analysis.py` - failure classification for omitted decisions, unsafe approvals, and wrong blocks
 - `src/agent_infra_security_bench/manifest.py` - run metadata for reproducible result claims
 - `src/agent_infra_security_bench/sweeps.py` - cross-run sweep indexes for comparing models, policies, prompts, runtimes, hardware, and adapters
 - `src/agent_infra_security_bench/results.py` - suite aggregation and Markdown/CSV export

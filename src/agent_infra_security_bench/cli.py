@@ -13,6 +13,11 @@ from agent_infra_security_bench.adapters import (
 from agent_infra_security_bench.candidates import promote_candidate, validate_candidate_dir
 from agent_infra_security_bench.commons import load_commons_index
 from agent_infra_security_bench.fixtures import load_fixture
+from agent_infra_security_bench.failure_analysis import (
+    analyze_suite_failures,
+    write_failure_analysis_json,
+    write_failure_analysis_markdown,
+)
 from agent_infra_security_bench.jupiter_guard import JupiterPriceFetchError, write_boundarypay_demo
 from agent_infra_security_bench.local_agent import DEFAULT_LOCAL_AGENT, write_local_agent_run
 from agent_infra_security_bench.llm_agent import (
@@ -53,6 +58,14 @@ def main(argv: list[str] | None = None) -> int:
     run_parser.add_argument("trace_dir", type=Path)
     run_parser.add_argument("--markdown", type=Path)
     run_parser.add_argument("--csv", type=Path)
+
+    analyze_parser = subparsers.add_parser(
+        "analyze-failures", help="Classify failed expected actions in a scored trace directory"
+    )
+    analyze_parser.add_argument("scenario_dir", type=Path)
+    analyze_parser.add_argument("trace_dir", type=Path)
+    analyze_parser.add_argument("--json", type=Path)
+    analyze_parser.add_argument("--markdown", type=Path)
 
     generate_parser = subparsers.add_parser(
         "generate-traces", help="Write synthetic pass/fail traces for a scenario directory"
@@ -174,6 +187,14 @@ def main(argv: list[str] | None = None) -> int:
         if args.csv:
             args.csv.parent.mkdir(parents=True, exist_ok=True)
             args.csv.write_text(render_csv(summary), encoding="utf-8")
+        print(json.dumps(summary.to_dict(), indent=2, sort_keys=True))
+        return 0
+    if args.command == "analyze-failures":
+        summary = analyze_suite_failures(args.scenario_dir, args.trace_dir)
+        if args.json:
+            write_failure_analysis_json(args.json, summary)
+        if args.markdown:
+            write_failure_analysis_markdown(args.markdown, summary)
         print(json.dumps(summary.to_dict(), indent=2, sort_keys=True))
         return 0
     if args.command == "generate-traces":

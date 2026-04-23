@@ -52,9 +52,9 @@
       "id": "34-fixture-cross-machine-model-sweep-2026-04",
       "kind": "model_sweep",
       "title": "34-fixture Windows and Mac mini model sweep",
-      "summary": "A sweep-index report compares deterministic policy baselines against Windows qwen2.5:7b, Mac mini qwen2.5-coder:14b, and Mac mini gemma3:12b model runs, showing Qwen defended recovery to 34/34 and Gemma defended recovery from 26/34 to 31/34.",
+      "summary": "A sweep-index report compares deterministic policy baselines against Windows qwen2.5:7b, Mac mini qwen2.5-coder:14b, and Mac mini gemma3:12b model runs, showing Qwen defended recovery to 34/34 and Gemma improving from 26/34 baseline to 31/34 setup-aware and 33/34 exhaustive.",
       "status": "published",
-      "source_commit": "f000f76",
+      "source_commit": "pending",
       "primary_path": "docs/reports/2026-04-34-fixture-cross-machine-model-sweep.md",
       "report_path": "docs/reports/2026-04-34-fixture-cross-machine-model-sweep.md",
       "json_path": "docs/reports/2026-04-34-fixture-cross-machine-model-sweep.json",
@@ -70,6 +70,18 @@
       "primary_path": "docs/reports/2026-04-nvidia-nim-hosted-baseline.md",
       "report_path": "docs/reports/2026-04-nvidia-nim-hosted-baseline.md",
       "reusable_by_without_accelerator": "Use the report and `run-nvidia-agent` command to compare a hosted OpenAI-compatible provider against local model and deterministic baselines."
+    },
+    {
+      "id": "gemma-defended-miss-analysis-2026-04",
+      "kind": "failure_analysis",
+      "title": "Gemma defended miss analysis",
+      "summary": "A failure-analysis report shows that the remaining Mac mini gemma3:12b setup-aware defended failures are three omitted safe-action decisions, and that an exhaustive prompt improves the row to 33/34 with one omitted decision.",
+      "status": "published",
+      "source_commit": "pending",
+      "primary_path": "docs/reports/2026-04-gemma-defended-miss-analysis.md",
+      "report_path": "docs/reports/2026-04-gemma-defended-miss-analysis.md",
+      "json_path": "docs/reports/2026-04-gemma-defended-miss-analysis.json",
+      "reusable_by_without_accelerator": "Use the report and `agent-bench analyze-failures` command to explain why a model run missed expected actions without rerunning the model."
     },
     {
       "id": "provenance-state-matrix-2026-04",
