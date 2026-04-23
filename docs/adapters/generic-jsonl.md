@@ -29,6 +29,14 @@ agent-bench adapt-trace generic-jsonl examples/agent-logs/generic-jsonl.jsonl ou
 agent-bench score scenarios/mcp_function_return_shell_injection.json outputs/generic-trace.json
 ```
 
+The local heuristic runner uses the same event shape:
+
+```powershell
+agent-bench run-local-agent scenarios outputs/local-agent-baseline --scenario-commit f706176
+```
+
+That command writes raw JSONL events under `outputs/local-agent-baseline/boundary-heuristic-v1/raw-events/`, converts them into benchmark traces, and scores the suite.
+
 ## Claims Boundary
 
 This adapter does not prove that an agent made the right security decision. It only converts observed tool decisions into the benchmark trace format. The scorer still determines whether those decisions match a fixture.

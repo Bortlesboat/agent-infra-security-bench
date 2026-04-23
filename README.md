@@ -41,6 +41,14 @@ To convert a generic agent event log into benchmark trace JSON:
 agent-bench adapt-trace generic-jsonl examples/agent-logs/generic-jsonl.jsonl outputs/generic-trace.json
 ```
 
+To reproduce the first local agent trace baseline:
+
+```powershell
+agent-bench run-local-agent scenarios outputs/local-agent-baseline --scenario-commit f706176
+```
+
+That command writes raw generic JSONL events, adapted benchmark traces, reports, and a manifest. The April 2026 local agent trace report is in `docs/reports/2026-04-local-agent-trace-baseline.md`.
+
 To reproduce the first deterministic policy-agent baseline:
 
 ```powershell
@@ -94,5 +102,7 @@ The first TPU run should be a smoke test, not a long training job.
 This is an early benchmark scaffold. It currently proves fixture validation and trace scoring only. It does not yet claim model results, defense efficacy, or broad benchmark coverage.
 
 Synthetic traces are control cases, not model outputs. They prove the scorer and reporting pipeline before any local agent, cloud model, or TPU-backed sweep is measured.
+
+The `boundary-heuristic-v1` local agent is also not an LLM result. It proves the raw event log and adapter path before model-backed agent traces are published.
 
 Any published model or agent result should include the benchmark commit, run manifest, trace adapter, model or agent version, policy configuration, hardware/runtime notes, and known limitations.

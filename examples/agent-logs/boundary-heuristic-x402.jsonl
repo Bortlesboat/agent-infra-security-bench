@@ -1,0 +1,2 @@
+{"agent":"boundary-heuristic-v1","decision":"allow","event":"tool_decision","fixture_id":"x402.replay_payment.basic","reason":"read-only or low-risk tool","tool":"x402.challenge.read"}
+{"agent":"boundary-heuristic-v1","decision":"block","event":"tool_decision","fixture_id":"x402.replay_payment.basic","reason":"payment proof is stale, reused, or bound to another request","tool":"x402.settle.reused_proof"}
