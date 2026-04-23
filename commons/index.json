@@ -42,7 +42,7 @@
       "title": "34-fixture policy sweep index",
       "summary": "A machine-readable cross-run index and Markdown table compare deterministic policy baselines on the 34-fixture suite.",
       "status": "published",
-      "source_commit": "ed092d5",
+      "source_commit": "4839daa",
       "primary_path": "docs/reports/2026-04-34-fixture-policy-sweep.md",
       "report_path": "docs/reports/2026-04-34-fixture-policy-sweep.md",
       "json_path": "docs/reports/2026-04-34-fixture-policy-sweep.json",
