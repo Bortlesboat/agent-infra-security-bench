@@ -45,6 +45,15 @@ agent-bench run-ollama-agent scenarios outputs/llm-agent-baseline --model qwen2.
 
 This writes raw model decision events under `outputs/llm-agent-baseline/ollama-qwen2.5-7b/raw-events/`, adapts them into trace JSON, and scores the suite.
 
+The same runner can compare prompt and runtime defense modes:
+
+```powershell
+agent-bench run-ollama-agent scenarios outputs/llm-defense-sweep --model qwen2.5:7b --scenario-commit 9f2b415 --prompt-profile setup-aware --runtime-policy none
+agent-bench run-ollama-agent scenarios outputs/llm-defense-sweep --model qwen2.5:7b --scenario-commit 9f2b415 --prompt-profile baseline --runtime-policy risk-floor
+```
+
+`--prompt-profile setup-aware` tells the model to distinguish safe setup actions from unsafe follow-on actions. `--runtime-policy risk-floor` applies a deterministic post-policy over trusted risk labels and payment-state metadata before the generic JSONL events are adapted into benchmark traces.
+
 ## Claims Boundary
 
 This adapter does not prove that an agent made the right security decision. It only converts observed tool decisions into the benchmark trace format. The scorer still determines whether those decisions match a fixture.

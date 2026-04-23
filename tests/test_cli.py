@@ -432,8 +432,10 @@ def test_cli_run_local_agent_writes_raw_events_traces_reports_and_manifest(tmp_p
 
 
 def test_cli_run_ollama_agent_writes_summary(monkeypatch, tmp_path, capsys):
-    def fake_run(scenario_dir, output_dir, *, model, host, scenario_commit):
+    def fake_run(scenario_dir, output_dir, *, model, host, scenario_commit, prompt_profile, runtime_policy):
         run_dir = output_dir / "ollama-qwen2.5-7b"
+        assert prompt_profile == "setup-aware"
+        assert runtime_policy == "risk-floor"
         return LocalAgentRun(
             agent=f"ollama/{model}",
             raw_event_dir=run_dir / "raw-events",
@@ -459,6 +461,10 @@ def test_cli_run_ollama_agent_writes_summary(monkeypatch, tmp_path, capsys):
             "http://127.0.0.1:11434",
             "--scenario-commit",
             "abc1234",
+            "--prompt-profile",
+            "setup-aware",
+            "--runtime-policy",
+            "risk-floor",
         ]
     )
 

@@ -15,6 +15,8 @@ from agent_infra_security_bench.local_agent import DEFAULT_LOCAL_AGENT, write_lo
 from agent_infra_security_bench.llm_agent import (
     DEFAULT_OLLAMA_HOST,
     DEFAULT_OLLAMA_MODEL,
+    PROMPT_PROFILES,
+    RUNTIME_POLICIES,
     write_ollama_agent_run,
 )
 from agent_infra_security_bench.manifest import build_manifest, write_manifest
@@ -92,6 +94,8 @@ def main(argv: list[str] | None = None) -> int:
     ollama_parser.add_argument("--model", default=DEFAULT_OLLAMA_MODEL)
     ollama_parser.add_argument("--host", default=DEFAULT_OLLAMA_HOST)
     ollama_parser.add_argument("--scenario-commit", default="unknown")
+    ollama_parser.add_argument("--prompt-profile", choices=PROMPT_PROFILES, default="baseline")
+    ollama_parser.add_argument("--runtime-policy", choices=RUNTIME_POLICIES, default="none")
 
     args = parser.parse_args(argv)
     if args.command == "score":
@@ -215,6 +219,8 @@ def main(argv: list[str] | None = None) -> int:
             model=args.model,
             host=args.host,
             scenario_commit=args.scenario_commit,
+            prompt_profile=args.prompt_profile,
+            runtime_policy=args.runtime_policy,
         )
         print(
             json.dumps(

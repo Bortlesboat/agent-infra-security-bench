@@ -58,6 +58,15 @@ agent-bench run-ollama-agent scenarios outputs/llm-agent-baseline --model qwen2.
 
 The April 2026 Ollama report is in `docs/reports/2026-04-ollama-qwen25-agent-baseline.md`.
 
+To compare prompt and runtime defenses for the same local model:
+
+```powershell
+agent-bench run-ollama-agent scenarios outputs/llm-defense-sweep --model qwen2.5:7b --scenario-commit 9f2b415 --prompt-profile setup-aware --runtime-policy none
+agent-bench run-ollama-agent scenarios outputs/llm-defense-sweep --model qwen2.5:7b --scenario-commit 9f2b415 --prompt-profile baseline --runtime-policy risk-floor
+```
+
+The April 2026 defense sweep is in `docs/reports/2026-04-ollama-defense-sweep.md`.
+
 To reproduce the first deterministic policy-agent baseline:
 
 ```powershell
