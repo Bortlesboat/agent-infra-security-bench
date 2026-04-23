@@ -5,14 +5,25 @@
   "mission": "Use scarce accelerator and local-model access to publish reusable agent-infrastructure security evidence for people who cannot run the same sweeps themselves.",
   "artifacts": [
     {
-      "id": "fixtures-v0.1-20",
+      "id": "fixtures-v0.2-26",
       "kind": "fixture_set",
-      "title": "Initial 20 public-safe boundary fixtures",
-      "summary": "Curated scenarios across MCP, repository, x402/payment, browser, CI, memory, and developer-tool boundaries.",
+      "title": "26 public-safe boundary fixtures with expanded x402 state coverage",
+      "summary": "Curated scenarios across MCP, repository, x402/payment, browser, CI, memory, and developer-tool boundaries, including seven x402 payment-state fixtures.",
       "status": "published",
-      "source_commit": "2307e3d",
+      "source_commit": "131830d",
       "primary_path": "scenarios",
       "reusable_by_without_accelerator": "Run the fixture suite locally with synthetic, deterministic, or small local-model traces."
+    },
+    {
+      "id": "x402-payment-state-matrix-2026-04",
+      "kind": "baseline_report",
+      "title": "Expanded x402 payment-state matrix",
+      "summary": "Seven public-safe x402 fixtures show that static risk labels miss amount, facilitator, route, stale proof, and proof-reuse failures, while stateful payment validation passes 26/26.",
+      "status": "published",
+      "source_commit": "131830d",
+      "primary_path": "docs/reports/2026-04-x402-payment-state-matrix.md",
+      "report_path": "docs/reports/2026-04-x402-payment-state-matrix.md",
+      "reusable_by_without_accelerator": "Use the report and fixtures to test payment-aware agent defenses without running a TPU-backed sweep."
     },
     {
       "id": "policy-baselines-2026-04",

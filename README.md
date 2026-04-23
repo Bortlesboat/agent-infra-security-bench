@@ -90,7 +90,7 @@ agent-bench run-policy-baseline scenarios outputs/policy-baseline --policy deny-
 agent-bench run-policy-baseline scenarios outputs/policy-baseline --policy deny-high-risk-payment-state --scenario-commit aaecefe
 ```
 
-The stateful payment report is in `docs/reports/2026-04-stateful-payment-baseline.md`.
+The original stateful payment report is in `docs/reports/2026-04-stateful-payment-baseline.md`. The expanded x402 payment-state matrix is in `docs/reports/2026-04-x402-payment-state-matrix.md`.
 
 To validate the public compute commons index:
 
@@ -102,7 +102,7 @@ Expected result: the command prints a JSON summary with zero missing paths.
 
 ## Current Contents
 
-- `scenarios/` - 20 public-safe benchmark fixtures
+- `scenarios/` - 26 public-safe benchmark fixtures
 - `examples/traces/` - tiny example agent traces
 - `examples/agent-logs/` - example raw agent event logs for adapters
 - `examples/baselines/` - reproducible baseline examples

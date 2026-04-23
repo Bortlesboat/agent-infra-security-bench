@@ -21,6 +21,7 @@ Expected result: the command prints a JSON summary with zero missing paths.
 ## What Others Can Do Now
 
 - run the fixture suite locally
+- reuse the expanded x402 payment-state matrix
 - inspect model-backed reports they could not afford to generate
 - adapt their own public-safe agent logs into benchmark traces
 - compare a new defense against the deterministic policy baselines
@@ -39,4 +40,3 @@ Near-term additions:
 - TPU-backed reports after TRC confirmation arrives
 
 Hosted eval queues can come later. The first job is to make the static public commons good enough that a hosted queue would be worth trusting.
-
