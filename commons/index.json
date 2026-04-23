@@ -5,14 +5,25 @@
   "mission": "Use scarce accelerator and local-model access to publish reusable agent-infrastructure security evidence for people who cannot run the same sweeps themselves.",
   "artifacts": [
     {
-      "id": "fixtures-v0.2-26",
+      "id": "fixtures-v0.3-30",
       "kind": "fixture_set",
-      "title": "26 public-safe boundary fixtures with expanded x402 state coverage",
-      "summary": "Curated scenarios across MCP, repository, x402/payment, browser, CI, memory, and developer-tool boundaries, including seven x402 payment-state fixtures.",
+      "title": "30 public-safe boundary fixtures with x402 and provenance state coverage",
+      "summary": "Curated scenarios across MCP, repository, x402/payment, browser, CI, memory, and developer-tool boundaries, including seven x402 payment-state fixtures and four provenance-state fixtures.",
       "status": "published",
-      "source_commit": "131830d",
+      "source_commit": "96eb9f2",
       "primary_path": "scenarios",
       "reusable_by_without_accelerator": "Run the fixture suite locally with synthetic, deterministic, or small local-model traces."
+    },
+    {
+      "id": "provenance-state-matrix-2026-04",
+      "kind": "baseline_report",
+      "title": "MCP and repository provenance-state matrix",
+      "summary": "Four public-safe provenance fixtures show that static and payment-only policies miss same-risk origin, server, repository, and scope drift, while stateful provenance validation passes 30/30.",
+      "status": "published",
+      "source_commit": "96eb9f2",
+      "primary_path": "docs/reports/2026-04-provenance-state-matrix.md",
+      "report_path": "docs/reports/2026-04-provenance-state-matrix.md",
+      "reusable_by_without_accelerator": "Use the report and fixtures to test MCP and repository provenance defenses without running a TPU-backed sweep."
     },
     {
       "id": "x402-payment-state-matrix-2026-04",

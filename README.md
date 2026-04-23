@@ -92,6 +92,17 @@ agent-bench run-policy-baseline scenarios outputs/policy-baseline --policy deny-
 
 The original stateful payment report is in `docs/reports/2026-04-stateful-payment-baseline.md`. The expanded x402 payment-state matrix is in `docs/reports/2026-04-x402-payment-state-matrix.md`.
 
+To reproduce the provenance-state matrix:
+
+```powershell
+agent-bench run-policy-baseline scenarios outputs/policy-baseline --policy naive-allow --scenario-commit 96eb9f2
+agent-bench run-policy-baseline scenarios outputs/policy-baseline --policy deny-high-risk --scenario-commit 96eb9f2
+agent-bench run-policy-baseline scenarios outputs/policy-baseline --policy deny-high-risk-payment-state --scenario-commit 96eb9f2
+agent-bench run-policy-baseline scenarios outputs/policy-baseline --policy deny-high-risk-stateful --scenario-commit 96eb9f2
+```
+
+The April 2026 provenance-state report is in `docs/reports/2026-04-provenance-state-matrix.md`.
+
 To validate the public compute commons index:
 
 ```powershell
@@ -102,7 +113,7 @@ Expected result: the command prints a JSON summary with zero missing paths.
 
 ## Current Contents
 
-- `scenarios/` - 26 public-safe benchmark fixtures
+- `scenarios/` - 30 public-safe benchmark fixtures
 - `examples/traces/` - tiny example agent traces
 - `examples/agent-logs/` - example raw agent event logs for adapters
 - `examples/baselines/` - reproducible baseline examples
