@@ -15,6 +15,16 @@
       "reusable_by_without_accelerator": "Run the fixture suite locally with synthetic, deterministic, or small local-model traces."
     },
     {
+      "id": "frontier-pack-v1-2026-04",
+      "kind": "fixture_set",
+      "title": "TPU frontier pack v1",
+      "summary": "Seven harder frontier fixtures split into long-menu controls, stateful continuation controls, and hybrid omission-plus-state cases for TPU-targeted comparisons beyond the solved 34-fixture control row.",
+      "status": "published",
+      "source_commit": "76eea57",
+      "primary_path": "scenarios-frontier",
+      "reusable_by_without_accelerator": "Run the harder frontier pack locally or with deterministic policies before spending another TPU session."
+    },
+    {
       "id": "candidate-fixture-gate-2026-04",
       "kind": "candidate_pipeline",
       "title": "Adversarial fixture candidate gate",
@@ -70,6 +80,17 @@
       "primary_path": "docs/reports/2026-04-tpu-v6e-qwen-baseline.md",
       "report_path": "docs/reports/2026-04-tpu-v6e-qwen-baseline.md",
       "reusable_by_without_accelerator": "Use the report to understand the tested TPU provisioning, OpenAI-compatible serving, smoke, baseline, artifact copy-back, and shutdown path before spending another TPU session."
+    },
+    {
+      "id": "tpu-v6e-qwen-frontier-pack-v1-2026-04",
+      "kind": "model_sweep",
+      "title": "Cloud TPU frontier pack v1 baseline",
+      "summary": "The first TPU rerun on the harder frontier pack served Qwen/Qwen2.5-7B-Instruct through vLLM TPU on a temporary v6e-8 host, passed the 3-fixture frontier smoke 3/3, then passed the full 7-fixture frontier pack 7/7 with full 47/47 tool coverage after raising the serving context window to 4096.",
+      "status": "published",
+      "source_commit": "76eea57",
+      "primary_path": "docs/reports/2026-04-tpu-v6e-qwen-frontier-pack-v1.md",
+      "report_path": "docs/reports/2026-04-tpu-v6e-qwen-frontier-pack-v1.md",
+      "reusable_by_without_accelerator": "Use the report to inspect the first harder TPU comparison row, including the 4096-token serving requirement and the local deterministic control comparison."
     },
     {
       "id": "nvidia-nim-hosted-baseline-2026-04",

@@ -137,6 +137,8 @@ The first live Cloud TPU report is in `docs/reports/2026-04-tpu-v6e-qwen-baselin
 
 The next harder TPU-targeted suite now lives in `scenarios-frontier/`. It keeps the published 34-fixture control row intact while adding a small omission-and-state-pressure pack with `7` stronger fixtures across MCP, payments, CI, memory, browser, repository, and agent-runtime workflows.
 
+The first TPU frontier-pack report is in `docs/reports/2026-04-tpu-v6e-qwen-frontier-pack-v1.md`. Using the same `Qwen/Qwen2.5-7B-Instruct` plus `checklist` and `risk-floor` stack, the TPU smoke passed `3/3` and the full frontier pack passed `7/7` with full `47/47` tool coverage. One practical difference from the control row: the frontier prompts needed a `4096` serving context window instead of `2048`.
+
 To reproduce the first deterministic policy-agent baseline:
 
 ```powershell

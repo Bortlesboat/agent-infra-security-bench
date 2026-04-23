@@ -177,6 +177,8 @@ vllm serve "$MODEL_ID" \
   --max-model-len=2048
 ```
 
+For the longer `scenarios-frontier/` pack, the April 23, 2026 rerun needed `--max-model-len=4096`; the original `2048` cap returned an HTTP `400` context-length error once the frontier prompts and `max_tokens` were combined.
+
 ## Verify One OpenAI-Compatible Request
 
 Open a second TPU VM shell and verify the exact API surface the benchmark uses:
