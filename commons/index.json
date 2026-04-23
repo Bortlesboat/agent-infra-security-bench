@@ -54,7 +54,7 @@
       "title": "34-fixture Windows and Mac mini model sweep",
       "summary": "A sweep-index report compares deterministic policy baselines against Windows qwen2.5:7b, Mac mini qwen2.5-coder:14b, and Mac mini gemma3:12b model runs, showing Qwen defended recovery to 34/34 and Gemma defended recovery from 26/34 to 31/34.",
       "status": "published",
-      "source_commit": "pending",
+      "source_commit": "f000f76",
       "primary_path": "docs/reports/2026-04-34-fixture-cross-machine-model-sweep.md",
       "report_path": "docs/reports/2026-04-34-fixture-cross-machine-model-sweep.md",
       "json_path": "docs/reports/2026-04-34-fixture-cross-machine-model-sweep.json",
