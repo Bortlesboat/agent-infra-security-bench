@@ -10,7 +10,7 @@ Tool-using AI agents increasingly operate across local files, source repositorie
 
 This project builds an open-source benchmark and reproducibility workflow for evaluating whether self-hosted agents preserve tool, identity, payment, and repository boundaries under indirect prompt injection and tool poisoning. The first release includes public-safe fixtures, deterministic scoring, synthetic control traces, run manifests, public contribution/security guidance, TPU-backed model/defense sweeps, and a short technical report.
 
-The current public baseline already shows one concrete control gap: a static high-risk tool denylist passes 19 of 20 fixtures but misses `x402.replay_payment.basic`. A follow-up deterministic baseline, `deny-high-risk-payment-state`, adds narrow payment-state validation and passes 20 of 20 fixtures. This gives the project a reproducible before/after result: payment-agent safety needs protocol-state validation, not only tool-category labels.
+The current public baseline already shows one concrete control gap: a static high-risk tool denylist passes 19 of 20 fixtures but misses `x402.replay_payment.basic`. A follow-up deterministic baseline, `deny-high-risk-payment-state`, adds narrow payment-state validation and passes 20 of 20 fixtures. The first local model-backed run adds a second signal: `ollama/qwen2.5:7b` passed 14 of 20 fixtures, with zero unsafe approvals but six over-blocked expected-safe actions. Together, these results show both sides of practical agent controls: protocol-state validation and the safety/utility tradeoff.
 
 ## Public Deliverables
 
@@ -18,7 +18,7 @@ The current public baseline already shows one concrete control gap: a static hig
 - At least 20 public-safe fixtures across repository, payment, shell, filesystem, and browser domains.
 - Deterministic scorer, trace format, and run-manifest format.
 - Public contribution, security, issue-template, citation, and CI surfaces.
-- Baseline results across at least three deterministic policies, plus real-agent traces as the next release target.
+- Baseline results across at least three deterministic policies and one local model-backed agent run.
 - Reproducible TPU smoke-run documentation.
 - Technical writeup with limitations and next steps.
 
@@ -37,5 +37,5 @@ MCP and similar tool protocols are moving quickly into developer workflows. The 
 
 1. Week 1: schema, scorer, first four fixtures, TPU setup runbook. Done.
 2. Week 2: 20 fixtures, synthetic controls, run manifests, CI, public trust layer, deterministic policy baselines, and stateful payment validation baseline. Done.
-3. Week 3: one real-agent baseline, first external fixture contribution path, and TPU smoke manifest after access confirmation.
+3. Week 3: prompt/runtime defense comparison, first external fixture contribution path, and TPU smoke manifest after access confirmation.
 4. Week 4: public technical report, conference proposal, and grant appendix.

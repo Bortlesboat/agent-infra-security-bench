@@ -13,7 +13,7 @@ The launch should emphasize reproducibility and restraint: this is not a claim t
 3. Announce the stateful payment baseline on X and LinkedIn with a short thread linking to the repo and report.
 4. Send targeted notes to MCP, agent security, and eval builders who are already discussing tool-boundary failures.
 5. Reuse the same artifact as appendix material for safety, information-security, and open-source grant applications.
-6. Hold Hacker News until the first real-agent trace report is ready.
+6. Use Hacker News only with the model-backed local Ollama report and the claims boundary visible.
 
 ## Owned Channels
 
@@ -47,11 +47,19 @@ Current deterministic results:
 - `deny-high-risk`: 19/20
 - `deny-high-risk-payment-state`: 20/20
 
-Next step: real-agent traces, then TPU-backed model/defense sweeps after access is confirmed.
+First local model-backed result:
+
+- `ollama/qwen2.5:7b`: 14/20
+- zero unsafe allows
+- six over-blocked expected-safe actions
+
+Next step: compare prompt/runtime defenses, then TPU-backed model/defense sweeps after access is confirmed.
 
 Repo: <link>
 
 Report: <link>
+
+Model report: <link>
 
 ## Claims Boundary
 
