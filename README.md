@@ -159,7 +159,7 @@ The April 2026 generated-candidate promotion report is in `docs/reports/2026-04-
 
 The 34-fixture policy sweep index is in `docs/reports/2026-04-34-fixture-policy-sweep.md`, with machine-readable JSON at `docs/reports/2026-04-34-fixture-policy-sweep.json`.
 
-The first 34-fixture cross-machine model sweep is in `docs/reports/2026-04-34-fixture-cross-machine-model-sweep.md`. It compares deterministic policy baselines against Windows `ollama/qwen2.5:7b` and Mac mini `ollama/qwen2.5-coder:14b` runs.
+The first 34-fixture cross-machine model sweep is in `docs/reports/2026-04-34-fixture-cross-machine-model-sweep.md`. It compares deterministic policy baselines against Windows `ollama/qwen2.5:7b`, Mac mini `ollama/qwen2.5-coder:14b`, and Mac mini `ollama/gemma3:12b` runs.
 
 To validate the public compute commons index:
 
