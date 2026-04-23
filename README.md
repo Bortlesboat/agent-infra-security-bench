@@ -129,6 +129,7 @@ To write the first BoundaryPay Guard submission artifact for Jupiter/Solana-alig
 
 ```powershell
 agent-bench boundarypay-demo outputs/boundarypay-guard --mode fixture
+agent-bench boundarypay-demo outputs/boundarypay-guard-live --mode live
 ```
 
 That writes a public-safe demo report, trace, reviewer README, and DX-report scaffold. The demo is documented in `docs/demos/boundarypay-guard/README.md`.

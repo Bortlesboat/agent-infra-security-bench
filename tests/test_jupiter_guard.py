@@ -4,6 +4,7 @@ from agent_infra_security_bench.jupiter_guard import (
     DEFAULT_SOL_MINT,
     DEFAULT_USDC_MINT,
     evaluate_payment_intent,
+    fetch_jupiter_price_snapshot,
     write_boundarypay_demo,
 )
 
@@ -99,4 +100,55 @@ def test_boundarypay_demo_writes_submission_artifacts(tmp_path):
 
     dx_report = (output_dir / "DX-REPORT.md").read_text(encoding="utf-8")
     assert "Jupiter Developer Platform" in dx_report
-    assert "fixture mode" in dx_report
+    assert "`fixture` mode" in dx_report
+
+
+def test_boundarypay_demo_live_dx_report_records_live_snapshot(monkeypatch, tmp_path):
+    def fake_price_snapshot(**_kwargs):
+        return {
+            "source": "live",
+            "platform": "jupiter",
+            "endpoint": "https://lite-api.jup.ag/price/v3",
+            "token_mint": DEFAULT_SOL_MINT,
+            "usd_price": 175.12,
+            "raw": {DEFAULT_SOL_MINT: {"usdPrice": 175.12}},
+        }
+
+    monkeypatch.setattr(
+        "agent_infra_security_bench.jupiter_guard.fetch_jupiter_price_snapshot",
+        fake_price_snapshot,
+    )
+
+    write_boundarypay_demo(tmp_path / "boundarypay", mode="live")
+
+    dx_report = (tmp_path / "boundarypay" / "DX-REPORT.md").read_text(encoding="utf-8")
+    assert "Jupiter Price V3 returned a live snapshot" in dx_report
+    assert "Before final Superteam/Jupiter submission" not in dx_report
+
+
+def test_fetch_jupiter_price_snapshot_sends_public_demo_user_agent(monkeypatch):
+    captured_headers = {}
+
+    class FakeResponse:
+        def __enter__(self):
+            return self
+
+        def __exit__(self, exc_type, exc, tb):
+            return False
+
+        def read(self):
+            return json.dumps({DEFAULT_SOL_MINT: {"usdPrice": 175.12}}).encode("utf-8")
+
+    def fake_urlopen(request, timeout):
+        nonlocal captured_headers
+        captured_headers = {
+            key.lower(): value for key, value in request.header_items()
+        }
+        return FakeResponse()
+
+    monkeypatch.setattr("agent_infra_security_bench.jupiter_guard.urlopen", fake_urlopen)
+
+    snapshot = fetch_jupiter_price_snapshot()
+
+    assert snapshot["usd_price"] == 175.12
+    assert captured_headers["user-agent"].startswith("agent-infra-security-bench/")

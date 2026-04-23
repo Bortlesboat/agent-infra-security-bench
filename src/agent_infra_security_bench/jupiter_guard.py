@@ -12,6 +12,10 @@ from urllib.request import Request, urlopen
 DEFAULT_SOL_MINT = "So11111111111111111111111111111111111111112"
 DEFAULT_USDC_MINT = "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v"
 JUPITER_PRICE_V3_URL = "https://lite-api.jup.ag/price/v3"
+PUBLIC_DEMO_USER_AGENT = (
+    "agent-infra-security-bench/0.1 "
+    "(+https://github.com/Bortlesboat/agent-infra-security-bench)"
+)
 INVALID_NONCE_STATUSES = {"expired", "reused", "stale"}
 BOUND_FIELDS = (
     "platform",
@@ -73,7 +77,10 @@ def fetch_jupiter_price_snapshot(
     base_url: str = JUPITER_PRICE_V3_URL,
 ) -> dict[str, Any]:
     query = urlencode({"ids": token_mint})
-    request = Request(f"{base_url}?{query}")
+    request = Request(
+        f"{base_url}?{query}",
+        headers={"User-Agent": PUBLIC_DEMO_USER_AGENT},
+    )
     if api_key:
         request.add_header("x-api-key", api_key)
     try:
@@ -248,14 +255,18 @@ drift, route drift, and platform/token binding issues can be blocked before exec
 
 
 def _dx_report_text(mode: str) -> str:
+    if mode == "live":
+        current_run = """This generated report was created in `live` mode. Jupiter Price V3 returned a live snapshot for the public SOL mint, and the guard evaluated the same deterministic payment-boundary cases against that live source metadata."""
+    else:
+        current_run = """This generated report was created in `fixture` mode. The demo uses a
+deterministic Jupiter price snapshot so reviewers can run it without an API key or
+wallet. Rerun with `--mode live` to capture current Price V3 metadata."""
+
     return f"""# BoundaryPay Guard DX Report
 
 ## Current Run
 
-This generated report was created in `{mode}` mode. In fixture mode, the demo uses a
-deterministic Jupiter price snapshot so reviewers can run it without an API key or
-wallet. Before final Superteam/Jupiter submission, rerun with `--mode live` after the
-Jupiter Developer Platform account and API key are ready.
+{current_run}
 
 ## Jupiter Developer Platform Notes
 
@@ -269,7 +280,7 @@ Jupiter Developer Platform account and API key are ready.
 
 ## What Needs Live Follow-Up
 
-- Time from API-key creation to first successful request.
+- Time from portal API-key creation to first authenticated request, if the bounty review wants Developer Platform analytics in addition to the keyless live Lite API run.
 - Whether the Price/Swap docs make route and amount binding easy to preserve.
 - Whether error responses are structured enough for an agent to recover safely.
 - Whether API logs expose enough metadata to audit agent-triggered requests.

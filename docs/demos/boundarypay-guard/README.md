@@ -24,12 +24,15 @@ Fixture mode writes a deterministic artifact folder:
 
 A checked-in fixture example is available under `sample-output/` for reviewers who want to inspect the artifact before running the command.
 
-Live mode can be used after a Jupiter Developer Platform API key is available:
+Live mode can be used keyless against Jupiter Lite Price V3 for a current public-price snapshot:
 
 ```powershell
-$env:JUPITER_API_KEY = "<developer-platform-key>"
 agent-bench boundarypay-demo outputs/boundarypay-guard-live --mode live
 ```
+
+For authenticated Developer Platform analytics or higher rate limits, set `JUPITER_API_KEY` before running live mode.
+
+A checked-in live example is available under `live-output/`.
 
 ## What It Checks
 
@@ -47,4 +50,4 @@ This demo does not sign transactions, place orders, hold wallet keys, execute sw
 
 ## Submission Path
 
-Use the generated folder as the review artifact for Superteam/Jupiter and Colosseum. Before final submission, rerun in live mode and update `DX-REPORT.md` with real API-key onboarding notes, first successful API call timing, and any docs/API friction observed during the build.
+Use the generated folder as the review artifact for Superteam/Jupiter and Colosseum. Before final submission, rerun in live mode and update `DX-REPORT.md` with any portal API-key onboarding notes, first authenticated API call timing, and docs/API friction observed during the build.

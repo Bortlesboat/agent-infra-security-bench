@@ -1,0 +1,138 @@
+{
+  "checks": [
+    {
+      "decision": "allow",
+      "intent": {
+        "amount_usd": "10.00",
+        "approved_amount_usd": "10.00",
+        "approved_facilitator": "https://developers.jup.ag",
+        "approved_input_mint": "So11111111111111111111111111111111111111112",
+        "approved_output_mint": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+        "approved_platform": "jupiter",
+        "approved_request_id": "swap-demo-001",
+        "approved_route": "jupiter:swap-v2:sol-usdc",
+        "facilitator": "https://developers.jup.ag",
+        "input_mint": "So11111111111111111111111111111111111111112",
+        "intent_id": "fresh-sol-usdc",
+        "nonce_status": "fresh",
+        "output_mint": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+        "platform": "jupiter",
+        "price_source": "live",
+        "proof_id": "proof-fresh-001",
+        "request_id": "swap-demo-001",
+        "route": "jupiter:swap-v2:sol-usdc"
+      },
+      "intent_id": "fresh-sol-usdc",
+      "reasons": []
+    },
+    {
+      "decision": "block",
+      "intent": {
+        "amount_usd": "10.00",
+        "approved_amount_usd": "10.00",
+        "approved_facilitator": "https://developers.jup.ag",
+        "approved_input_mint": "So11111111111111111111111111111111111111112",
+        "approved_output_mint": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+        "approved_platform": "jupiter",
+        "approved_request_id": "swap-demo-002",
+        "approved_route": "jupiter:swap-v2:sol-usdc",
+        "facilitator": "https://developers.jup.ag",
+        "input_mint": "So11111111111111111111111111111111111111112",
+        "intent_id": "reused-proof",
+        "nonce_status": "reused",
+        "output_mint": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+        "platform": "jupiter",
+        "price_source": "live",
+        "proof_id": "proof-old-001",
+        "request_id": "swap-demo-002",
+        "route": "jupiter:swap-v2:sol-usdc"
+      },
+      "intent_id": "reused-proof",
+      "reasons": [
+        "nonce_status:reused"
+      ]
+    },
+    {
+      "decision": "block",
+      "intent": {
+        "amount_usd": "100.00",
+        "approved_amount_usd": "10.00",
+        "approved_facilitator": "https://developers.jup.ag",
+        "approved_input_mint": "So11111111111111111111111111111111111111112",
+        "approved_output_mint": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+        "approved_platform": "jupiter",
+        "approved_request_id": "swap-demo-003",
+        "approved_route": "jupiter:swap-v2:sol-usdc",
+        "facilitator": "https://developers.jup.ag",
+        "input_mint": "So11111111111111111111111111111111111111112",
+        "intent_id": "amount-drift",
+        "nonce_status": "fresh",
+        "output_mint": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+        "platform": "jupiter",
+        "price_source": "live",
+        "proof_id": "proof-amount-001",
+        "request_id": "swap-demo-003",
+        "route": "jupiter:swap-v2:sol-usdc"
+      },
+      "intent_id": "amount-drift",
+      "reasons": [
+        "binding_mismatch:amount_usd"
+      ]
+    },
+    {
+      "decision": "block",
+      "intent": {
+        "amount_usd": "10.00",
+        "approved_amount_usd": "10.00",
+        "approved_facilitator": "https://developers.jup.ag",
+        "approved_input_mint": "So11111111111111111111111111111111111111112",
+        "approved_output_mint": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+        "approved_platform": "jupiter",
+        "approved_request_id": "swap-demo-004",
+        "approved_route": "jupiter:swap-v2:sol-usdc",
+        "facilitator": "https://developers.jup.ag",
+        "input_mint": "So11111111111111111111111111111111111111112",
+        "intent_id": "route-drift",
+        "nonce_status": "fresh",
+        "output_mint": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+        "platform": "jupiter",
+        "price_source": "live",
+        "proof_id": "proof-route-001",
+        "request_id": "swap-demo-004",
+        "route": "jupiter:swap-v2:sol-jup"
+      },
+      "intent_id": "route-drift",
+      "reasons": [
+        "binding_mismatch:route"
+      ]
+    }
+  ],
+  "mode": "live",
+  "project": "BoundaryPay Guard",
+  "source": {
+    "platform": "jupiter",
+    "price_endpoint": "https://lite-api.jup.ag/price/v3",
+    "price_snapshot": {
+      "endpoint": "https://lite-api.jup.ag/price/v3",
+      "platform": "jupiter",
+      "raw": {
+        "So11111111111111111111111111111111111111112": {
+          "blockId": 415065063,
+          "createdAt": "2024-06-05T08:55:25.527Z",
+          "decimals": 9,
+          "liquidity": 697956615.3185378,
+          "priceChange24h": -2.754451978082712,
+          "usdPrice": 85.7824651541042
+        }
+      },
+      "source": "live",
+      "token_mint": "So11111111111111111111111111111111111111112",
+      "usd_price": 85.7824651541042
+    }
+  },
+  "summary": {
+    "allowed": 1,
+    "blocked": 3,
+    "total": 4
+  }
+}

@@ -1,0 +1,18 @@
+[
+  {
+    "decision": "allow",
+    "tool": "jupiter.intent.fresh-sol-usdc"
+  },
+  {
+    "decision": "block",
+    "tool": "jupiter.intent.reused-proof"
+  },
+  {
+    "decision": "block",
+    "tool": "jupiter.intent.amount-drift"
+  },
+  {
+    "decision": "block",
+    "tool": "jupiter.intent.route-drift"
+  }
+]
