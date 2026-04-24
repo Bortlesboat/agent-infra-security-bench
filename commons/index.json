@@ -137,6 +137,17 @@
       "reusable_by_without_accelerator": "Use the report to see whether the checklist prompt generally rescues completeness on the frontier pack or whether the earlier Qwen recovery was family-specific."
     },
     {
+      "id": "tpu-v6e-qwen14-frontier-scale-sweep-2026-04",
+      "kind": "defense_sweep",
+      "title": "Cloud TPU Qwen 14B frontier scale sweep",
+      "summary": "A stronger open Qwen checkpoint on the same frontier pack reached 5/7 with baseline plus no runtime, 6/7 with checklist plus no runtime, and 7/7 with checklist plus the runtime risk floor; scale improved utility and completeness, but explicit unsafe approvals appeared until the defended row restored the runtime layer.",
+      "status": "published",
+      "source_commit": "a3e392c",
+      "primary_path": "docs/reports/2026-04-tpu-v6e-qwen14-frontier-scale-sweep.md",
+      "report_path": "docs/reports/2026-04-tpu-v6e-qwen14-frontier-scale-sweep.md",
+      "reusable_by_without_accelerator": "Use the report to compare model scale, prompt structure, and runtime policy on the same TPU frontier pack without spending another TPU session."
+    },
+    {
       "id": "nvidia-nim-hosted-baseline-2026-04",
       "kind": "model_sweep",
       "title": "Hosted NVIDIA NIM baseline",
