@@ -2,29 +2,29 @@
 
 ## Title
 
-Agent Infrastructure Security Bench: reproducible evals for self-hosted tool-using AI agents
+Agent Infrastructure Security Bench: reproducible frontier evidence for self-hosted tool-using AI agents
 
 ## Summary
 
-Tool-using AI agents increasingly operate across local files, source repositories, MCP servers, payment APIs, browser automation, and shell commands. Existing benchmarks cover important prompt-injection and cyber tasks, but many practical failures happen at the infrastructure boundary: overly broad tokens, cross-repository data leakage, tool shadowing, replayed payment proofs, and untrusted tool outputs that trigger privileged actions.
+Tool-using AI agents increasingly operate across local files, source repositories, MCP servers, payment APIs, browser automation, CI artifacts, memory surfaces, and shell-capable workflows. Existing benchmarks cover important prompt-injection and cyber tasks, but many practical failures still happen at the infrastructure boundary: cross-repository data leakage, MCP provenance drift, replayed payment proofs, stateful workflow continuation errors, omitted tool decisions, and untrusted tool outputs that trigger privileged actions.
 
-This project builds an open-source benchmark and reproducibility workflow for evaluating whether self-hosted agents preserve tool, identity, payment, and repository boundaries under indirect prompt injection and tool poisoning. The first release includes public-safe fixtures, deterministic scoring, synthetic control traces, run manifests, public contribution/security guidance, TPU-backed model/defense sweeps, and a short technical report.
+This project builds an open-source benchmark and reproducibility workflow for evaluating whether self-hosted agents preserve those boundaries under indirect prompt injection, tool poisoning, and approval-bound workflow pressure. The current public surface includes a stable `34`-fixture control suite, a harder `7`-fixture frontier pack, deterministic policy controls, explicit tool-decision coverage analysis, run manifests, public contribution/security guidance, BoundaryBench Commons for reuse, and local, Mac mini, hosted, and TPU-backed model and defense sweeps.
 
-The current public baseline already shows one concrete control gap: a static high-risk tool denylist passes 19 of 20 fixtures but misses `x402.replay_payment.basic`. A follow-up deterministic baseline, `deny-high-risk-payment-state`, adds narrow payment-state validation and passes 20 of 20 fixtures. The first local model-backed run adds a second signal: `ollama/qwen2.5:7b` passed 14 of 20 fixtures, with zero unsafe approvals but six over-blocked expected-safe actions. A prompt/runtime defense sweep then recovers the full suite two ways: setup-aware prompting reaches 20 of 20, and a deterministic runtime risk-floor policy also reaches 20 of 20, both with zero unsafe approvals. A second local baseline runner on a Mac mini adds cross-model evidence: `qwen2.5:14b` passes 20 of 20 with the baseline prompt, while `qwen2.5-coder:14b` moves from 19 of 20 to 20 of 20 with setup-aware prompting. Together, these results show both sides of practical agent controls: protocol-state validation, safety/utility tradeoffs, and reproducible cross-machine model comparison.
+The most useful current result is not just that we have more rows. It is that the benchmark now separates **safety**, **utility**, and **completeness** on the same fixed frontier pack. The frontier controls show why state matters: `deny-high-risk-payment-state` passes only `1/7`, while `deny-high-risk-stateful` passes `7/7`. The TPU matrix then shows that different open model families need different defense mixes to close the same pack. `Qwen 7B` mainly needed a structured checklist prompt to move from `4/7` to `7/7`; `Mistral 7B` improved from `2/7` to `5/7` with the same checklist but still needed a runtime risk floor to reach `7/7`; `Qwen 14B` was the strongest weak-prompt row at `5/7`, but surfaced unsafe approvals until the runtime layer was restored. Together, these rows make a stronger public-good contribution than a simple score leaderboard: they show how boundary-layer failures change shape across model families, prompting regimes, and runtime defenses.
 
 ## Public Deliverables
 
 - A permissively licensed benchmark repository.
-- At least 20 public-safe fixtures across repository, payment, shell, filesystem, and browser domains.
-- Deterministic scorer, trace format, and run-manifest format.
-- Public contribution, security, issue-template, citation, and CI surfaces.
-- Baseline results across at least three deterministic policies, local prompt/runtime defense configurations, and two local model-runner surfaces.
-- Reproducible TPU smoke-run documentation.
-- Technical writeup with limitations and next steps.
+- A stable `34`-fixture control suite plus a separate `7`-fixture frontier pack.
+- Deterministic scorer, trace format, coverage analysis, sweep-index format, and run-manifest format.
+- Public contribution, security, issue-template, citation, CI, and Commons surfaces.
+- Baseline and defended results across deterministic policies plus local, Mac mini, hosted, and TPU-backed model surfaces.
+- Reproducible TPU provisioning, serving, artifact copy-back, and shutdown documentation.
+- A higher-layer synthesis that explains the benchmark's safety, utility, and completeness thesis.
 
 ## Why Now
 
-MCP and similar tool protocols are moving quickly into developer workflows. The security problem is no longer only whether a model can identify malicious text. It is whether the surrounding agent runtime keeps untrusted content from causing privileged tool calls. This benchmark targets that practical control layer.
+MCP and similar tool protocols are moving quickly into developer workflows. The practical security problem is no longer only whether a model can identify malicious text. It is whether the surrounding runtime keeps untrusted content from causing privileged tool calls, stale approval reuse, provenance drift, and incomplete decision-making under pressure. This benchmark targets that practical control layer.
 
 ## Fit
 
@@ -35,8 +35,8 @@ MCP and similar tool protocols are moving quickly into developer workflows. The 
 
 ## Near-Term Milestones
 
-1. Week 1: schema, scorer, first four fixtures, TPU setup runbook. Done.
-2. Week 2: 20 fixtures, synthetic controls, run manifests, CI, public trust layer, deterministic policy baselines, and stateful payment validation baseline. Done.
-3. Week 3: prompt/runtime defense comparison and local cross-model baseline. Done.
-4. Week 4: public technical report, conference proposal, and grant appendix.
-5. Week 5: external fixture contribution path, expanded x402 replay variants, and TPU smoke manifest after access confirmation.
+1. Keep the `34`-fixture control row and `7`-fixture frontier pack stable long enough to support reuse and external comparison.
+2. Add new frontier fixtures only when they introduce a genuinely new failure thesis, not just more difficulty.
+3. Expand public-safe contributor and grant surfaces around the frontier synthesis, fixed-pack sweep, and Commons artifacts.
+4. Use the remaining TPU window only for sharp unanswered questions, not general model collection.
+5. Publish one tighter outward-facing package that makes the benchmark's safety/utility/completeness thesis easy to cite and reuse.

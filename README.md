@@ -155,6 +155,8 @@ The consolidated fixed-pack comparison is now in `docs/reports/2026-04-frontier-
 
 The higher-layer readout of what this matrix actually means is in `docs/reports/2026-04-frontier-findings-synthesis.md`. That synthesis turns the frontier work into one public thesis: the benchmark is not just exposing "better" and "worse" rows, it is separating completeness failures, utility failures, and safety failures, and showing that different open model families need different defense layers to close the same boundary-pressure pack.
 
+The outward-facing launch and grant surfaces that summarize that thesis now live in `docs/launch/public-launch-packet.md`, `docs/launch/frontier-launch-copy.md`, and `docs/grants/one-page-proposal.md`.
+
 To reproduce the first deterministic policy-agent baseline:
 
 ```powershell
@@ -260,8 +262,8 @@ That writes a public-safe demo report, trace, reviewer README, and DX-report sca
 - `docs/roadmap/` - development-first research agenda and milestone plan
 - `docs/demos/` - submission-ready public demos such as BoundaryPay Guard
 - `docs/runbooks/` - first Cloud TPU runbook
-- `docs/grants/` - starter grant proposal language
-- `docs/launch/` and `docs/reports/` - public launch packet and baseline report template
+- `docs/grants/` - grant-ready proposal language and opportunity context
+- `docs/launch/` and `docs/reports/` - current launch packet, frontier launch copy, historical release copy, and report surfaces
 
 ## TPU Role
 

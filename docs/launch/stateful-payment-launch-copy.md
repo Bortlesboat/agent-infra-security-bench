@@ -1,5 +1,7 @@
 # Stateful Payment Baseline Launch Copy
 
+> Historical note: this file preserves the earlier launch copy for the original `20`-fixture payment-state release. For the current frontier-era launch surface, use `docs/launch/frontier-launch-copy.md`.
+
 ## Primary Links
 
 - Repo: https://github.com/Bortlesboat/agent-infra-security-bench
