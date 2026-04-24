@@ -1,7 +1,7 @@
 {
   "schema_version": "agent-infra-security-bench/compute-commons/v1",
   "name": "BoundaryBench Commons",
-  "updated_at": "2026-04-23",
+  "updated_at": "2026-04-24",
   "mission": "Use scarce accelerator and local-model access to publish reusable agent-infrastructure security evidence for people who cannot run the same sweeps themselves.",
   "artifacts": [
     {
@@ -146,6 +146,18 @@
       "primary_path": "docs/reports/2026-04-tpu-v6e-qwen14-frontier-scale-sweep.md",
       "report_path": "docs/reports/2026-04-tpu-v6e-qwen14-frontier-scale-sweep.md",
       "reusable_by_without_accelerator": "Use the report to compare model scale, prompt structure, and runtime policy on the same TPU frontier pack without spending another TPU session."
+    },
+    {
+      "id": "frontier-pack-tpu-sweep-2026-04",
+      "kind": "sweep_index",
+      "title": "Frontier pack TPU sweep index",
+      "summary": "A fixed-pack sweep table compares the frontier policy controls against TPU-served Qwen 7B, Mistral 7B, and Qwen 14B rows on the same seven-scenario frontier pack, making the model-family, prompt, runtime, safety, utility, and completeness tradeoffs visible in one artifact.",
+      "status": "published",
+      "source_commit": "76eea57",
+      "primary_path": "docs/reports/2026-04-frontier-pack-tpu-sweep.md",
+      "report_path": "docs/reports/2026-04-frontier-pack-tpu-sweep.md",
+      "json_path": "docs/reports/2026-04-frontier-pack-tpu-sweep.json",
+      "reusable_by_without_accelerator": "Use the sweep index to compare frontier-pack policy controls and TPU-backed model rows without rerunning the TPU experiments."
     },
     {
       "id": "nvidia-nim-hosted-baseline-2026-04",

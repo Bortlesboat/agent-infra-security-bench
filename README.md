@@ -149,6 +149,8 @@ The follow-up Mistral recovery run is in `docs/reports/2026-04-tpu-v6e-mistral-f
 
 The next TPU scale sweep is in `docs/reports/2026-04-tpu-v6e-qwen14-frontier-scale-sweep.md`. On the same frontier pack, TPU-served `Qwen/Qwen2.5-14B-Instruct` needed `tensor_parallel_size=4` to preserve the `4096` context budget on `v6e-8`, then reached `5/7` with `baseline + none`, `6/7` with `checklist + none`, and `7/7` with `checklist + risk-floor`. The useful twist is that scale improved pass rate but also surfaced explicit unsafe approvals until the runtime floor was restored.
 
+The consolidated fixed-pack comparison is now in `docs/reports/2026-04-frontier-pack-tpu-sweep.md`, with matching machine-readable JSON at `docs/reports/2026-04-frontier-pack-tpu-sweep.json`. It keeps the same `7` frontier scenarios fixed and shows the higher-layer result directly: Qwen 7B is mainly a completeness problem under weak prompting, Mistral 7B is weaker across the same pressure test, and Qwen 14B is the strongest open checkpoint here but still needs the runtime floor to remove unsafe approvals.
+
 To reproduce the first deterministic policy-agent baseline:
 
 ```powershell
