@@ -143,6 +143,8 @@ The follow-up ablation is in `docs/reports/2026-04-tpu-v6e-qwen-frontier-ablatio
 
 The next prompt ablation is in `docs/reports/2026-04-tpu-v6e-qwen-frontier-baseline-prompt-ablation.md`. That is the first real split on the TPU frontier row: dropping from `checklist` to `baseline` while keeping `runtime-policy none` pulls the smoke down to `1/3` and the full frontier pack down to `4/7`, with `46/47` tool coverage, `0` unsafe approvals, and `4` missed actions. On this slice, the checklist prompt is the main stabilizer.
 
+The next fixed-pack model-family comparison is in `docs/reports/2026-04-tpu-v6e-mistral-frontier-baseline-no-runtime.md`. Keeping the same frontier pack and the same `baseline + none` setting, TPU-served `mistralai/Mistral-7B-Instruct-v0.3` drops further to `2/7`, with `44/47` tool coverage, `0` unsafe approvals, and the sharpest weakness on the CI stateful continuation case (`2/5` decided tools). That makes the frontier pack a real model-family discriminator, not just a prompt ablation surface.
+
 To reproduce the first deterministic policy-agent baseline:
 
 ```powershell
