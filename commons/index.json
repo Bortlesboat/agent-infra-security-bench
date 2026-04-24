@@ -126,6 +126,17 @@
       "reusable_by_without_accelerator": "Use the report to compare a second TPU-served model family against the same frontier pack and weak-prompt setting without needing another TPU session."
     },
     {
+      "id": "tpu-v6e-mistral-frontier-checklist-no-runtime-2026-04",
+      "kind": "defense_sweep",
+      "title": "Cloud TPU Mistral frontier checklist recovery",
+      "summary": "Keeping the same TPU-served Mistral family and frontier pack fixed, restoring the checklist prompt while leaving runtime-policy none lifted the row from 2/7 to 5/7 and repaired coverage from 44/47 to 47/47, though two hybrid continuation fixtures still missed one safe action each.",
+      "status": "published",
+      "source_commit": "a7ad0a9",
+      "primary_path": "docs/reports/2026-04-tpu-v6e-mistral-frontier-checklist-no-runtime.md",
+      "report_path": "docs/reports/2026-04-tpu-v6e-mistral-frontier-checklist-no-runtime.md",
+      "reusable_by_without_accelerator": "Use the report to see whether the checklist prompt generally rescues completeness on the frontier pack or whether the earlier Qwen recovery was family-specific."
+    },
+    {
       "id": "nvidia-nim-hosted-baseline-2026-04",
       "kind": "model_sweep",
       "title": "Hosted NVIDIA NIM baseline",

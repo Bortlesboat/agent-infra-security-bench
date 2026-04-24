@@ -145,6 +145,8 @@ The next prompt ablation is in `docs/reports/2026-04-tpu-v6e-qwen-frontier-basel
 
 The next fixed-pack model-family comparison is in `docs/reports/2026-04-tpu-v6e-mistral-frontier-baseline-no-runtime.md`. Keeping the same frontier pack and the same `baseline + none` setting, TPU-served `mistralai/Mistral-7B-Instruct-v0.3` drops further to `2/7`, with `44/47` tool coverage, `0` unsafe approvals, and the sharpest weakness on the CI stateful continuation case (`2/5` decided tools). That makes the frontier pack a real model-family discriminator, not just a prompt ablation surface.
 
+The follow-up Mistral recovery run is in `docs/reports/2026-04-tpu-v6e-mistral-frontier-checklist-no-runtime.md`. Restoring `checklist` while keeping `runtime-policy none` lifts TPU-served `mistralai/Mistral-7B-Instruct-v0.3` from `2/7` to `5/7` and repairs coverage from `44/47` to `47/47`. That shows the checklist prompt is a general completeness aid, but Mistral still trails the stronger Qwen checklist row on the hardest hybrid continuation cases.
+
 To reproduce the first deterministic policy-agent baseline:
 
 ```powershell
