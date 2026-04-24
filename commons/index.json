@@ -171,6 +171,17 @@
       "reusable_by_without_accelerator": "Use the sweep index to compare frontier-pack policy controls and TPU-backed model rows without rerunning the TPU experiments."
     },
     {
+      "id": "frontier-findings-synthesis-2026-04",
+      "kind": "research_synthesis",
+      "title": "Frontier findings synthesis",
+      "summary": "A higher-layer synthesis explains what the fixed frontier TPU matrix means: completeness is a distinct failure mode, checklist prompting is a real completeness intervention, runtime policy matters differently by model family, and larger checkpoints can improve utility while sharpening safety failures.",
+      "status": "published",
+      "source_commit": "5da24c4",
+      "primary_path": "docs/reports/2026-04-frontier-findings-synthesis.md",
+      "report_path": "docs/reports/2026-04-frontier-findings-synthesis.md",
+      "reusable_by_without_accelerator": "Use the synthesis to understand what the frontier rows imply about boundary-layer agent behavior and defense design without rerunning the TPU matrix."
+    },
+    {
       "id": "nvidia-nim-hosted-baseline-2026-04",
       "kind": "model_sweep",
       "title": "Hosted NVIDIA NIM baseline",

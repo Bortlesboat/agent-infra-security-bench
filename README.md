@@ -153,6 +153,8 @@ The next TPU scale sweep is in `docs/reports/2026-04-tpu-v6e-qwen14-frontier-sca
 
 The consolidated fixed-pack comparison is now in `docs/reports/2026-04-frontier-pack-tpu-sweep.md`, with matching machine-readable JSON at `docs/reports/2026-04-frontier-pack-tpu-sweep.json`. It keeps the same `7` frontier scenarios fixed and now shows the higher-layer result more clearly: Qwen 7B mainly needs prompt structure, Mistral 7B needs both prompt structure and the runtime floor, and Qwen 14B is the strongest open weak-prompt row but still needs the runtime floor to remove unsafe approvals.
 
+The higher-layer readout of what this matrix actually means is in `docs/reports/2026-04-frontier-findings-synthesis.md`. That synthesis turns the frontier work into one public thesis: the benchmark is not just exposing "better" and "worse" rows, it is separating completeness failures, utility failures, and safety failures, and showing that different open model families need different defense layers to close the same boundary-pressure pack.
+
 To reproduce the first deterministic policy-agent baseline:
 
 ```powershell
