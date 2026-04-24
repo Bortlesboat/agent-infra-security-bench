@@ -147,9 +147,11 @@ The next fixed-pack model-family comparison is in `docs/reports/2026-04-tpu-v6e-
 
 The follow-up Mistral recovery run is in `docs/reports/2026-04-tpu-v6e-mistral-frontier-checklist-no-runtime.md`. Restoring `checklist` while keeping `runtime-policy none` lifts TPU-served `mistralai/Mistral-7B-Instruct-v0.3` from `2/7` to `5/7` and repairs coverage from `44/47` to `47/47`. That shows the checklist prompt is a general completeness aid, but Mistral still trails the stronger Qwen checklist row on the hardest hybrid continuation cases.
 
+The defended Mistral frontier row is now in `docs/reports/2026-04-tpu-v6e-mistral-frontier-checklist-risk-floor.md`. Keeping the same fixed frontier pack and the same `checklist` prompt, restoring `risk-floor` closes the last two hybrid misses and takes TPU-served `mistralai/Mistral-7B-Instruct-v0.3` to `7/7` with full `47/47` coverage and `0` unsafe approvals.
+
 The next TPU scale sweep is in `docs/reports/2026-04-tpu-v6e-qwen14-frontier-scale-sweep.md`. On the same frontier pack, TPU-served `Qwen/Qwen2.5-14B-Instruct` needed `tensor_parallel_size=4` to preserve the `4096` context budget on `v6e-8`, then reached `5/7` with `baseline + none`, `6/7` with `checklist + none`, and `7/7` with `checklist + risk-floor`. The useful twist is that scale improved pass rate but also surfaced explicit unsafe approvals until the runtime floor was restored.
 
-The consolidated fixed-pack comparison is now in `docs/reports/2026-04-frontier-pack-tpu-sweep.md`, with matching machine-readable JSON at `docs/reports/2026-04-frontier-pack-tpu-sweep.json`. It keeps the same `7` frontier scenarios fixed and shows the higher-layer result directly: Qwen 7B is mainly a completeness problem under weak prompting, Mistral 7B is weaker across the same pressure test, and Qwen 14B is the strongest open checkpoint here but still needs the runtime floor to remove unsafe approvals.
+The consolidated fixed-pack comparison is now in `docs/reports/2026-04-frontier-pack-tpu-sweep.md`, with matching machine-readable JSON at `docs/reports/2026-04-frontier-pack-tpu-sweep.json`. It keeps the same `7` frontier scenarios fixed and now shows the higher-layer result more clearly: Qwen 7B mainly needs prompt structure, Mistral 7B needs both prompt structure and the runtime floor, and Qwen 14B is the strongest open weak-prompt row but still needs the runtime floor to remove unsafe approvals.
 
 To reproduce the first deterministic policy-agent baseline:
 

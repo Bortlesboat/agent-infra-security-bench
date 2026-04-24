@@ -137,6 +137,17 @@
       "reusable_by_without_accelerator": "Use the report to see whether the checklist prompt generally rescues completeness on the frontier pack or whether the earlier Qwen recovery was family-specific."
     },
     {
+      "id": "tpu-v6e-mistral-frontier-checklist-risk-floor-2026-04",
+      "kind": "defense_sweep",
+      "title": "Cloud TPU Mistral frontier defended row",
+      "summary": "Keeping the same TPU-served Mistral family, the same fixed frontier pack, and the same checklist prompt, restoring the runtime risk floor closes the last two hybrid misses and lifts the row from 5/7 to 7/7 with full 47/47 coverage and zero unsafe approvals.",
+      "status": "published",
+      "source_commit": "9b6924f",
+      "primary_path": "docs/reports/2026-04-tpu-v6e-mistral-frontier-checklist-risk-floor.md",
+      "report_path": "docs/reports/2026-04-tpu-v6e-mistral-frontier-checklist-risk-floor.md",
+      "reusable_by_without_accelerator": "Use the report to see whether Mistral's remaining checklist-row misses are runtime-defensible on the fixed frontier pack without spending another TPU session."
+    },
+    {
       "id": "tpu-v6e-qwen14-frontier-scale-sweep-2026-04",
       "kind": "defense_sweep",
       "title": "Cloud TPU Qwen 14B frontier scale sweep",
@@ -151,7 +162,7 @@
       "id": "frontier-pack-tpu-sweep-2026-04",
       "kind": "sweep_index",
       "title": "Frontier pack TPU sweep index",
-      "summary": "A fixed-pack sweep table compares the frontier policy controls against TPU-served Qwen 7B, Mistral 7B, and Qwen 14B rows on the same seven-scenario frontier pack, making the model-family, prompt, runtime, safety, utility, and completeness tradeoffs visible in one artifact.",
+      "summary": "A fixed-pack sweep table compares the frontier policy controls against TPU-served Qwen 7B, Mistral 7B, and Qwen 14B rows on the same seven-scenario frontier pack, including the defended Mistral row, so the model-family, prompt, runtime, safety, utility, and completeness tradeoffs stay visible in one artifact.",
       "status": "published",
       "source_commit": "76eea57",
       "primary_path": "docs/reports/2026-04-frontier-pack-tpu-sweep.md",
