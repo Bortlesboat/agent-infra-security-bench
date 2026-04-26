@@ -89,6 +89,7 @@ Keep the public story in this order:
 - `docs/reports/2026-04-frontier-findings-synthesis.md`
 - `docs/reports/2026-04-frontier-pack-tpu-sweep.md`
 - `docs/launch/frontier-launch-copy.md`
+- `docs/launch/frontier-first-wave-share-kit.md`
 - `docs/grants/one-page-proposal.md`
 
 ### Rented Channels
@@ -111,6 +112,8 @@ Keep the public story in this order:
 3. Reuse the same thesis in X and LinkedIn copy.
 4. Use the one-paragraph grant summary in applications and outreach notes.
 5. Reserve Hacker News for the version where the claims boundary and fixed-pack sweep are already easy to inspect.
+
+The tactical copy for that first wave now lives in `docs/launch/frontier-first-wave-share-kit.md`.
 
 ## Messaging Guardrails
 

@@ -6,6 +6,8 @@ This is the current outward-facing copy surface for the frontier-era benchmark s
 
 The earlier `stateful-payment-launch-copy.md` file is still useful as a historical record of the first `20`-fixture payment-state release, but it is no longer the best top-level launch surface for the repo.
 
+For the smaller "what do we post first?" version, use `docs/launch/frontier-first-wave-share-kit.md`.
+
 ## Primary Links
 
 - Repo: `https://github.com/Bortlesboat/agent-infra-security-bench`
