@@ -1,0 +1,49 @@
+{
+  "name": "frontier-v2-qwen14-first-wave",
+  "repoBranch": "main",
+  "scenarioDir": "scenarios-frontier-v2",
+  "scenarioCommitSuffix": "frontier-v2-working-tree",
+  "lanes": [
+    {
+      "name": "europe-west4-a-v6e",
+      "zone": "europe-west4-a",
+      "acceleratorType": "v6e-8",
+      "runtimeVersion": "v2-alpha-tpuv6e",
+      "hardwareLabel": "tpu-v6e",
+      "spot": true
+    },
+    {
+      "name": "us-east1-d-v6e",
+      "zone": "us-east1-d",
+      "acceleratorType": "v6e-8",
+      "runtimeVersion": "v2-alpha-tpuv6e",
+      "hardwareLabel": "tpu-v6e",
+      "spot": true
+    }
+  ],
+  "model": {
+    "id": "Qwen/Qwen2.5-14B-Instruct",
+    "tensorParallelSize": 4,
+    "maxModelLen": 4096
+  },
+  "runs": [
+    {
+      "id": "baseline-none",
+      "outputDir": "outputs/tpu-frontier-v2-qwen14-baseline-none",
+      "promptProfile": "baseline",
+      "runtimePolicy": "none"
+    },
+    {
+      "id": "checklist-none",
+      "outputDir": "outputs/tpu-frontier-v2-qwen14-checklist-none",
+      "promptProfile": "checklist",
+      "runtimePolicy": "none"
+    },
+    {
+      "id": "checklist-risk-floor",
+      "outputDir": "outputs/tpu-frontier-v2-qwen14-checklist-risk-floor",
+      "promptProfile": "checklist",
+      "runtimePolicy": "risk-floor"
+    }
+  ]
+}

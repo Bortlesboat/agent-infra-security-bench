@@ -24,6 +24,21 @@ A successful first TPU run should emit:
 - a run manifest
 - one directly comparable TPU sweep row
 
+## Fast Strike Path
+
+When spot windows are unstable, prefer the queue-driven strike path instead of retyping the same manual sequence:
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File scripts/tpu-strike.ps1 -QueueFile docs/runbooks/tpu-frontier-v2-qwen7b-first-wave.json
+```
+
+Sibling queue manifests exist for the next two model families:
+
+- `docs/runbooks/tpu-frontier-v2-mistral7b-first-wave.json`
+- `docs/runbooks/tpu-frontier-v2-qwen14-first-wave.json`
+
+That script still follows the same billing discipline as the rest of this runbook: create one TPU, try the highest-value queue, copy artifacts back, then delete the TPU and verify the zone is empty.
+
 ## No-Surprises Rules
 
 - Create TPUs only in grant-approved zones.

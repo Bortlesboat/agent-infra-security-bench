@@ -159,6 +159,20 @@ The outward-facing launch and grant surfaces that summarize that thesis now live
 
 The next TPU waiting-window extension now lives in `scenarios-frontier-v2/` and `tests/test_frontier_pack_v2.py`. It keeps the original `7`-fixture frontier pack intact, adds two new continuation-boundary cases, and raises the fixed pack to `9` scenarios and `60` tools. Fresh local deterministic controls on the v2 pack still show the intended split: `deny-high-risk-payment-state` passes `1/9`, while `deny-high-risk-stateful` passes `9/9`.
 
+The current TPU operating readout is in `docs/reports/2026-04-tpu-field-notes-gpu-depreciation.md`. It records the useful distinction between a lane that never allocates and a lane that allocates but gets reclaimed before serving is ready.
+
+To maximize short-lived TPU windows, the repo now includes a queue-driven strike path:
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File scripts/tpu-strike.ps1 -QueueFile docs/runbooks/tpu-frontier-v2-qwen7b-first-wave.json
+```
+
+The first queued manifests are:
+
+- `docs/runbooks/tpu-frontier-v2-qwen7b-first-wave.json`
+- `docs/runbooks/tpu-frontier-v2-mistral7b-first-wave.json`
+- `docs/runbooks/tpu-frontier-v2-qwen14-first-wave.json`
+
 To reproduce the first deterministic policy-agent baseline:
 
 ```powershell
@@ -245,6 +259,7 @@ That writes a public-safe demo report, trace, reviewer README, and DX-report sca
 - `scenarios/` - 34 public-safe benchmark fixtures
 - `scenarios-frontier/` - 7 TPU-focused frontier fixtures that stress long menus, state drift, and workflow continuation
 - `scenarios-frontier-v2/` - 9 TPU waiting-window frontier fixtures that add repository-owner drift and memory-retrieval-to-publish drift to the fixed frontier pack
+- `scripts/tpu-strike.ps1` - queue-driven TPU create/setup/run/copy-back/delete path for short-lived grant windows
 - `candidates/` - quarantined generated fixture proposals plus the review/promotion gate
 - `examples/traces/` - tiny example agent traces
 - `examples/agent-logs/` - example raw agent event logs for adapters
