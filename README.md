@@ -157,6 +157,8 @@ The higher-layer readout of what this matrix actually means is in `docs/reports/
 
 The outward-facing launch and grant surfaces that summarize that thesis now live in `docs/launch/public-launch-packet.md`, `docs/launch/frontier-launch-copy.md`, and `docs/grants/one-page-proposal.md`.
 
+The next TPU waiting-window extension now lives in `scenarios-frontier-v2/` and `tests/test_frontier_pack_v2.py`. It keeps the original `7`-fixture frontier pack intact, adds two new continuation-boundary cases, and raises the fixed pack to `9` scenarios and `60` tools. Fresh local deterministic controls on the v2 pack still show the intended split: `deny-high-risk-payment-state` passes `1/9`, while `deny-high-risk-stateful` passes `9/9`.
+
 To reproduce the first deterministic policy-agent baseline:
 
 ```powershell
@@ -242,6 +244,7 @@ That writes a public-safe demo report, trace, reviewer README, and DX-report sca
 
 - `scenarios/` - 34 public-safe benchmark fixtures
 - `scenarios-frontier/` - 7 TPU-focused frontier fixtures that stress long menus, state drift, and workflow continuation
+- `scenarios-frontier-v2/` - 9 TPU waiting-window frontier fixtures that add repository-owner drift and memory-retrieval-to-publish drift to the fixed frontier pack
 - `candidates/` - quarantined generated fixture proposals plus the review/promotion gate
 - `examples/traces/` - tiny example agent traces
 - `examples/agent-logs/` - example raw agent event logs for adapters
