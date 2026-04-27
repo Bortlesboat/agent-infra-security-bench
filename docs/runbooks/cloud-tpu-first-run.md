@@ -37,6 +37,8 @@ Sibling queue manifests exist for the next two model families:
 - `docs/runbooks/tpu-frontier-v2-mistral7b-first-wave.json`
 - `docs/runbooks/tpu-frontier-v2-qwen14-first-wave.json`
 
+Windows note: on this host, short-lived TPU names plus the PuTTY-backed `gcloud` transport were brittle enough that the strike script no longer relies on `gcloud ... ssh/scp` at all. It now uses `gcloud` only for create/describe/delete, then switches to native Windows OpenSSH with a temp-copy of the Google Compute Engine key, an isolated `known_hosts` file, and absolute `/home/<user>/...` remote paths. If you fall back to manual Windows commands, prefer the strike script or reproduce that same transport shape instead of trusting PuTTY cache state.
+
 That script still follows the same billing discipline as the rest of this runbook: create one TPU, try the highest-value queue, copy artifacts back, then delete the TPU and verify the zone is empty.
 
 ## No-Surprises Rules
@@ -127,10 +129,13 @@ gcloud compute tpus tpu-vm describe $env:TPU_NAME `
 
 ## Connect To The TPU VM
 
+Generic path below. On this Windows host, prefer the queue-driven strike script over ad hoc `gcloud ... ssh` sessions if TPU names are being reused quickly.
+
 ```powershell
 gcloud compute tpus tpu-vm ssh $env:TPU_NAME `
   --project=$env:PROJECT_ID `
-  --zone=$env:ZONE
+  --zone=$env:ZONE `
+  --strict-host-key-checking=no
 ```
 
 ## Prepare The TPU VM
@@ -263,16 +268,20 @@ python -m agent_infra_security_bench.cli run-openai-agent \
 
 From the local machine:
 
+Generic path below. On this Windows host, the strike script's native OpenSSH copy-back path is the more reliable option when Cloud SDK is routing transport through PuTTY.
+
 ```powershell
 gcloud compute tpus tpu-vm scp --recurse `
-  $env:TPU_NAME`:~/agent-infra-security-bench/outputs/tpu-v6e-smoke `
+  $env:TPU_NAME`:/home/$env:USERNAME/agent-infra-security-bench/outputs/tpu-v6e-smoke `
   ./outputs `
-  --zone=$env:ZONE
+  --zone=$env:ZONE `
+  --strict-host-key-checking=no
 
 gcloud compute tpus tpu-vm scp --recurse `
-  $env:TPU_NAME`:~/agent-infra-security-bench/outputs/tpu-v6e-baseline-34 `
+  $env:TPU_NAME`:/home/$env:USERNAME/agent-infra-security-bench/outputs/tpu-v6e-baseline-34 `
   ./outputs `
-  --zone=$env:ZONE
+  --zone=$env:ZONE `
+  --strict-host-key-checking=no
 ```
 
 After copy-back, validate the imported artifacts locally before writing any public report.
