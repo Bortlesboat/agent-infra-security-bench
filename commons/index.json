@@ -263,6 +263,19 @@
       "reusable_by_without_accelerator": "Use the mixed prompt files and command shape to reproduce the next serving-pressure design on any OpenAI-compatible endpoint."
     },
     {
+      "id": "tpu-v6e-qwen14-mixed-prompt-serving-probe-2026-04",
+      "kind": "serving_probe",
+      "title": "TPU v6e Qwen 14B mixed-prompt serving probe",
+      "summary": "A guarded Spot v6e-8 run rotated three public-safe boundary prompts through Qwen/Qwen2.5-14B-Instruct with TP=4 and completed 1,280 OpenAI-compatible chat requests with zero failed requests, including a 512-concurrency row at 81.843 req/s and p95 6.089s.",
+      "status": "published",
+      "source_commit": "0aced87",
+      "primary_path": "docs/reports/2026-04-tpu-v6e-qwen14-mixed-prompt-serving-probe.md",
+      "report_path": "docs/reports/2026-04-tpu-v6e-qwen14-mixed-prompt-serving-probe.md",
+      "json_path": "docs/reports/2026-04-tpu-v6e-qwen14-mixed-prompt-serving-probe.json",
+      "runbook_path": "docs/runbooks/tpu-native-experiments.md",
+      "reusable_by_without_accelerator": "Use the report and JSON summary to inspect mixed-prompt Qwen 14B TPU serving behavior without running cloud TPUs."
+    },
+    {
       "id": "frontier-v2-what-we-learned-2026-04",
       "kind": "research_synthesis",
       "title": "Frontier v2 plain-English synthesis",

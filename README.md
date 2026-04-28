@@ -171,6 +171,8 @@ The first TPU-native serving pressure probe is in `docs/reports/2026-04-tpu-v6e-
 
 The overnight multi-model serving probe is in `docs/reports/2026-04-tpu-v6e-overnight-serving-probe.md`, with machine-readable summary at `docs/reports/2026-04-tpu-v6e-overnight-serving-probe.json`. It ran Qwen 14B, Mistral 7B, and a repeat Qwen 7B row sequentially on one Spot `v6e-8` lane and recorded `0` failed requests across `4,992` OpenAI-compatible chat requests, including `512`-concurrency short-prompt rows. The guarded runner and cleanup fallback are `scripts/tpu-overnight-serving-probe.ps1` and `scripts/tpu-cleanup-watchdog.ps1`.
 
+The first mixed-prompt follow-up is in `docs/reports/2026-04-tpu-v6e-qwen14-mixed-prompt-serving-probe.md`, with machine-readable summary at `docs/reports/2026-04-tpu-v6e-qwen14-mixed-prompt-serving-probe.json`. It rotated three public-safe boundary prompts through Qwen 14B on one Spot `v6e-8` lane and completed `1,280` OpenAI-compatible chat requests with `0` failed requests, including a `512`-concurrency row at `81.843 req/s` and p95 `6.089s`.
+
 For the next TPU-native serving run, `agent-bench probe-openai-serving` supports `--prompt-files` so mixed prompt variants can be rotated per request instead of measuring only identical-prefix pressure.
 
 To maximize short-lived TPU windows, the repo now includes a queue-driven strike path:
