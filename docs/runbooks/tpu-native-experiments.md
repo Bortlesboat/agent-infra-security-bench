@@ -31,7 +31,15 @@ So the TPU-shaped questions are:
 
 ## First TPU-native test: serving pressure probe
 
-Run a short load probe against the same OpenAI-compatible vLLM endpoint used by the benchmark:
+Status: completed in two stages.
+
+- First single-model report: `docs/reports/2026-04-tpu-v6e-serving-pressure-probe.md`
+- Overnight multi-model report: `docs/reports/2026-04-tpu-v6e-overnight-serving-probe.md`
+- Overnight machine-readable summary: `docs/reports/2026-04-tpu-v6e-overnight-serving-probe.json`
+
+The first probe established that the serving layer can be measured separately from agent score. The overnight probe expanded that into three sequential model servers and `4,992` OpenAI-compatible chat requests with `0` failed requests.
+
+To run a short load probe against the same OpenAI-compatible vLLM endpoint used by the benchmark:
 
 ```powershell
 agent-bench probe-openai-serving `
@@ -49,6 +57,30 @@ agent-bench probe-openai-serving `
 This answers a different question from the model sweep:
 
 > how much serving throughput and latency headroom do we get from the TPU lane when prompts look like the benchmark?
+
+## Next TPU-native test: mixed prompt serving pressure
+
+The overnight long-prompt row reused an identical prompt, so prefix caching likely helped. The next serving run should rotate multiple public-safe prompts per request:
+
+```powershell
+agent-bench probe-openai-serving `
+  --base-url http://127.0.0.1:8000/v1 `
+  --model Qwen/Qwen2.5-14B-Instruct `
+  --prompt-files `
+    docs/runbooks/tpu-probe-mixed-prompts/ci-memory-boundary.txt `
+    docs/runbooks/tpu-probe-mixed-prompts/payment-repository-boundary.txt `
+    docs/runbooks/tpu-probe-mixed-prompts/mcp-browser-boundary.txt `
+  --concurrency 16,64,128,256 `
+  --requests-per-level 192 `
+  --max-tokens 96 `
+  --timeout 300 `
+  --label qwen14b-v6e8-mixed-prompts `
+  --json outputs/tpu-probes/qwen14b-v6e8-mixed-prompts.json `
+  --csv outputs/tpu-probes/qwen14b-v6e8-mixed-prompts.csv `
+  --markdown outputs/tpu-probes/qwen14b-v6e8-mixed-prompts.md
+```
+
+This run is more useful than repeating the overnight long-prompt row because it reduces identical-prefix effects while preserving the same serving metrics.
 
 ## What to compare
 

@@ -4,6 +4,7 @@ from pathlib import Path
 
 from agent_infra_security_bench.load_probe import (
     ProbeConfig,
+    load_prompts,
     parse_concurrency_levels,
     percentile,
     render_probe_markdown,
@@ -51,6 +52,57 @@ def test_run_probe_with_fake_transport() -> None:
     assert report["levels"][0]["ok"] == 3
     assert report["levels"][0]["total_tokens"] == 45
     assert report["levels"][0]["latency_p95_s"] == 0.25
+
+
+def test_run_probe_can_rotate_prompt_variants() -> None:
+    seen_prompts: list[str] = []
+
+    def fake_transport(
+        _base_url: str,
+        _model: str,
+        prompt: str,
+        _max_tokens: int,
+        _timeout: float,
+        _api_key: str | None,
+    ) -> dict[str, object]:
+        seen_prompts.append(prompt)
+        return {
+            "ok": True,
+            "status": 200,
+            "latency_s": 0.25,
+            "completion_tokens": 5,
+            "prompt_tokens": 10,
+            "total_tokens": 15,
+            "error": None,
+        }
+
+    report = run_probe(
+        ProbeConfig(
+            base_url="http://127.0.0.1:8000/v1",
+            model="example/model",
+            prompt="alpha",
+            additional_prompts=("bravo", "charlie"),
+            concurrency_levels=(1,),
+            requests_per_level=5,
+            max_tokens=16,
+            timeout=5,
+        ),
+        transport=fake_transport,
+    )
+
+    assert seen_prompts == ["alpha", "bravo", "charlie", "alpha", "bravo"]
+    assert report["prompt_count"] == 3
+    assert report["prompt_chars_min"] == 5
+    assert report["prompt_chars_max"] == 7
+
+
+def test_load_prompts_accepts_multiple_prompt_files(tmp_path: Path) -> None:
+    first = tmp_path / "first.txt"
+    second = tmp_path / "second.txt"
+    first.write_text("alpha", encoding="utf-8")
+    second.write_text("bravo", encoding="utf-8")
+
+    assert load_prompts(prompt_files=(first, second)) == ("alpha", "bravo")
 
 
 def test_probe_writers(tmp_path: Path) -> None:

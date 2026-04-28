@@ -41,7 +41,7 @@ from agent_infra_security_bench.llm_agent import (
 )
 from agent_infra_security_bench.load_probe import (
     ProbeConfig,
-    load_prompt,
+    load_prompts,
     parse_concurrency_levels,
     render_probe_markdown,
     resolve_api_key,
@@ -215,6 +215,7 @@ def main(argv: list[str] | None = None) -> int:
     probe_parser.add_argument("--api-key-env")
     probe_parser.add_argument("--prompt")
     probe_parser.add_argument("--prompt-file", type=Path)
+    probe_parser.add_argument("--prompt-files", type=Path, nargs="+")
     probe_parser.add_argument("--concurrency", default="1,2,4")
     probe_parser.add_argument("--requests-per-level", type=int, default=8)
     probe_parser.add_argument("--max-tokens", type=int, default=64)
@@ -497,11 +498,13 @@ def main(argv: list[str] | None = None) -> int:
         )
         return 0
     if args.command == "probe-openai-serving":
+        prompts = load_prompts(args.prompt, args.prompt_file, tuple(args.prompt_files or ()))
         report = run_probe(
             ProbeConfig(
                 base_url=args.base_url,
                 model=args.model,
-                prompt=load_prompt(args.prompt, args.prompt_file),
+                prompt=prompts[0],
+                additional_prompts=prompts[1:],
                 concurrency_levels=parse_concurrency_levels(args.concurrency),
                 requests_per_level=args.requests_per_level,
                 max_tokens=args.max_tokens,

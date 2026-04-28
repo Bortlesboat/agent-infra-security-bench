@@ -227,6 +227,42 @@
       "reusable_by_without_accelerator": "Use the summary to understand the first measured TPU-vs-GPU cost result and its claim boundary without reading the full field-notes report."
     },
     {
+      "id": "tpu-v6e-serving-pressure-probe-2026-04",
+      "kind": "serving_probe",
+      "title": "TPU v6e single-model serving pressure probe",
+      "summary": "The first TPU-native serving probe measures cold start, TPU runtime setup, concurrency scaling, latency, failures, and token throughput for Qwen/Qwen2.5-7B-Instruct on a Spot v6e-8 serving lane.",
+      "status": "published",
+      "source_commit": "482ecac",
+      "primary_path": "docs/reports/2026-04-tpu-v6e-serving-pressure-probe.md",
+      "report_path": "docs/reports/2026-04-tpu-v6e-serving-pressure-probe.md",
+      "runbook_path": "docs/runbooks/tpu-native-experiments.md",
+      "reusable_by_without_accelerator": "Use the report to understand the serving-layer throughput and latency curve without needing TPU access."
+    },
+    {
+      "id": "tpu-v6e-overnight-serving-probe-2026-04",
+      "kind": "serving_probe",
+      "title": "TPU v6e overnight multi-model serving probe",
+      "summary": "An overnight guarded run served Qwen 14B, Mistral 7B, and a repeat Qwen 7B row sequentially on one Spot v6e-8 lane, recording 0 failed requests across 4,992 OpenAI-compatible chat requests including 512-concurrency rows.",
+      "status": "published",
+      "source_commit": "482ecac",
+      "primary_path": "docs/reports/2026-04-tpu-v6e-overnight-serving-probe.md",
+      "report_path": "docs/reports/2026-04-tpu-v6e-overnight-serving-probe.md",
+      "json_path": "docs/reports/2026-04-tpu-v6e-overnight-serving-probe.json",
+      "runbook_path": "docs/runbooks/tpu-native-experiments.md",
+      "reusable_by_without_accelerator": "Use the report, JSON summary, and runbook to inspect multi-model TPU serving pressure without running cloud TPUs."
+    },
+    {
+      "id": "tpu-mixed-prompt-serving-harness-2026-04",
+      "kind": "runbook",
+      "title": "Mixed-prompt TPU serving harness",
+      "summary": "The serving probe can now rotate prompt variants per request with --prompt-files, and the runbook includes three public-safe mixed boundary prompts for the next anti-prefix-cache TPU serving test.",
+      "status": "published",
+      "primary_path": "docs/runbooks/tpu-native-experiments.md",
+      "runbook_path": "docs/runbooks/tpu-native-experiments.md",
+      "example_path": "docs/runbooks/tpu-probe-mixed-prompts",
+      "reusable_by_without_accelerator": "Use the mixed prompt files and command shape to reproduce the next serving-pressure design on any OpenAI-compatible endpoint."
+    },
+    {
       "id": "frontier-v2-what-we-learned-2026-04",
       "kind": "research_synthesis",
       "title": "Frontier v2 plain-English synthesis",

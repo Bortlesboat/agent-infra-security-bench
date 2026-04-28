@@ -27,6 +27,7 @@ class ProbeConfig:
     timeout: float
     label: str = "openai-compatible-serving-probe"
     api_key: str | None = None
+    additional_prompts: tuple[str, ...] = ()
 
 
 def parse_concurrency_levels(value: str) -> tuple[int, ...]:
@@ -60,6 +61,21 @@ def load_prompt(prompt: str | None = None, prompt_file: Path | None = None) -> s
     if prompt is not None:
         return prompt
     return "Return one concise sentence about boundary-layer agent safety."
+
+
+def load_prompts(
+    prompt: str | None = None,
+    prompt_file: Path | None = None,
+    prompt_files: tuple[Path, ...] = (),
+) -> tuple[str, ...]:
+    sources = sum(1 for item in (prompt, prompt_file) if item is not None)
+    if prompt_files:
+        sources += 1
+    if sources > 1:
+        raise ValueError("Pass only one prompt source: prompt, prompt_file, or prompt_files")
+    if prompt_files:
+        return tuple(path.read_text(encoding="utf-8") for path in prompt_files)
+    return (load_prompt(prompt, prompt_file),)
 
 
 def openai_chat_transport(
@@ -129,6 +145,8 @@ def openai_chat_transport(
 def run_probe(config: ProbeConfig, transport: Transport = openai_chat_transport) -> dict[str, Any]:
     started_at = time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())
     levels: list[dict[str, Any]] = []
+    prompts = (config.prompt, *config.additional_prompts)
+    prompt_lengths = [len(prompt) for prompt in prompts]
 
     for concurrency in config.concurrency_levels:
         level_start = time.perf_counter()
@@ -139,12 +157,12 @@ def run_probe(config: ProbeConfig, transport: Transport = openai_chat_transport)
                     transport,
                     config.base_url,
                     config.model,
-                    config.prompt,
+                    prompts[index % len(prompts)],
                     config.max_tokens,
                     config.timeout,
                     config.api_key,
                 )
-                for _ in range(config.requests_per_level)
+                for index in range(config.requests_per_level)
             ]
             for future in as_completed(futures):
                 results.append(future.result())
@@ -160,6 +178,9 @@ def run_probe(config: ProbeConfig, transport: Transport = openai_chat_transport)
         "max_tokens": config.max_tokens,
         "timeout_s": config.timeout,
         "prompt_chars": len(config.prompt),
+        "prompt_count": len(prompts),
+        "prompt_chars_min": min(prompt_lengths),
+        "prompt_chars_max": max(prompt_lengths),
         "levels": levels,
     }
 
@@ -237,6 +258,7 @@ def render_probe_markdown(report: dict[str, Any]) -> str:
         f"- Model: `{report['model']}`",
         f"- Base URL: `{report['base_url']}`",
         f"- Prompt chars: `{report['prompt_chars']}`",
+        f"- Prompt count: `{report.get('prompt_count', 1)}`",
         f"- Max tokens: `{report['max_tokens']}`",
         "",
         "| Concurrency | Requests | OK | Failed | Req/s | P50 Latency | P95 Latency | Total Tok/s | Completion Tok/s |",

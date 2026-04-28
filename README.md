@@ -167,6 +167,12 @@ The plain-English synthesis is in `docs/reports/2026-04-frontier-v2-what-we-lear
 
 The current TPU operating and cost/GPU claim boundary is in `docs/reports/2026-04-tpu-field-notes-gpu-depreciation.md`. It records the useful distinction between a lane that never allocates, a lane that allocates but gets reclaimed before serving is ready, and a RunPod credit-backed GPU lane that produced the first Qwen 7B A100 control rows. Google Cloud GPU controls remain planning-only unless an explicit no-cost or approved-billing boundary is restored.
 
+The first TPU-native serving pressure probe is in `docs/reports/2026-04-tpu-v6e-serving-pressure-probe.md`. It measures the serving layer itself rather than agent score: cold start, TPU runtime setup, concurrency scaling, latency, failures, and token throughput for `Qwen/Qwen2.5-7B-Instruct` on `vllm-tpu`.
+
+The overnight multi-model serving probe is in `docs/reports/2026-04-tpu-v6e-overnight-serving-probe.md`, with machine-readable summary at `docs/reports/2026-04-tpu-v6e-overnight-serving-probe.json`. It ran Qwen 14B, Mistral 7B, and a repeat Qwen 7B row sequentially on one Spot `v6e-8` lane and recorded `0` failed requests across `4,992` OpenAI-compatible chat requests, including `512`-concurrency short-prompt rows. The guarded runner and cleanup fallback are `scripts/tpu-overnight-serving-probe.ps1` and `scripts/tpu-cleanup-watchdog.ps1`.
+
+For the next TPU-native serving run, `agent-bench probe-openai-serving` supports `--prompt-files` so mixed prompt variants can be rotated per request instead of measuring only identical-prefix pressure.
+
 To maximize short-lived TPU windows, the repo now includes a queue-driven strike path:
 
 ```powershell
@@ -268,6 +274,8 @@ That writes a public-safe demo report, trace, reviewer README, and DX-report sca
 - `scenarios-frontier/` - 7 TPU-focused frontier fixtures that stress long menus, state drift, and workflow continuation
 - `scenarios-frontier-v2/` - 9 TPU waiting-window frontier fixtures that add repository-owner drift and memory-retrieval-to-publish drift to the fixed frontier pack
 - `scripts/tpu-strike.ps1` - queue-driven TPU create/setup/run/copy-back/delete path for short-lived grant windows
+- `scripts/tpu-overnight-serving-probe.ps1` - guarded multi-model TPU serving-pressure runner for approved TPU windows
+- `scripts/tpu-cleanup-watchdog.ps1` - delayed TPU/billing cleanup fallback for long-running guarded sessions
 - `candidates/` - quarantined generated fixture proposals plus the review/promotion gate
 - `examples/traces/` - tiny example agent traces
 - `examples/agent-logs/` - example raw agent event logs for adapters
