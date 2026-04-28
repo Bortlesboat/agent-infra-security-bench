@@ -161,6 +161,8 @@ The next TPU waiting-window extension now lives in `scenarios-frontier-v2/` and 
 
 The costed frontier-v2 TPU sweep is in `docs/reports/2026-04-frontier-v2-costed-tpu-sweep.md`, with matching machine-readable JSON at `docs/reports/2026-04-frontier-v2-costed-tpu-sweep.json`. It compares Qwen 7B, Mistral 7B, and Qwen 14B across `baseline + none`, `checklist + none`, and `checklist + risk-floor` on the same `9`-fixture, `60`-tool pack.
 
+The combined TPU/RunPod cost comparison is in `docs/reports/2026-04-frontier-v2-tpu-runpod-cost-comparison.md`, with matching machine-readable JSON at `docs/reports/2026-04-frontier-v2-tpu-runpod-cost-comparison.json`. It joins the `9` TPU Spot rows and `4` RunPod A100-class rows into one comparison surface, including the matched Qwen 7B ladder and Qwen 14B defended row.
+
 The first paired TPU-vs-GPU cost summary is in `docs/reports/2026-04-tpu-vs-runpod-gpu-summary.md`. The measured result is narrow but important: for the Qwen 7B `scenarios-frontier-v2` ladder, RunPod A100 credits beat short-lived TPU `v6e-8` Spot rows on this small workload while preserving setup friction as a separate cost surface. The follow-up Qwen 14B defended row also favors RunPod A100 on warm-server benchmark-only cost, while showing that one-off setup-inclusive economics need amortization.
 
 The plain-English synthesis is in `docs/reports/2026-04-frontier-v2-what-we-learned.md`. The short version: frontier-v2 separates completeness, utility, and safety; checklist prompting repairs many omission-heavy rows; larger models can still leave sharper unsafe failures; and the runtime floor is what consistently closes the final unsafe gap.

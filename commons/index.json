@@ -207,13 +207,25 @@
       "id": "frontier-v2-runpod-gpu-sweep-2026-04",
       "kind": "sweep_index",
       "title": "Frontier v2 RunPod GPU sweep",
-      "summary": "A three-row RunPod A100 GPU control compares Qwen 7B across baseline, checklist, and defended runtime settings on the same frontier-v2 pack, including benchmark-only timing, cost, pass rate, unsafe count, missed count, and tool-decision coverage.",
+      "summary": "A four-row RunPod A100-class GPU control compares Qwen 7B across baseline, checklist, and defended runtime settings plus a Qwen 14B defended scale row on the same frontier-v2 pack, including benchmark-only timing, cost, pass rate, unsafe count, missed count, and tool-decision coverage.",
       "status": "published",
-      "source_commit": "c589da8",
+      "source_commit": "5f3b083",
       "primary_path": "docs/reports/2026-04-frontier-v2-runpod-gpu-sweep.md",
       "report_path": "docs/reports/2026-04-frontier-v2-runpod-gpu-sweep.md",
       "json_path": "docs/reports/2026-04-frontier-v2-runpod-gpu-sweep.json",
-      "reusable_by_without_accelerator": "Use the sweep table to compare the first measured GPU control against the costed TPU frontier-v2 Qwen 7B rows without running RunPod or TPU resources."
+      "reusable_by_without_accelerator": "Use the sweep table to compare the measured GPU controls against the costed TPU frontier-v2 Qwen 7B and Qwen 14B rows without running RunPod or TPU resources."
+    },
+    {
+      "id": "frontier-v2-tpu-runpod-cost-comparison-2026-04",
+      "kind": "sweep_index",
+      "title": "Frontier v2 TPU/RunPod cost comparison",
+      "summary": "A combined 13-row cost comparison joins the nine Cloud TPU v6e Spot frontier-v2 rows with four RunPod A100-class GPU rows, including matched Qwen 7B prompt/runtime rows and the Qwen 14B defended scale row with benchmark-only costs and setup-amortization caveats.",
+      "status": "published",
+      "source_commit": "5f3b083",
+      "primary_path": "docs/reports/2026-04-frontier-v2-tpu-runpod-cost-comparison.md",
+      "report_path": "docs/reports/2026-04-frontier-v2-tpu-runpod-cost-comparison.md",
+      "json_path": "docs/reports/2026-04-frontier-v2-tpu-runpod-cost-comparison.json",
+      "reusable_by_without_accelerator": "Use the combined sweep and paired-cost table to compare TPU and RunPod GPU rows without running either cloud resource."
     },
     {
       "id": "tpu-vs-runpod-gpu-summary-2026-04",
