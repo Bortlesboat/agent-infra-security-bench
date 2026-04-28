@@ -228,6 +228,18 @@
       "reusable_by_without_accelerator": "Use the combined sweep and paired-cost table to compare TPU and RunPod GPU rows without running either cloud resource."
     },
     {
+      "id": "frontier-v2-qwen14-amortized-tpu-runpod-session-2026-04",
+      "kind": "sweep_index",
+      "title": "Frontier v2 Qwen 14B amortized TPU/RunPod session",
+      "summary": "A setup-inclusive paired session reruns the Qwen 14B baseline, checklist, and defended frontier-v2 rows once on Cloud TPU v6e Spot and once on RunPod A100 SXM, preserving identical quality results while comparing wall-clock setup, benchmark windows, total session cost, and amortized cost per row, fixture, passed fixture, and covered tool decision.",
+      "status": "published",
+      "source_commit": "ea6c4b0",
+      "primary_path": "docs/reports/2026-04-frontier-v2-qwen14-amortized-tpu-runpod-session.md",
+      "report_path": "docs/reports/2026-04-frontier-v2-qwen14-amortized-tpu-runpod-session.md",
+      "json_path": "docs/reports/2026-04-frontier-v2-qwen14-amortized-tpu-runpod-session.json",
+      "reusable_by_without_accelerator": "Use the session table to compare TPU and RunPod GPU setup-inclusive economics for the matched Qwen 14B triplet without running either resource."
+    },
+    {
       "id": "tpu-vs-runpod-gpu-summary-2026-04",
       "kind": "research_synthesis",
       "title": "TPU vs RunPod GPU first paired cost summary",

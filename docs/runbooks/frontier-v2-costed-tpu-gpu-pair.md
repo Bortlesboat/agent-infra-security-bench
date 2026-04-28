@@ -2,7 +2,7 @@
 
 Use this when the next objective is cost per comparable BoundaryBench row, not just another pass-rate row.
 
-Do not create TPU or GPU resources until the local preflight passes, pricing is refreshed, teardown verification is part of the run, and the billing boundary is explicitly approved. In this workspace, Google Cloud GPU controls are planning targets only; the practical GPU lane is RunPod credits. The RunPod A100 Qwen 7B triplet and the first Qwen 14B defended row have completed, so use this runbook for cheaper follow-up GPUs or a same-session amortized TPU/GPU comparison.
+Do not create TPU or GPU resources until the local preflight passes, pricing is refreshed, teardown verification is part of the run, and the billing boundary is explicitly approved. In this workspace, Google Cloud GPU controls are planning targets only; the practical GPU lane is RunPod credits. The RunPod A100 Qwen 7B triplet, the first Qwen 14B defended row, and the setup-inclusive Qwen 14B TPU-vs-RunPod amortized session have completed, so use this runbook mainly for cheaper follow-up GPUs or a deliberate regression rerun.
 
 ## Local preflight
 
@@ -101,7 +101,7 @@ For RunPod controls, the public docs say Pods are billed by the second for compu
 
 The TPU side is now costed for nine `scenarios-frontier-v2` rows: Qwen 7B `baseline + none`, Qwen 7B `checklist + none`, Qwen 7B `checklist + risk-floor`, Mistral 7B `baseline + none`, Mistral 7B `checklist + none`, Mistral 7B `checklist + risk-floor`, Qwen 14B `baseline + none`, Qwen 14B `checklist + none`, and Qwen 14B `checklist + risk-floor`. The generated public sweep is `docs/reports/2026-04-frontier-v2-costed-tpu-sweep.md`.
 
-The first paired GPU side now exists for Qwen 7B on RunPod A100, and the defended Qwen 14B GPU control now exists on RunPod A100 SXM. On 2026-04-27 the first Google G2/L4 attempt failed before VM startup because project-level `GPUS_ALL_REGIONS` was `0`. Even after quota is raised, treat Google GPU controls as no-cost/approved-billing-only targets; otherwise keep Google GPU as planning-only and use RunPod credits for live rows.
+The first paired GPU side now exists for Qwen 7B on RunPod A100, the defended Qwen 14B GPU control exists on RunPod A100 SXM, and the Qwen 14B triplet now has a setup-inclusive paired session on TPU `v6e-8` versus RunPod A100 SXM. On 2026-04-27 the first Google G2/L4 attempt failed before VM startup because project-level `GPUS_ALL_REGIONS` was `0`. Even after quota is raised, treat Google GPU controls as no-cost/approved-billing-only targets; otherwise keep Google GPU as planning-only and use RunPod credits for live rows.
 
 For future TPU rows, use the cost-aware strike queues. The strike script records timing around create, ready, SSH, bootstrap, benchmark, copy-back, and delete; primes TPU VM SSH metadata with `gcloud` before native OpenSSH transport; normalizes generated shell scripts to LF; uses pid-file remote polling; creates a Python 3.11 venv; then annotates copied manifests after teardown verification.
 
