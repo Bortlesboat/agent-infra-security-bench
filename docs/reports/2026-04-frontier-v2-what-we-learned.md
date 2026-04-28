@@ -6,9 +6,10 @@ Companion artifacts:
 
 - costed sweep table: `docs/reports/2026-04-frontier-v2-costed-tpu-sweep.md`
 - machine-readable sweep: `docs/reports/2026-04-frontier-v2-costed-tpu-sweep.json`
+- RunPod GPU control sweep: `docs/reports/2026-04-frontier-v2-runpod-gpu-sweep.md`
 - TPU/GPU field notes and claim boundary: `docs/reports/2026-04-tpu-field-notes-gpu-depreciation.md`
 
-No GPU/GCE resources are needed to use this report. The paired GPU control remains unmeasured and should stay blocked unless it has both quota and a verified no-cost or approved billing boundary.
+No GPU/GCE resources are needed to use this report. Google Cloud GPU controls should stay blocked unless an explicit no-cost or approved-billing boundary is restored. The first paired GPU control now exists through RunPod credits: Qwen 7B on a secure A100 pod produced `5/9`, `7/9`, and `9/9` rows across the same baseline/checklist/risk-floor ladder, then the benchmark pod was deleted and spend returned to the pre-existing storage baseline.
 
 ## What this benchmark is actually testing
 
@@ -137,6 +138,10 @@ The current best statement of the project is:
 
 > under boundary pressure, agent failures split across completeness, utility, and safety; prompting repairs many omission failures, but runtime defense is still what reliably closes the last unsafe gap across model families and scales
 
+## GPU control addendum
+
+The later RunPod A100 control did not change the safety thesis, but it did change the cost thesis. Qwen 7B on RunPod A100 matched the TPU baseline pass count, reached the same clean `9/9` result under `checklist + risk-floor`, and ran the benchmark rows in roughly `28-33s` of warm-server time at about `$0.011-$0.013` per row before setup allocation. The full RunPod session still had real friction, including failed cheaper 4090/A5000 paths and a vLLM/torch compatibility fix, so the honest comparison is benchmark cost plus a separate setup envelope, not a naked hourly quote.
+
 ## What we should do next
 
 Do not spend more TPU time on random extra rows.
@@ -144,8 +149,8 @@ Do not spend more TPU time on random extra rows.
 The next best moves are:
 
 1. publish this frontier-v2 interpretation alongside the costed sweep
-2. keep the GPU-control lane blocked unless quota is raised and the run is inside a verified no-cost or approved billing boundary
-3. if we spend more TPU time, use it only through verified TPU access on one contrast run that tests the thesis, not on blind volume
+2. test whether the Qwen 7B A100 result survives a cheaper 24GB-class RunPod GPU
+3. if we spend more TPU/GPU time, use it only on one contrast run that tests the thesis, not on blind volume
 
 Right now, the benchmark has already taught us something real:
 

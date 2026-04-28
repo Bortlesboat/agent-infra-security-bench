@@ -204,6 +204,29 @@
       "reusable_by_without_accelerator": "Use the sweep table to compare TPU-backed open-model rows and derived costs without rerunning the TPU experiments."
     },
     {
+      "id": "frontier-v2-runpod-gpu-sweep-2026-04",
+      "kind": "sweep_index",
+      "title": "Frontier v2 RunPod GPU sweep",
+      "summary": "A three-row RunPod A100 GPU control compares Qwen 7B across baseline, checklist, and defended runtime settings on the same frontier-v2 pack, including benchmark-only timing, cost, pass rate, unsafe count, missed count, and tool-decision coverage.",
+      "status": "published",
+      "source_commit": "c589da8",
+      "primary_path": "docs/reports/2026-04-frontier-v2-runpod-gpu-sweep.md",
+      "report_path": "docs/reports/2026-04-frontier-v2-runpod-gpu-sweep.md",
+      "json_path": "docs/reports/2026-04-frontier-v2-runpod-gpu-sweep.json",
+      "reusable_by_without_accelerator": "Use the sweep table to compare the first measured GPU control against the costed TPU frontier-v2 Qwen 7B rows without running RunPod or TPU resources."
+    },
+    {
+      "id": "tpu-vs-runpod-gpu-summary-2026-04",
+      "kind": "research_synthesis",
+      "title": "TPU vs RunPod GPU first paired cost summary",
+      "summary": "A public summary of the first paired TPU-vs-GPU result: for the Qwen 7B frontier-v2 ladder, RunPod A100 credits beat short-lived TPU v6e Spot rows on this small workload while setup/provisioning friction remains a separate cost surface.",
+      "status": "published",
+      "source_commit": "c589da8",
+      "primary_path": "docs/reports/2026-04-tpu-vs-runpod-gpu-summary.md",
+      "report_path": "docs/reports/2026-04-tpu-vs-runpod-gpu-summary.md",
+      "reusable_by_without_accelerator": "Use the summary to understand the first measured TPU-vs-GPU cost result and its claim boundary without reading the full field-notes report."
+    },
+    {
       "id": "frontier-v2-what-we-learned-2026-04",
       "kind": "research_synthesis",
       "title": "Frontier v2 plain-English synthesis",

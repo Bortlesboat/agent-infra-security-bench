@@ -1,7 +1,7 @@
 # TPU Field Notes For The GPU Depreciation Debate
 
 Date: 2026-04-26
-Updated: 2026-04-27
+Updated: 2026-04-28
 
 ## Thesis
 
@@ -77,6 +77,8 @@ The new rows changed the useful denominator from "one TPU cost point" to "small 
 
 The first GPU-control attempt on 2026-04-27 did not reach a benchmark row. Local preflight, regional L4 quota, and teardown checks were clean, but the actual `g2-standard-4` create failed on the global Compute Engine GPU quota: `GPUS_ALL_REGIONS` was `0`. That is a useful negative datapoint rather than a model result. Google documents that GPU projects need both the regional GPU-family quota and the additional global `GPUs (all regions)` quota, so any future GPU control would need both checks before allocation. It would also need a verified no-cost or explicitly approved billing boundary; the live workspace should not create paid GPU/GCE resources for this comparison. The same live session also exposed stale TPU strike processes from earlier retries; those were stopped, the created TPU VMs were deleted, and final provider checks showed no GCE instances or TPU VMs left running in the touched zones.
 
+On 2026-04-28, the RunPod credit lane produced the missing GPU control rows without re-linking Google Cloud billing. Preflight found no running RunPod pods, a known pre-existing storage baseline from one exited pod, and a positive credit balance. The cheap GPU lane still had friction: an A5000 allocation disappeared before launch, a secure 4090 vLLM pod never became API/SSH-ready, a secure 4090 PyTorch pod also failed readiness/port exposure, and community 4090 allocation attempts failed before a usable pod existed. The successful lane was a secure `NVIDIA A100 80GB PCIe` pod at a launch-time meter of `$1.39/hr`. The base PyTorch image had a working CUDA stack, but the first vLLM install pulled an incompatible newer torch wheel; pinning `vllm==0.10.2` and `transformers==4.56.2` fixed the serving stack. The live endpoint then returned an OpenAI-compatible smoke response and ran all three Qwen 7B frontier-v2 rows. After copy-back, the A100 pod and the temporary custom template were deleted, RunPod showed no running pods, and current spend returned to the pre-run storage baseline.
+
 ## Prior Completed TPU v6e Benchmark Rows
 
 Earlier completed Cloud TPU `v6e-8` runs provide the model-behavior side of the field evidence. These rows used the same BoundaryBench artifact path: raw events, adapted traces, results, coverage, and manifests.
@@ -107,6 +109,8 @@ Those are not marketing claims. They are measured workload outcomes on a non-GPU
 
 Pricing checked on 2026-04-27 from the public Google Cloud pages for [Cloud TPU pricing](https://cloud.google.com/tpu/pricing), [Compute GPU pricing](https://cloud.google.com/compute/gpus-pricing), [Compute Engine VM pricing](https://cloud.google.com/compute/all-pricing), and [Spot VM pricing](https://cloud.google.com/spot-vms/pricing). The public TPU page prices TPUs per chip-hour and says TPU charges accrue while the TPU node is in `READY`. The public GPU page says A3, A2, and G2 accelerator-optimized machine types include the attached GPU cost in the machine-type price, so GPU comparisons should use whole-machine hours rather than GPU-only component prices.
 
+RunPod was checked on 2026-04-28 as the practical no-cash GPU lane because this workspace has RunPod credits and Google Cloud billing is intentionally unlinked. The relevant public RunPod docs are [billing overview](https://docs.runpod.io/accounts-billing/billing), [Pods pricing](https://docs.runpod.io/pods/pricing), [Pods API list response](https://docs.runpod.io/api-reference/pods/GET/pods), and [CLI GPU list](https://docs.runpod.io/runpodctl/reference/runpodctl-gpu). The important pricing behavior is different from Google: RunPod consumes prepaid credits for active pods, serverless endpoints, and storage; current GPU prices are refreshed during pod deployment; the pod record exposes `costPerHr` and `adjustedCostPerHr`; stopped pods can still accrue storage charges; and Spot pods are interruptible. So a RunPod GPU row must capture the actual pod hourly meter from launch, not rely only on a static public table.
+
 The current hourly meter snapshot:
 
 | Lane | Current public price signal | Full-node hourly meter used for comparison | Notes |
@@ -121,6 +125,8 @@ The current hourly meter snapshot:
 | A2 `a2-highgpu-1g`, 1x A100 40GB | `$3.673385/hr` on demand | `$3.67/hr` | Stronger single-GPU control for 7B/14B rows. |
 | A3 High `a3-highgpu-1g`, 1x H100 80GB | `$11.061250015/hr` on demand | `$11.06/hr` | Comparable when the question is H100 single-node latency/headroom. |
 | A3 High `a3-highgpu-8g`, 8x H100 80GB | `$88.490000119/hr` on demand | `$88.49/hr` | Not the right first control for small 7B rows unless measuring batched throughput or multi-GPU serving. |
+| RunPod Secure Pod, 1x A100 80GB PCIe | Launch-time pod meter | `$1.39/hr` | Actual 2026-04-28 GPU control meter, paid from credits. |
+| RunPod Secure Pod, 1x RTX 4090 | Launch-time pod meter | `$0.69/hr` | Attempted cheaper lane; readiness/allocation friction blocked a benchmark row. |
 
 The costed TPU sweep now gives actual workload denominators:
 
@@ -138,7 +144,17 @@ The costed TPU sweep now gives actual workload denominators:
 
 The completed TPU rows are tightly clustered on elapsed allocation time: roughly `696-887s` and `$1.16-$1.48` per successful Spot row at the launch-time `v6e-8` meter. Prompt/runtime structure matters more to cost per useful result than the small timing differences: Mistral baseline is the most expensive per passed fixture because it only passes `2/9`, while Mistral `checklist + risk-floor` is the cheapest perfect row at `$0.142739` per passed fixture. Qwen 14B `checklist + risk-floor` adds a second scale row that is clean on quality and still only `$0.150689` per passed fixture.
 
-At the Qwen 7B baseline's `0.214722h` wall-clock time, the current GPU meters would imply about `$0.152` on `g2-standard-4` L4, `$0.789` on `a2-highgpu-1g` A100, `$2.375` on `a3-highgpu-1g` H100, and `$18.999` on `a3-highgpu-8g`. That is not the final answer, because GPU wall-clock is still unmeasured. It does show the live comparison boundary: these TPU Spot rows are cheaper than H100-class same-time controls, but they do not beat the cheap single-L4 or single-A100 meters unless those GPU rows take materially longer or fail the workload shape.
+The 2026-04-28 RunPod A100 control gives the first measured GPU denominator for the same Qwen 7B frontier-v2 workload. The generated GPU sweep is `docs/reports/2026-04-frontier-v2-runpod-gpu-sweep.md`. The row-level GPU costs below are benchmark-only warm-server costs from the annotated manifests; RunPod allocation, image readiness, package install, model download, server warmup, and failed lower-cost GPU attempts are handled as setup friction rather than hidden in model quality.
+
+| Row | TPU `v6e-8` Spot row | RunPod A100 row | Read |
+| --- | --- | --- | --- |
+| Qwen 7B `baseline + none` | `5/9`, `773s`, `$1.286313`, `$0.257263/pass`, `59/60` coverage | `5/9`, `32.595s`, `$0.012585`, `$0.002517/pass`, `60/60` coverage | Same pass count; the GPU row covered every tool decision. |
+| Qwen 7B `checklist + none` | `8/9`, `696s`, `$1.158181`, `$0.144773/pass`, `60/60` coverage | `7/9`, `29.619s`, `$0.011436`, `$0.001634/pass`, `60/60` coverage | GPU was far cheaper but one fixture worse on quality. |
+| Qwen 7B `checklist + risk-floor` | `9/9`, `803s`, `$1.336235`, `$0.148471/pass`, `60/60` coverage | `9/9`, `27.778s`, `$0.010725`, `$0.001192/pass`, `60/60` coverage | Clean paired row; A100 wins this small workload on measured marginal cost. |
+
+The setup envelope matters. The two failed 4090 pods consumed about `883s` at `$0.69/hr`, or roughly `$0.169` of billable friction. The successful A100 pod was live for about `3,160s` at `$1.39/hr`, or roughly `$1.220`, and produced all three Qwen 7B rows. Allocating that whole RunPod session envelope across the three completed rows gives about `$0.463/row`, still below the three matched TPU Spot rows' combined `$3.780729` (`$1.260/row`). That is a stronger answer than the earlier theoretical comparison, but it is not yet a universal hardware claim: the TPU rows were launched as short-lived strikes, and a same-session warm TPU sweep could amortize setup differently.
+
+At the Qwen 7B baseline's `0.214722h` TPU wall-clock time, the current Google GPU meters would imply about `$0.152` on `g2-standard-4` L4, `$0.789` on `a2-highgpu-1g` A100, `$2.375` on `a3-highgpu-1g` H100, and `$18.999` on `a3-highgpu-8g`. The measured RunPod A100 row now shows that an available credit-backed single-GPU lane can be materially cheaper for this small BoundaryBench-style workload. The open question moves from "can any GPU row beat TPU?" to "how much of that advantage survives on cheaper 24GB GPUs, larger models, batched throughput, and equally amortized warm-session runs?"
 
 The immediate answer is therefore split:
 
@@ -183,9 +199,11 @@ economic_run_cost_usd =
   successful_run_cost_usd + allocated_friction_cost_usd
 ```
 
-What we can now quantify is a `9`-row frontier-v2 TPU Spot surface: `9` fixtures per row, `60` possible tool decisions per row, per-row allocation windows of roughly `11.6-14.8` minutes, and per-row Spot costs of roughly `$1.16-$1.48`. The clean completed rows are Qwen 7B, Mistral 7B, and Qwen 14B `checklist + risk-floor`: all `9/9` with `60/60` coverage and no unsafe approvals.
+What we can now quantify is a `9`-row frontier-v2 TPU Spot surface plus a `3`-row RunPod A100 Qwen 7B control. The TPU surface has `9` fixtures per row, `60` possible tool decisions per row, per-row allocation windows of roughly `11.6-14.8` minutes, and per-row Spot costs of roughly `$1.16-$1.48`. The RunPod A100 control has the same `9` fixtures and `60` possible tool decisions for Qwen 7B, benchmark-only durations of roughly `28-33s`, and row costs of roughly `$0.011-$0.013` before allocating shared setup friction.
 
-What the 2026-04-27 GPU attempt adds is a quota-friction measurement, not a GPU quality or cost row. The attempted G2/L4 control was blocked before VM startup by `GPUS_ALL_REGIONS=0`, even though the regional L4 quota surface showed one available L4. Until that global quota is raised, retrying G2, A2, or A3 Compute Engine zones will not produce the paired row. Under the current no-spend operating rule, those retries should remain planning-only unless the run is inside a verified no-cost credit boundary or explicitly approved billing guardrail.
+What the 2026-04-27 Google GPU attempt adds is a quota-friction measurement, not a GPU quality or cost row. The attempted G2/L4 control was blocked before VM startup by `GPUS_ALL_REGIONS=0`, even though the regional L4 quota surface showed one available L4. Under the current no-spend operating rule, retrying G2, A2, or A3 on Google Cloud should remain planning-only.
+
+The RunPod lane is no longer theoretical. The 2026-04-28 control proved the credit-backed path, but also proved that "available GPU" is not the same as "usable benchmark pod": allocation disappearance, no-port readiness, and serving-stack version drift all showed up before the A100 row succeeded. The public repo should still avoid RunPod account IDs, account emails, pod IDs, public IPs, exact balances, or API-key material.
 
 What we still cannot honestly compute is actual cost per run for the older completed TPU v1 rows, because those historical manifests and artifacts do not carry wall-clock timing. They record fields such as `created_at`, `model`, `policy`, `hardware`, `scenario_count`, `results_path`, and `coverage_path`; `coverage.json` records fixture/tool coverage; `results.csv` records pass, unsafe, and missed counts. They do not record `create_requested_at`, `ready_at`, `bootstrap_started_at`, `benchmark_started_at`, `benchmark_finished_at`, `copyback_finished_at`, or `delete_verified_at`.
 
@@ -196,17 +214,17 @@ The repo now has the instrumentation needed for the next paired TPU-vs-GPU run. 
 - `reliability`: allocation failures, preemption count, whether preemption occurred before benchmark start, and whether teardown was verified
 - `derived_costs`: billable seconds, successful run cost, friction cost, cost per fixture, cost per passed fixture, cost per covered tool decision, and cost per fully covered tool decision when coverage is complete
 
-Scientifically, the cleanest missing measurement is no longer another Qwen 7B baseline TPU attempt. It is the paired GPU control for the completed Qwen 7B baseline row, using the same repo commit, model weights, `max_model_len=4096`, prompt/runtime settings, and OpenAI-compatible benchmark path. Operationally, that remains a planning target only until two separate gates are true: `GPUS_ALL_REGIONS` is raised above zero, and the run is covered by a verified no-cost or explicitly approved billing boundary.
+Scientifically, the cleanest missing Qwen 7B GPU measurement has now been collected on RunPod A100. The next missing measurements are narrower: a cheaper 24GB-class RunPod GPU if allocation/readiness stabilizes, a Qwen 14B GPU row on A100/H100, and a same-session warm TPU-vs-GPU run that amortizes setup on both sides instead of comparing fresh TPU strikes with warm GPU benchmark rows.
 
 | Pair | Hardware | Why |
 | --- | --- | --- |
-| Qwen 7B `baseline + none` | Completed TPU `v6e-8` row vs G2 L4 first, A2 A100 fallback | Cheapest first answer to whether TPU beats the practical single-GPU control. |
-| Qwen 7B `checklist + none` | TPU `v6e-8` vs the same GPU lane | Measures whether prompt structure still closes the expanded pack and how cost changes when pass rate improves. |
-| Qwen 14B `checklist + risk-floor` | TPU `v6e-8` vs A2 A100 or A3 H100 | Checks whether the larger row needs the more expensive GPU class. |
+| Qwen 7B prompt/runtime triplet | Completed TPU `v6e-8` rows vs completed RunPod A100 rows | First paired answer: A100 credits beat TPU Spot on this small measured workload, with setup friction tracked separately. |
+| Qwen 7B `baseline + none` on a cheaper RunPod 24GB-class GPU | L4 if available, otherwise A5000 / RTX 4090 / RTX 3090 | Checks whether A100 was overkill and whether the cheap-GPU lane can actually provision cleanly. |
+| Qwen 14B `checklist + risk-floor` | TPU `v6e-8` vs RunPod A100 80GB or H100 | Checks whether the larger clean TPU row requires a premium GPU class. |
 
 No additional TPU or GPU resources should be created from this report alone. The next live run should start only after preflight is clean, pricing is snapshotted, the no-cost or approved-billing boundary is explicit, and final teardown verification is part of the run plan.
 
-For the GPU control specifically, preflight now means: verify no stale TPU strike processes are still running, verify no TPU/GCE resources remain from prior attempts, verify `GPUS_ALL_REGIONS > 0`, verify the regional quota for the target GPU family (`GPU_FAMILY:NVIDIA_L4` for G2/L4, `NVIDIA_A100_GPUS` for A2, or `GPU_FAMILY:NVIDIA_H100` for A3), verify billing cannot charge unexpectedly, then create exactly one VM and delete it after copy-back.
+For the next RunPod GPU control specifically, preflight now means: verify no stale TPU strike processes are still running, verify no TPU/GCE resources remain from prior attempts, verify RunPod credits and account spend controls, verify current spend is zero or explicitly baselined, verify target GPU availability, create exactly one pod, capture `costPerHr` and `adjustedCostPerHr`, run the planned rows while the server is warm, copy artifacts back, delete/terminate the pod, and verify the RunPod spend rate returned to the pre-run baseline.
 
 ## What This Adds To The NVIDIA/GPU Useful-Life Debate
 
@@ -227,8 +245,8 @@ For BoundaryBench-style agent evaluation, the answer so far is mixed but meaning
 
 - **Workload portability:** yes; vLLM plus an OpenAI-compatible runner made open-model TPU rows comparable with local and hosted rows.
 - **Measurement fidelity:** yes; the same pass, unsafe, missed, and coverage metrics survive the hardware move.
-- **Operational friction:** real; the April 26/27 field attempts hit capacity inconsistency, spot preemption, serving-quota limits, TPU VM SSH-key metadata friction, Windows script transport issues, Python-version drift, stale retry processes, and global GPU quota gating before the costed TPU surface completed and before the GPU control could start.
-- **Economic implication:** TPU substitution is not a binary replacement story. It is a pressure function. The measured TPU Spot rows are already cheaper than same-time H100-class controls, but the cheap L4/A100 comparison is still open until a paired GPU run exists, global Compute GPU quota allows the VM to start, and the run can happen inside an approved no-cost/billing-safe boundary.
+- **Operational friction:** real; the April 26/27 TPU attempts hit capacity inconsistency, spot preemption, serving-quota limits, TPU VM SSH-key metadata friction, Windows script transport issues, Python-version drift, stale retry processes, and global Google GPU quota gating. The April 28 RunPod attempt added GPU-side friction: disappearing lower-cost allocations, pods that never exposed usable ports, and serving-stack version drift.
+- **Economic implication:** TPU substitution is not a binary replacement story. It is a pressure function. The measured TPU Spot rows are already cheaper than same-time H100-class Google controls, but the first real RunPod A100 control beat TPU Spot on this small Qwen 7B workload. That narrows the claim: TPU pressure is real, but cheap available single-GPU supply can still be the better economic home for small open-model agent-eval rows.
 
 ## Substitution-Adjusted Useful Life
 
@@ -248,24 +266,23 @@ TPUs pressure the middle of that equation. They do not need to replace all GPUs.
 
 ## What We Should Measure Next
 
-The next measurement gap is the GPU side of the already-completed Qwen 7B frontier-v2 baseline row, but it should not be run on this workspace as a paid cloud control. The TPU side of the Qwen 7B, Mistral 7B, and Qwen 14B prompt/runtime ladders is now complete enough that another TPU row is lower leverage than the first paired GPU control, but that GPU control stays blocked until it is quota-clean and no-cost/billing-safe.
+The first GPU side of the Qwen 7B frontier-v2 ladder is now complete on RunPod A100, and it should not be repeated on this workspace as a paid Google Cloud control. The next useful step is not "another A100 baseline." It is testing whether the same result survives a cheaper GPU class, a larger model, or equal setup amortization.
 
 To make that window count, the repo now carries a queue-driven strike path at `scripts/tpu-strike.ps1` plus cost-aware queue manifests under `docs/runbooks/`. The strike path snapshots timing, primes TPU SSH metadata, uses native OpenSSH for transport, copies artifacts back, deletes the TPU, verifies teardown, and annotates the manifest with cost metadata. The GPU control should mirror those fields instead of becoming a one-off stopwatch note.
 
-Candidate GPU rows if a no-cost/approved-billing lane exists:
+Candidate next rows if a no-cost/approved-billing lane exists:
 
 | Row | Why |
 | --- | --- |
-| Qwen 7B `baseline + none` on G2 L4 | cheapest practical GPU control if Qwen 7B fits at `4096` context; blocked on 2026-04-27 by `GPUS_ALL_REGIONS=0` |
-| Qwen 7B `baseline + none` on A2 A100 | fallback if L4 memory or throughput is not sufficient |
-| Qwen 7B `checklist + none` on G2 L4 or A2 A100 | tests whether prompt structure improves pass rate enough to change cost per passed fixture against the same GPU lane |
-| Qwen 14B `checklist + risk-floor` on A2 A100 or A3 H100 | tests whether the clean larger-model TPU row requires a more expensive GPU class |
+| Qwen 7B `baseline + none` on RunPod L4 if available, otherwise RTX A5000 / RTX 3090 / RTX 4090 | tests whether the A100 result was overkill and whether a cheap GPU can provision cleanly |
+| Qwen 7B same-session warm TPU triplet vs same-session warm GPU triplet | separates accelerator economics from create/bootstrap/delete overhead on both sides |
+| Qwen 14B `checklist + risk-floor` on RunPod A100 or H100 | tests whether the clean larger-model TPU row requires a more expensive GPU class |
 
 The public value is the same: show people without TPU access what TPU-backed workload substitution looks like at the level where accounting debate becomes operational reality.
 
 ## Claim Boundary
 
 - This report is not a broad TPU-versus-GPU benchmark.
-- The fresh 2026-04-27 retries completed nine costed TPU frontier-v2 model runs, but they do not yet prove TPU is cheaper than GPU for this workload because the paired GPU control was blocked before VM startup by global GPU quota and should not be retried as a paid cloud run without an approved no-cost/billing-safe boundary.
+- The fresh 2026-04-27 retries completed nine costed TPU frontier-v2 model runs. The 2026-04-28 RunPod session completed three matched Qwen 7B A100 GPU rows and showed that this A100 credit lane was cheaper for the small Qwen 7B workload. That does not prove GPUs are generally cheaper, TPUs are generally worse, or larger/batched workloads behave the same way.
 - The model-behavior table is from earlier completed Cloud TPU v6e runs in this repo.
 - The investment claim is about substitution pressure and economic useful life, not a declaration that TPUs universally dominate GPUs.
