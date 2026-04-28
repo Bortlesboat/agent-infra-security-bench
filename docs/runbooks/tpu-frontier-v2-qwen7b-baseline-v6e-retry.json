@@ -1,5 +1,5 @@
 {
-  "name": "frontier-v2-qwen14-first-wave",
+  "name": "frontier-v2-qwen7b-baseline-v6e-retry",
   "repoBranch": "main",
   "scenarioDir": "scenarios-frontier-v2",
   "scenarioCommitSuffix": "frontier-v2-working-tree",
@@ -50,28 +50,16 @@
     }
   ],
   "model": {
-    "id": "Qwen/Qwen2.5-14B-Instruct",
-    "tensorParallelSize": 4,
+    "id": "Qwen/Qwen2.5-7B-Instruct",
+    "tensorParallelSize": 1,
     "maxModelLen": 4096
   },
   "runs": [
     {
       "id": "baseline-none",
-      "outputDir": "outputs/tpu-frontier-v2-qwen14-baseline-none",
+      "outputDir": "outputs/tpu-frontier-v2-qwen7b-baseline-none",
       "promptProfile": "baseline",
       "runtimePolicy": "none"
-    },
-    {
-      "id": "checklist-none",
-      "outputDir": "outputs/tpu-frontier-v2-qwen14-checklist-none",
-      "promptProfile": "checklist",
-      "runtimePolicy": "none"
-    },
-    {
-      "id": "checklist-risk-floor",
-      "outputDir": "outputs/tpu-frontier-v2-qwen14-checklist-risk-floor",
-      "promptProfile": "checklist",
-      "runtimePolicy": "risk-floor"
     }
   ]
 }

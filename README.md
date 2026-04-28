@@ -159,13 +159,19 @@ The outward-facing launch and grant surfaces that summarize that thesis now live
 
 The next TPU waiting-window extension now lives in `scenarios-frontier-v2/` and `tests/test_frontier_pack_v2.py`. It keeps the original `7`-fixture frontier pack intact, adds two new continuation-boundary cases, and raises the fixed pack to `9` scenarios and `60` tools. Fresh local deterministic controls on the v2 pack still show the intended split: `deny-high-risk-payment-state` passes `1/9`, while `deny-high-risk-stateful` passes `9/9`.
 
-The current TPU operating readout is in `docs/reports/2026-04-tpu-field-notes-gpu-depreciation.md`. It records the useful distinction between a lane that never allocates and a lane that allocates but gets reclaimed before serving is ready.
+The costed frontier-v2 TPU sweep is in `docs/reports/2026-04-frontier-v2-costed-tpu-sweep.md`, with matching machine-readable JSON at `docs/reports/2026-04-frontier-v2-costed-tpu-sweep.json`. It compares Qwen 7B, Mistral 7B, and Qwen 14B across `baseline + none`, `checklist + none`, and `checklist + risk-floor` on the same `9`-fixture, `60`-tool pack.
+
+The plain-English synthesis is in `docs/reports/2026-04-frontier-v2-what-we-learned.md`. The short version: frontier-v2 separates completeness, utility, and safety; checklist prompting repairs many omission-heavy rows; larger models can still leave sharper unsafe failures; and the runtime floor is what consistently closes the final unsafe gap.
+
+The current TPU operating and cost/GPU claim boundary is in `docs/reports/2026-04-tpu-field-notes-gpu-depreciation.md`. It records the useful distinction between a lane that never allocates and a lane that allocates but gets reclaimed before serving is ready. GPU controls remain planning-only unless quota and a verified no-cost or approved billing boundary are both present.
 
 To maximize short-lived TPU windows, the repo now includes a queue-driven strike path:
 
 ```powershell
 powershell -NoProfile -ExecutionPolicy Bypass -File scripts/tpu-strike.ps1 -QueueFile docs/runbooks/tpu-frontier-v2-qwen7b-first-wave.json
 ```
+
+For the next TPU-vs-GPU cost comparison design, use `docs/runbooks/frontier-v2-costed-tpu-gpu-pair.md`. The TPU strike queues now carry lane-level pricing snapshots, and the strike script writes `cost-metadata/pricing.json`, `cost-metadata/timing.json`, and `cost-metadata/reliability.json` beside copied run manifests before annotating them with `derived_costs`. Do not use that runbook to launch paid GPU/GCE controls without an explicit no-cost or approved-billing boundary.
 
 The first queued manifests are:
 

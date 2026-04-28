@@ -1,7 +1,7 @@
 {
   "schema_version": "agent-infra-security-bench/compute-commons/v1",
   "name": "BoundaryBench Commons",
-  "updated_at": "2026-04-24",
+  "updated_at": "2026-04-28",
   "mission": "Use scarce accelerator and local-model access to publish reusable agent-infrastructure security evidence for people who cannot run the same sweeps themselves.",
   "artifacts": [
     {
@@ -180,6 +180,39 @@
       "primary_path": "docs/reports/2026-04-frontier-findings-synthesis.md",
       "report_path": "docs/reports/2026-04-frontier-findings-synthesis.md",
       "reusable_by_without_accelerator": "Use the synthesis to understand what the frontier rows imply about boundary-layer agent behavior and defense design without rerunning the TPU matrix."
+    },
+    {
+      "id": "frontier-pack-v2-2026-04",
+      "kind": "fixture_set",
+      "title": "TPU frontier pack v2",
+      "summary": "Nine harder frontier fixtures extend the original frontier pack with repository-owner drift and memory-retrieval-to-publish drift, raising the fixed control surface to 60 expected tool decisions while preserving the stateful-vs-payment deterministic split.",
+      "status": "published",
+      "source_commit": "8f0927f",
+      "primary_path": "scenarios-frontier-v2",
+      "reusable_by_without_accelerator": "Run the v2 frontier pack locally with deterministic policies or inspect it before spending any accelerator time."
+    },
+    {
+      "id": "frontier-v2-costed-tpu-sweep-2026-04",
+      "kind": "sweep_index",
+      "title": "Frontier v2 costed TPU sweep",
+      "summary": "A nine-row costed TPU sweep compares Qwen 7B, Mistral 7B, and Qwen 14B across baseline, checklist, and defended runtime settings on the same frontier-v2 pack, including per-row timing, cost, pass rate, unsafe count, missed count, and tool-decision coverage.",
+      "status": "published",
+      "source_commit": "8f0927f",
+      "primary_path": "docs/reports/2026-04-frontier-v2-costed-tpu-sweep.md",
+      "report_path": "docs/reports/2026-04-frontier-v2-costed-tpu-sweep.md",
+      "json_path": "docs/reports/2026-04-frontier-v2-costed-tpu-sweep.json",
+      "reusable_by_without_accelerator": "Use the sweep table to compare TPU-backed open-model rows and derived costs without rerunning the TPU experiments."
+    },
+    {
+      "id": "frontier-v2-what-we-learned-2026-04",
+      "kind": "research_synthesis",
+      "title": "Frontier v2 plain-English synthesis",
+      "summary": "A plain-English synthesis of the costed frontier-v2 TPU surface: prompt structure repairs many omission-heavy rows, runtime defense still closes the last unsafe gap, and larger models can improve usefulness while leaving sharper safety failures.",
+      "status": "published",
+      "source_commit": "8f0927f",
+      "primary_path": "docs/reports/2026-04-frontier-v2-what-we-learned.md",
+      "report_path": "docs/reports/2026-04-frontier-v2-what-we-learned.md",
+      "reusable_by_without_accelerator": "Use the synthesis to understand what the nine costed TPU rows mean for boundary-layer defense design without running TPU or GPU resources."
     },
     {
       "id": "nvidia-nim-hosted-baseline-2026-04",

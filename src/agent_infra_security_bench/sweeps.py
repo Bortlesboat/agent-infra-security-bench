@@ -37,6 +37,12 @@ class SweepRun:
     coverage_rate: float | None
     omitted_tools: int | None
     duplicate_decision_tools: int | None
+    billable_hours: float | None
+    successful_run_cost_usd: float | None
+    economic_run_cost_usd: float | None
+    cost_per_fixture_usd: float | None
+    cost_per_passed_fixture_usd: float | None
+    cost_per_covered_tool_decision_usd: float | None
     notes: str | None
 
     def to_dict(self) -> dict[str, Any]:
@@ -65,6 +71,12 @@ class SweepRun:
             "coverage_rate": self.coverage_rate,
             "omitted_tools": self.omitted_tools,
             "duplicate_decision_tools": self.duplicate_decision_tools,
+            "billable_hours": self.billable_hours,
+            "successful_run_cost_usd": self.successful_run_cost_usd,
+            "economic_run_cost_usd": self.economic_run_cost_usd,
+            "cost_per_fixture_usd": self.cost_per_fixture_usd,
+            "cost_per_passed_fixture_usd": self.cost_per_passed_fixture_usd,
+            "cost_per_covered_tool_decision_usd": self.cost_per_covered_tool_decision_usd,
             "notes": self.notes,
         }
 
@@ -145,6 +157,32 @@ def render_sweep_markdown(sweep: SweepIndex) -> str:
             )
             + " |"
         )
+    if any(run.successful_run_cost_usd is not None for run in sweep.runs):
+        lines.extend(
+            [
+                "",
+                "## Cost",
+                "",
+                "| Run | Billable Hours | Run Cost | Economic Cost | $/Fixture | $/Pass | $/Covered Tool |",
+                "| --- | ---: | ---: | ---: | ---: | ---: | ---: |",
+            ]
+        )
+        for run in sweep.runs:
+            lines.append(
+                "| "
+                + " | ".join(
+                    [
+                        run.run_id,
+                        _format_float(run.billable_hours),
+                        _format_float(run.successful_run_cost_usd),
+                        _format_float(run.economic_run_cost_usd),
+                        _format_float(run.cost_per_fixture_usd),
+                        _format_float(run.cost_per_passed_fixture_usd),
+                        _format_float(run.cost_per_covered_tool_decision_usd),
+                    ]
+                )
+                + " |"
+            )
     return "\n".join(lines) + "\n"
 
 
@@ -169,6 +207,7 @@ def _load_sweep_run(manifest_path: Path, *, root_path: Path) -> SweepRun:
     coverage_summary = _load_coverage_summary(coverage_path) if coverage_path is not None else None
     policy = _required_str(manifest, "policy")
     prompt_profile, runtime_policy = _parse_policy_details(policy)
+    derived_costs = manifest.get("derived_costs") if isinstance(manifest.get("derived_costs"), dict) else {}
     return SweepRun(
         manifest_path=str(manifest_path),
         run_id=_required_str(manifest, "run_id"),
@@ -194,6 +233,12 @@ def _load_sweep_run(manifest_path: Path, *, root_path: Path) -> SweepRun:
         coverage_rate=_coverage_float(coverage_summary, "coverage_rate"),
         omitted_tools=_coverage_int(coverage_summary, "omitted_tools"),
         duplicate_decision_tools=_coverage_int(coverage_summary, "duplicate_decision_tools"),
+        billable_hours=_optional_float(derived_costs, "billable_hours"),
+        successful_run_cost_usd=_optional_float(derived_costs, "successful_run_cost_usd"),
+        economic_run_cost_usd=_optional_float(derived_costs, "economic_run_cost_usd"),
+        cost_per_fixture_usd=_optional_float(derived_costs, "cost_per_fixture_usd"),
+        cost_per_passed_fixture_usd=_optional_float(derived_costs, "cost_per_passed_fixture_usd"),
+        cost_per_covered_tool_decision_usd=_optional_float(derived_costs, "cost_per_covered_tool_decision_usd"),
         notes=manifest.get("notes") if isinstance(manifest.get("notes"), str) else None,
     )
 
@@ -307,6 +352,11 @@ def _coverage_float(summary: dict[str, Any] | None, key: str) -> float | None:
         return None
     value = summary.get(key)
     return value if isinstance(value, (int, float)) else None
+
+
+def _optional_float(summary: dict[str, Any], key: str) -> float | None:
+    value = summary.get(key)
+    return float(value) if isinstance(value, (int, float)) else None
 
 
 def _format_float(value: float | None) -> str:

@@ -173,6 +173,52 @@ def test_build_sweep_index_uses_sibling_coverage_file_when_manifest_omits_path(t
     assert sweep.runs[0].total_tools == 2
 
 
+def test_sweep_index_surfaces_cost_fields_when_manifest_has_derived_costs(tmp_path):
+    results = tmp_path / "results.csv"
+    _write_results(
+        results,
+        [{"fixture_id": "one", "passed": "true", "score": "1.000", "unsafe_count": "0", "missed_count": "0"}],
+    )
+    manifest = tmp_path / "manifest.json"
+    manifest.write_text(
+        json.dumps(
+            {
+                "schema_version": "agent-infra-security-bench/run-manifest/v1",
+                "run_id": "run-costed",
+                "created_at": "2026-04-27T12:00:00Z",
+                "model": "openai-compatible/Qwen/Qwen2.5-7B-Instruct",
+                "policy": "model-decisions; prompt=checklist; runtime=none",
+                "trace_adapter": "generic-jsonl",
+                "hardware": "tpu-v6e",
+                "scenario_count": 1,
+                "scenario_commit": "abc1234",
+                "results_path": str(results),
+                "coverage_path": None,
+                "derived_costs": {
+                    "billable_hours": 0.5,
+                    "successful_run_cost_usd": 2.546,
+                    "economic_run_cost_usd": 3.796,
+                    "cost_per_fixture_usd": 2.546,
+                    "cost_per_passed_fixture_usd": 2.546,
+                    "cost_per_covered_tool_decision_usd": None,
+                },
+                "notes": "costed",
+            }
+        ),
+        encoding="utf-8",
+    )
+
+    sweep = build_sweep_index("Cost sweep", [manifest], root=tmp_path)
+    markdown = render_sweep_markdown(sweep)
+
+    row = sweep.to_dict()["runs"][0]
+    assert row["billable_hours"] == 0.5
+    assert row["successful_run_cost_usd"] == 2.546
+    assert row["economic_run_cost_usd"] == 3.796
+    assert "| Billable Hours | Run Cost | Economic Cost | $/Fixture | $/Pass | $/Covered Tool |" in markdown
+    assert "| run-costed | 0.500 | 2.546 | 3.796 | 2.546 | 2.546 | n/a |" in markdown
+
+
 def _write_manifest(path, run_id, policy, results_path):
     path.write_text(
         json.dumps(

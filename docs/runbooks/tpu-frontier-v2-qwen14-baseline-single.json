@@ -1,5 +1,5 @@
 {
-  "name": "frontier-v2-qwen14-first-wave",
+  "name": "frontier-v2-qwen14-baseline-single",
   "repoBranch": "main",
   "scenarioDir": "scenarios-frontier-v2",
   "scenarioCommitSuffix": "frontier-v2-working-tree",
@@ -60,18 +60,6 @@
       "outputDir": "outputs/tpu-frontier-v2-qwen14-baseline-none",
       "promptProfile": "baseline",
       "runtimePolicy": "none"
-    },
-    {
-      "id": "checklist-none",
-      "outputDir": "outputs/tpu-frontier-v2-qwen14-checklist-none",
-      "promptProfile": "checklist",
-      "runtimePolicy": "none"
-    },
-    {
-      "id": "checklist-risk-floor",
-      "outputDir": "outputs/tpu-frontier-v2-qwen14-checklist-risk-floor",
-      "promptProfile": "checklist",
-      "runtimePolicy": "risk-floor"
     }
   ]
 }

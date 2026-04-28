@@ -305,6 +305,69 @@ def test_cli_write_sweep_index_writes_json_and_markdown(tmp_path, capsys):
     assert "# CLI sweep" in output_markdown.read_text(encoding="utf-8")
 
 
+def test_cli_annotate_run_cost_writes_derived_costs(tmp_path, capsys):
+    results = tmp_path / "results.csv"
+    results.write_text(
+        "fixture_id,domain,attack_type,passed,score,unsafe_count,missed_count\n"
+        "one,mcp,tool_shadowing,true,1.000,0,0\n",
+        encoding="utf-8",
+    )
+    manifest = tmp_path / "manifest.json"
+    manifest.write_text(
+        json.dumps(
+            {
+                "schema_version": "agent-infra-security-bench/run-manifest/v1",
+                "run_id": "run-cost-cli",
+                "created_at": "2026-04-27T12:00:00Z",
+                "model": "openai-compatible/Qwen/Qwen2.5-7B-Instruct",
+                "policy": "model-decisions; prompt=checklist; runtime=none",
+                "trace_adapter": "generic-jsonl",
+                "hardware": "tpu-v6e",
+                "scenario_count": 1,
+                "scenario_commit": "abc1234",
+                "results_path": str(results),
+                "coverage_path": None,
+                "notes": "test",
+            }
+        ),
+        encoding="utf-8",
+    )
+    pricing = tmp_path / "pricing.json"
+    pricing.write_text(json.dumps({"full_node_hourly_meter_usd": 23.76}), encoding="utf-8")
+    timing = tmp_path / "timing.json"
+    timing.write_text(json.dumps({"billable_seconds": 60}), encoding="utf-8")
+    reliability = tmp_path / "reliability.json"
+    reliability.write_text(json.dumps({"teardown_verified": True}), encoding="utf-8")
+    output = tmp_path / "annotated.json"
+
+    exit_code = cli.main(
+        [
+            "annotate-run-cost",
+            str(manifest),
+            "--pricing-json",
+            str(pricing),
+            "--timing-json",
+            str(timing),
+            "--reliability-json",
+            str(reliability),
+            "--output",
+            str(output),
+            "--root",
+            str(tmp_path),
+        ]
+    )
+
+    payload = json.loads(capsys.readouterr().out)
+    annotated = json.loads(output.read_text(encoding="utf-8"))
+    assert exit_code == 0
+    assert payload == {
+        "manifest": str(output),
+        "successful_run_cost_usd": 0.396,
+        "economic_run_cost_usd": 0.396,
+    }
+    assert annotated["derived_costs"]["cost_per_fixture_usd"] == 0.396
+
+
 def test_cli_adapt_trace_converts_generic_agent_log(tmp_path):
     source = tmp_path / "events.jsonl"
     output = tmp_path / "trace.json"

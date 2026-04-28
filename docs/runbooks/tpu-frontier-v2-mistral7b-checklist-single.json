@@ -1,5 +1,5 @@
 {
-  "name": "frontier-v2-qwen14-first-wave",
+  "name": "frontier-v2-mistral7b-checklist-single",
   "repoBranch": "main",
   "scenarioDir": "scenarios-frontier-v2",
   "scenarioCommitSuffix": "frontier-v2-working-tree",
@@ -47,31 +47,63 @@
         "currency": "USD",
         "requires_launch_time_refresh": true
       }
+    },
+    {
+      "name": "europe-west4-b-v5e",
+      "zone": "europe-west4-b",
+      "acceleratorType": "v5litepod-8",
+      "runtimeVersion": "v2-alpha-tpuv5-lite",
+      "hardwareLabel": "tpu-v5e",
+      "spot": true,
+      "pricingSnapshot": {
+        "provider": "google-cloud",
+        "zone": "europe-west4-b",
+        "pricing_checked_at": "2026-04-27",
+        "pricing_source_url": "https://cloud.google.com/spot-vms/pricing",
+        "pricing_basis": "Current public Spot TPU table; refresh at launch.",
+        "provisioning_model": "spot",
+        "accelerator_type": "v5litepod-8",
+        "accelerator_count": 8,
+        "accelerator_hourly_meter_usd": 0.244926,
+        "full_node_hourly_meter_usd": 1.959408,
+        "currency": "USD",
+        "requires_launch_time_refresh": true
+      }
+    },
+    {
+      "name": "us-central1-a-v5e",
+      "zone": "us-central1-a",
+      "acceleratorType": "v5litepod-8",
+      "runtimeVersion": "v2-alpha-tpuv5-lite",
+      "hardwareLabel": "tpu-v5e",
+      "spot": true,
+      "pricingSnapshot": {
+        "provider": "google-cloud",
+        "zone": "us-central1-a",
+        "pricing_checked_at": "2026-04-27",
+        "pricing_source_url": "https://cloud.google.com/spot-vms/pricing",
+        "pricing_basis": "Current public Spot TPU table; refresh at launch.",
+        "provisioning_model": "spot",
+        "accelerator_type": "v5litepod-8",
+        "accelerator_count": 8,
+        "accelerator_hourly_meter_usd": 0.244926,
+        "full_node_hourly_meter_usd": 1.959408,
+        "currency": "USD",
+        "requires_launch_time_refresh": true
+      }
     }
   ],
   "model": {
-    "id": "Qwen/Qwen2.5-14B-Instruct",
-    "tensorParallelSize": 4,
+    "id": "mistralai/Mistral-7B-Instruct-v0.3",
+    "tensorParallelSize": 1,
     "maxModelLen": 4096
   },
   "runs": [
     {
-      "id": "baseline-none",
-      "outputDir": "outputs/tpu-frontier-v2-qwen14-baseline-none",
-      "promptProfile": "baseline",
-      "runtimePolicy": "none"
-    },
-    {
       "id": "checklist-none",
-      "outputDir": "outputs/tpu-frontier-v2-qwen14-checklist-none",
+      "outputDir": "outputs/tpu-frontier-v2-mistral7b-checklist-none",
       "promptProfile": "checklist",
       "runtimePolicy": "none"
-    },
-    {
-      "id": "checklist-risk-floor",
-      "outputDir": "outputs/tpu-frontier-v2-qwen14-checklist-risk-floor",
-      "promptProfile": "checklist",
-      "runtimePolicy": "risk-floor"
     }
   ]
 }

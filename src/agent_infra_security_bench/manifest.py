@@ -4,6 +4,7 @@ from dataclasses import dataclass
 from datetime import UTC, datetime
 import json
 from pathlib import Path
+from typing import Any
 from uuid import uuid4
 
 SCHEMA_VERSION = "agent-infra-security-bench/run-manifest/v1"
@@ -22,9 +23,13 @@ class RunManifest:
     results_path: str | None
     coverage_path: str | None
     notes: str | None
+    pricing_snapshot: dict[str, Any] | None = None
+    timing: dict[str, Any] | None = None
+    reliability: dict[str, Any] | None = None
+    derived_costs: dict[str, Any] | None = None
 
-    def to_dict(self) -> dict[str, str | int | None]:
-        return {
+    def to_dict(self) -> dict[str, Any]:
+        payload: dict[str, Any] = {
             "schema_version": SCHEMA_VERSION,
             "run_id": self.run_id,
             "created_at": self.created_at,
@@ -38,6 +43,15 @@ class RunManifest:
             "coverage_path": self.coverage_path,
             "notes": self.notes,
         }
+        if self.pricing_snapshot is not None:
+            payload["pricing_snapshot"] = self.pricing_snapshot
+        if self.timing is not None:
+            payload["timing"] = self.timing
+        if self.reliability is not None:
+            payload["reliability"] = self.reliability
+        if self.derived_costs is not None:
+            payload["derived_costs"] = self.derived_costs
+        return payload
 
 
 def build_manifest(
@@ -51,6 +65,10 @@ def build_manifest(
     results_path: str | None = None,
     coverage_path: str | None = None,
     notes: str | None = None,
+    pricing_snapshot: dict[str, Any] | None = None,
+    timing: dict[str, Any] | None = None,
+    reliability: dict[str, Any] | None = None,
+    derived_costs: dict[str, Any] | None = None,
 ) -> RunManifest:
     return RunManifest(
         run_id=f"run-{uuid4().hex[:12]}",
@@ -64,6 +82,10 @@ def build_manifest(
         results_path=results_path,
         coverage_path=coverage_path,
         notes=notes,
+        pricing_snapshot=pricing_snapshot,
+        timing=timing,
+        reliability=reliability,
+        derived_costs=derived_costs,
     )
 
 

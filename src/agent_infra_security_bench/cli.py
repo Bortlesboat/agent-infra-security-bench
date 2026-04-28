@@ -39,9 +39,21 @@ from agent_infra_security_bench.llm_agent import (
     write_ollama_agent_run,
     write_nvidia_nim_agent_run,
 )
+from agent_infra_security_bench.load_probe import (
+    ProbeConfig,
+    load_prompt,
+    parse_concurrency_levels,
+    render_probe_markdown,
+    resolve_api_key,
+    run_probe,
+    write_probe_csv,
+    write_probe_json,
+    write_probe_markdown,
+)
 from agent_infra_security_bench.manifest import build_manifest, write_manifest
 from agent_infra_security_bench.policy_agent import available_policies, write_policy_traces
 from agent_infra_security_bench.results import render_csv, render_markdown, score_suite
+from agent_infra_security_bench.run_costs import annotate_manifest_costs, load_json_object
 from agent_infra_security_bench.scoring import score_trace
 from agent_infra_security_bench.sweeps import (
     build_sweep_index,
@@ -113,6 +125,16 @@ def main(argv: list[str] | None = None) -> int:
     sweep_parser.add_argument("--markdown", type=Path)
     sweep_parser.add_argument("--root", type=Path)
 
+    cost_parser = subparsers.add_parser(
+        "annotate-run-cost", help="Add pricing, timing, reliability, and derived costs to a run manifest"
+    )
+    cost_parser.add_argument("manifest", type=Path)
+    cost_parser.add_argument("--pricing-json", type=Path, required=True)
+    cost_parser.add_argument("--timing-json", type=Path, required=True)
+    cost_parser.add_argument("--reliability-json", type=Path)
+    cost_parser.add_argument("--output", type=Path)
+    cost_parser.add_argument("--root", type=Path)
+
     commons_parser = subparsers.add_parser(
         "validate-commons", help="Validate the public compute commons index"
     )
@@ -182,6 +204,25 @@ def main(argv: list[str] | None = None) -> int:
     openai_parser.add_argument("--prompt-profile", choices=PROMPT_PROFILES, default="baseline")
     openai_parser.add_argument("--runtime-policy", choices=RUNTIME_POLICIES, default="none")
     openai_parser.add_argument("--hardware", default="hosted")
+
+    probe_parser = subparsers.add_parser(
+        "probe-openai-serving",
+        help="Measure OpenAI-compatible serving latency and throughput under concurrency",
+    )
+    probe_parser.add_argument("--base-url", default=DEFAULT_OPENAI_COMPAT_BASE_URL)
+    probe_parser.add_argument("--model", default=DEFAULT_OPENAI_COMPAT_MODEL)
+    probe_parser.add_argument("--api-key")
+    probe_parser.add_argument("--api-key-env")
+    probe_parser.add_argument("--prompt")
+    probe_parser.add_argument("--prompt-file", type=Path)
+    probe_parser.add_argument("--concurrency", default="1,2,4")
+    probe_parser.add_argument("--requests-per-level", type=int, default=8)
+    probe_parser.add_argument("--max-tokens", type=int, default=64)
+    probe_parser.add_argument("--timeout", type=float, default=120)
+    probe_parser.add_argument("--label", default="openai-compatible-serving-probe")
+    probe_parser.add_argument("--json", type=Path)
+    probe_parser.add_argument("--csv", type=Path)
+    probe_parser.add_argument("--markdown", type=Path)
 
     nvidia_parser = subparsers.add_parser(
         "run-nvidia-agent", help="Run a NVIDIA NIM hosted model agent and adapt raw JSONL events"
@@ -275,6 +316,29 @@ def main(argv: list[str] | None = None) -> int:
         print(
             json.dumps(
                 {"output": str(output), "markdown": markdown_path, "run_count": sweep.run_count},
+                indent=2,
+                sort_keys=True,
+            )
+        )
+        return 0
+    if args.command == "annotate-run-cost":
+        output = annotate_manifest_costs(
+            args.manifest,
+            pricing_snapshot=load_json_object(args.pricing_json),
+            timing=load_json_object(args.timing_json),
+            reliability=load_json_object(args.reliability_json) if args.reliability_json else None,
+            output_path=args.output,
+            root_path=args.root,
+        )
+        annotated = load_json_object(output)
+        derived_costs = annotated["derived_costs"]
+        print(
+            json.dumps(
+                {
+                    "manifest": str(output),
+                    "successful_run_cost_usd": derived_costs["successful_run_cost_usd"],
+                    "economic_run_cost_usd": derived_costs["economic_run_cost_usd"],
+                },
                 indent=2,
                 sort_keys=True,
             )
@@ -431,6 +495,28 @@ def main(argv: list[str] | None = None) -> int:
                 sort_keys=True,
             )
         )
+        return 0
+    if args.command == "probe-openai-serving":
+        report = run_probe(
+            ProbeConfig(
+                base_url=args.base_url,
+                model=args.model,
+                prompt=load_prompt(args.prompt, args.prompt_file),
+                concurrency_levels=parse_concurrency_levels(args.concurrency),
+                requests_per_level=args.requests_per_level,
+                max_tokens=args.max_tokens,
+                timeout=args.timeout,
+                label=args.label,
+                api_key=resolve_api_key(args.api_key, args.api_key_env),
+            )
+        )
+        if args.json:
+            write_probe_json(args.json, report)
+        if args.csv:
+            write_probe_csv(args.csv, report)
+        if args.markdown:
+            write_probe_markdown(args.markdown, report)
+        print(render_probe_markdown(report))
         return 0
     if args.command == "run-nvidia-agent":
         run = write_nvidia_nim_agent_run(

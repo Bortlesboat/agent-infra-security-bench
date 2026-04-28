@@ -10,6 +10,8 @@ The first commons artifact is `commons/index.json`.
 
 It lists published fixture sets, model runs, defense sweeps, trace-adapter examples, and runbooks. Each item explains why it is reusable by someone without accelerator access.
 
+As of the frontier-v2 update, Commons also includes the costed TPU sweep and the plain-English synthesis of what the nine TPU rows show about completeness, utility, safety, prompt structure, runtime defense, and model scale.
+
 Validate it locally:
 
 ```powershell
@@ -30,6 +32,7 @@ Expected result: the command prints a JSON summary with zero missing paths.
 - inspect failure-analysis reports that explain model misses by cause
 - inspect coverage-analysis reports that show whether a model produced one decision per listed tool
 - inspect model-backed reports they could not afford to generate
+- inspect costed TPU sweep tables without running TPU or GPU resources
 - adapt their own public-safe agent logs into benchmark traces
 - compare a new defense against the deterministic policy baselines
 - propose fixtures for future accelerator-backed sweeps
@@ -45,6 +48,6 @@ Near-term additions:
 - larger candidate batches for developer-tool and agent-runtime boundary state
 - more model families or hosted providers added to the 34-fixture sweep table
 - extend the checklist-style coverage experiments to more hosted or TPU-backed rows
-- TPU-backed reports after TRC confirmation arrives
+- only no-cost or explicitly approved accelerator reports; GPU controls stay planning-only unless the billing boundary is safe
 
 Hosted eval queues can come later. The first job is to make the static public commons good enough that a hosted queue would be worth trusting.
