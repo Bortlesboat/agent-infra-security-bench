@@ -2,7 +2,7 @@
 
 Use this when the next objective is cost per comparable BoundaryBench row, not just another pass-rate row.
 
-Do not create TPU or GPU resources until the local preflight passes, pricing is refreshed, teardown verification is part of the run, and the billing boundary is explicitly approved. In this workspace, Google Cloud GPU controls are planning targets only; the practical GPU lane is RunPod credits. The first RunPod A100 Qwen 7B control has completed, so use this runbook for cheaper follow-up GPUs, larger-model GPU rows, or a same-session amortized TPU/GPU comparison.
+Do not create TPU or GPU resources until the local preflight passes, pricing is refreshed, teardown verification is part of the run, and the billing boundary is explicitly approved. In this workspace, Google Cloud GPU controls are planning targets only; the practical GPU lane is RunPod credits. The RunPod A100 Qwen 7B triplet and the first Qwen 14B defended row have completed, so use this runbook for cheaper follow-up GPUs or a same-session amortized TPU/GPU comparison.
 
 ## Local preflight
 
@@ -101,7 +101,7 @@ For RunPod controls, the public docs say Pods are billed by the second for compu
 
 The TPU side is now costed for nine `scenarios-frontier-v2` rows: Qwen 7B `baseline + none`, Qwen 7B `checklist + none`, Qwen 7B `checklist + risk-floor`, Mistral 7B `baseline + none`, Mistral 7B `checklist + none`, Mistral 7B `checklist + risk-floor`, Qwen 14B `baseline + none`, Qwen 14B `checklist + none`, and Qwen 14B `checklist + risk-floor`. The generated public sweep is `docs/reports/2026-04-frontier-v2-costed-tpu-sweep.md`.
 
-The first paired GPU side now exists for Qwen 7B on RunPod A100. On 2026-04-27 the first Google G2/L4 attempt failed before VM startup because project-level `GPUS_ALL_REGIONS` was `0`. Even after quota is raised, treat Google GPU controls as no-cost/approved-billing-only targets; otherwise keep Google GPU as planning-only and use RunPod credits for live rows.
+The first paired GPU side now exists for Qwen 7B on RunPod A100, and the defended Qwen 14B GPU control now exists on RunPod A100 SXM. On 2026-04-27 the first Google G2/L4 attempt failed before VM startup because project-level `GPUS_ALL_REGIONS` was `0`. Even after quota is raised, treat Google GPU controls as no-cost/approved-billing-only targets; otherwise keep Google GPU as planning-only and use RunPod credits for live rows.
 
 For future TPU rows, use the cost-aware strike queues. The strike script records timing around create, ready, SSH, bootstrap, benchmark, copy-back, and delete; primes TPU VM SSH metadata with `gcloud` before native OpenSSH transport; normalizes generated shell scripts to LF; uses pid-file remote polling; creates a Python 3.11 venv; then annotates copied manifests after teardown verification.
 
@@ -121,19 +121,19 @@ The script does not make a failed pre-benchmark allocation look like a benchmark
 
 ## GPU control path
 
-Use RunPod credits first. The Qwen 7B A100 triplet is complete; the next live GPU control should either try a cheaper one-GPU shape that can honestly serve the same model and `4096` context, or move to Qwen 14B on A100/H100. The Google G2/A2/A3 rows remain fallback planning targets, not the active lane.
+Use RunPod credits first. The Qwen 7B A100 triplet is complete, and the Qwen 14B defended A100 row is complete. The next live GPU control should try a cheaper one-GPU shape that can honestly serve the same model and `4096` context, or run a same-session amortized comparison. The Google G2/A2/A3 rows remain fallback planning targets, not the active lane.
 
 | Row | First GPU control | Fallback |
 | --- | --- | --- |
 | Qwen 7B prompt/runtime triplet | Completed on RunPod A100 80GB | Repeat only for same-session amortization or regression checks |
 | Qwen 7B `baseline + none` cheaper rerun | RunPod L4 if available | RunPod RTX A5000, RTX 3090, or RTX 4090 |
-| Qwen 14B `checklist + risk-floor` | RunPod A100 80GB | RunPod H100; only try 24GB/32GB if quantization and context fit are proven |
+| Qwen 14B `checklist + risk-floor` | Completed on RunPod A100 SXM 80GB | Repeat only for same-session amortization, H100 throughput, or quantized cheaper-GPU fit tests |
 
 Serve the model through an OpenAI-compatible endpoint, then run the same benchmark command shape:
 
 The first live GPU-control attempt on 2026-04-27 was intentionally stopped at allocation failure. It attempted the G2/L4 row after local tests and empty-resource checks, but Compute Engine rejected the VM create with `Quota 'GPUS_ALL_REGIONS' exceeded. Limit: 0.0 globally.` Treat that as a preflight blocker, not as a benchmark row.
 
-The 2026-04-28 RunPod control completed three Qwen 7B A100 rows: `baseline + none` at `5/9`, `checklist + none` at `7/9`, and `checklist + risk-floor` at `9/9`. The cheaper GPU path had real setup friction before that success: A5000 allocation disappeared, 4090 pods failed allocation/readiness, and the first A100 serving stack needed vLLM/Transformers pinning. Preserve those failures as friction evidence, not benchmark rows.
+The first 2026-04-28 RunPod control completed three Qwen 7B A100 rows: `baseline + none` at `5/9`, `checklist + none` at `7/9`, and `checklist + risk-floor` at `9/9`. The cheaper GPU path had real setup friction before that success: A5000 allocation disappeared, 4090 pods failed allocation/readiness, and the first A100 serving stack needed vLLM/Transformers pinning. A later Qwen 14B A100 SXM row completed `checklist + risk-floor` at `9/9` with benchmark-only cost `$0.019522`, but the one-off session hit setup friction from a network-mounted venv and only became stable after moving the venv to `/root`. Preserve those failures as friction evidence, not benchmark rows.
 
 ```powershell
 agent-bench run-openai-agent scenarios-frontier-v2 outputs/gpu-frontier-v2-qwen7b-baseline-none `
