@@ -28,8 +28,8 @@ The first implementation slice should stay tightly focused on the runner and run
 ### Task 1: Add the failing runner tests first
 
 **Files:**
-- Modify: `C:/Users/andre/OneDrive/Documents/Playground/agent-infra-security-bench/tests/test_llm_agent.py`
-- Modify: `C:/Users/andre/OneDrive/Documents/Playground/agent-infra-security-bench/tests/test_cli.py`
+- Modify: `tests/test_llm_agent.py`
+- Modify: `tests/test_cli.py`
 
 - [ ] **Step 1: Write the failing client tests**
 
@@ -79,8 +79,8 @@ No commit is required if the red-state checkpoint is too noisy.
 ### Task 2: Implement the generic client and CLI
 
 **Files:**
-- Modify: `C:/Users/andre/OneDrive/Documents/Playground/agent-infra-security-bench/src/agent_infra_security_bench/llm_agent.py`
-- Modify: `C:/Users/andre/OneDrive/Documents/Playground/agent-infra-security-bench/src/agent_infra_security_bench/cli.py`
+- Modify: `src/agent_infra_security_bench/llm_agent.py`
+- Modify: `src/agent_infra_security_bench/cli.py`
 
 - [ ] **Step 1: Add `OpenAICompatibleModelClient`**
 
@@ -179,7 +179,7 @@ git commit -m "feat: add openai-compatible model runner"
 ### Task 3: Rewrite the TPU runbook around the actual grant-safe path
 
 **Files:**
-- Modify: `C:/Users/andre/OneDrive/Documents/Playground/agent-infra-security-bench/docs/runbooks/cloud-tpu-first-run.md`
+- Modify: `docs/runbooks/cloud-tpu-first-run.md`
 
 - [ ] **Step 1: Update the first-run target**
 
@@ -247,8 +247,8 @@ git commit -m "docs: refresh TPU first-run protocol"
 ### Task 4: Prepare the zero-billing local preflight
 
 **Files:**
-- Modify: `C:/Users/andre/OneDrive/Documents/Playground/agent-infra-security-bench/docs/runbooks/cloud-tpu-first-run.md`
-- Optional create: `C:/Users/andre/OneDrive/Documents/Playground/agent-infra-security-bench/docs/reports/2026-04-tpu-smoke-template.md`
+- Modify: `docs/runbooks/cloud-tpu-first-run.md`
+- Optional create: `docs/reports/2026-04-tpu-smoke-template.md`
 
 - [ ] **Step 1: Run local non-billed checks**
 
@@ -281,9 +281,9 @@ This step is a gate, not code:
 ### Task 5: Add the first 6-8 frontier fixtures only after the TPU baseline row exists
 
 **Files:**
-- Create: `C:/Users/andre/OneDrive/Documents/Playground/agent-infra-security-bench/scenarios/*.json`
-- Modify: `C:/Users/andre/OneDrive/Documents/Playground/agent-infra-security-bench/tests/` as needed
-- Modify: `C:/Users/andre/OneDrive/Documents/Playground/agent-infra-security-bench/docs/reports/*.md`
+- Create: `scenarios/*.json`
+- Modify: `tests/` as needed
+- Modify: `docs/reports/*.md`
 
 - [ ] **Step 1: Add 2 long-menu controls**
 - [ ] **Step 2: Add 2 stateful controls**
@@ -298,8 +298,8 @@ Use the existing fixture schema and keep all cases public-safe.
 ### Task 6: Publish the first TPU comparison story
 
 **Files:**
-- Create or modify: `C:/Users/andre/OneDrive/Documents/Playground/agent-infra-security-bench/docs/reports/*.md`
-- Modify: `C:/Users/andre/OneDrive/Documents/Playground/agent-infra-security-bench/commons/index.json`
+- Create or modify: `docs/reports/*.md`
+- Modify: `commons/index.json`
 
 - [ ] **Step 1: Write the first TPU baseline report**
 - [ ] **Step 2: Add the TPU row to the sweep surfaces**
